@@ -1,4 +1,5 @@
 {
+  "cSpell.words": ["nestjs", "typeorm"],
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode"
 }
