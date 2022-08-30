@@ -3,6 +3,7 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './apis/users/users.module';
+import { AppController } from './app.controller';
 
 @Module({
   imports: [
@@ -11,6 +12,11 @@ import { UsersModule } from './apis/users/users.module';
       driver: ApolloDriver,
       autoSchemaFile: 'src/commons/graphql/schema.gql',
       context: ({ req, res }) => ({ req, res }),
+      // Cors 추가
+      cors: {
+        origin: ['https://dangder.shop'],
+        credential: true,
+      },
     }),
     TypeOrmModule.forRoot({
       type: process.env.DATABASE_TYPE as 'mysql',
@@ -24,7 +30,7 @@ import { UsersModule } from './apis/users/users.module';
       logging: true,
     }),
   ],
-  controllers: [],
+  controllers: [AppController],
   providers: [],
 })
 export class AppModule {}
