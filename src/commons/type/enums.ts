@@ -1,0 +1,4 @@
+export enum PAYMENT_TYPE_ENUM {
+  PAYMENT = 'PAYMENT',
+  CANCEL = 'CANCEL',
+}

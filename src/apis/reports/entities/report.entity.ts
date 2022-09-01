@@ -10,7 +10,7 @@ import {
 
 @Entity()
 @ObjectType()
-export class ReportBoard {
+export class Report {
   @PrimaryGeneratedColumn('uuid')
   @Field(() => String)
   id: string;
