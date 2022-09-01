@@ -1,31 +1,28 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 import { User } from 'src/apis/users/entities/user.entity';
 import {
-  Entity,
-  PrimaryGeneratedColumn,
   Column,
-  ManyToOne,
+  Entity,
   JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 
 @Entity()
 @ObjectType()
-export class ReportBoard {
+export class BlockUser {
   @PrimaryGeneratedColumn('uuid')
   @Field(() => String)
   id: string;
 
   @Column()
   @Field(() => String)
-  reportId: string;
-
-  @Column()
-  @Field(() => String)
-  reportContent: string;
+  blockId: string;
+  // 차단 대상 유저 id
 
   @JoinColumn()
   @ManyToOne(() => User)
   @Field(() => User)
   user: User;
-  // ReportBoard N : User 1 연결
+  // BlockUser N : User 1 연결
 }
