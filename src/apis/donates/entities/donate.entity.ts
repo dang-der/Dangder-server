@@ -3,7 +3,7 @@ import { Column, PrimaryGeneratedColumn, Entity } from 'typeorm';
 
 @Entity()
 @ObjectType()
-export class Support {
+export class Donate {
   @PrimaryGeneratedColumn('uuid')
   @Field(() => String)
   id: string;
