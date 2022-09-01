@@ -40,9 +40,9 @@ export class User {
   @Field(() => String)
   password: string;
 
-  @Column({ default: 0 })
-  @Field(() => Int)
-  pet: number;
+  @Column()
+  @Field(() => Boolean)
+  pet: boolean;
 
   // 반려동물여부
 
@@ -65,11 +65,11 @@ export class User {
   @DeleteDateColumn()
   deletedAt: Date;
 
-  @Column()
+  @Column({ default: 0 })
   @Field(() => Int)
   reportCnt: number;
 
-  @Column()
+  @Column({ default: 0 })
   @Field(() => Int)
   donateTotal: number;
 
@@ -78,13 +78,13 @@ export class User {
   // isCert: string;
   // isCert -> ENUM 전환하려면
 
-  @Column()
+  @Column({ default: false })
   @Field(() => Boolean)
   isCert: boolean;
 
   // 이 회원이 패스를 구매했는가?
 
-  @Column()
+  @Column({ default: '일반회원' })
   @Field(() => String)
   donateGrade: string;
 
