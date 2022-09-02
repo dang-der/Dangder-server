@@ -4,9 +4,41 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './apis/users/users.module';
 import { AppController } from './app.controller';
+import { AvoidBreedsModule } from './apis/avoidBreeds/avoidBreeds.module';
+import { BlockUsersModule } from './apis/blockUsers/blockUsers.module';
+import { BreedsModule } from './apis/breeds/breeds.module';
+import { CharactersModule } from './apis/characters/characters.module';
+import { ChatMessagesModule } from './apis/chatMessages/chatMessages.module';
+import { DogsModule } from './apis/dogs/dogs.module';
+import { ChatRoomsModule } from './apis/chatRooms/chatRooms.module';
+import { DonateIOsModule } from './apis/donateIOs/donateIOs.module';
+import { DonatesModule } from './apis/donates/donates.module';
+import { DogsImagesModule } from './apis/dogsImages/dogsImages.module';
+import { InterestsModule } from './apis/interests/interests.module';
+import { LikesModule } from './apis/likes/likes.module';
+import { LocationsModule } from './apis/locations/locations.module';
+import { MailAuthTokensModule } from './apis/mailAuthTokens/mailAuthTokens.module';
+import { PaymentsModule } from './apis/payments/payments.module';
+import { ReportsModule } from './apis/reports/reports.module';
 
 @Module({
   imports: [
+    AvoidBreedsModule,
+    BlockUsersModule,
+    BreedsModule,
+    CharactersModule,
+    ChatMessagesModule,
+    ChatRoomsModule,
+    DogsModule,
+    DogsImagesModule,
+    DonateIOsModule,
+    DonatesModule,
+    InterestsModule,
+    LikesModule,
+    LocationsModule,
+    MailAuthTokensModule,
+    PaymentsModule,
+    ReportsModule,
     UsersModule,
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
