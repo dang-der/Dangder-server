@@ -1,5 +1,4 @@
-import { Field, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
-import { Donate } from 'src/apis/donates/entities/donate.entity';
+import { Field, Int, ObjectType } from '@nestjs/graphql';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -7,8 +6,6 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   DeleteDateColumn,
-  JoinColumn,
-  ManyToOne,
 } from 'typeorm';
 
 // export enum CERT_ENUM { // 실제 ENUM은 이거고
@@ -89,11 +86,4 @@ export class User {
   donateGrade: string;
 
   //후원 등급
-
-  @JoinColumn()
-  @ManyToOne(() => Donate)
-  @Field(() => Donate)
-  donate: Donate;
-  //후원 Id
-  // User N : Donate 1 연결
 }
