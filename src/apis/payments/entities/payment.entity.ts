@@ -5,7 +5,7 @@ import {
   Column,
   Entity,
   JoinColumn,
-  OneToOne,
+  ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -31,6 +31,6 @@ export class Payment {
 
   @JoinColumn()
   @Field(() => User)
-  @OneToOne(() => User)
+  @ManyToOne(() => User)
   user: User;
 }
