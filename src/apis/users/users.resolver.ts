@@ -5,7 +5,7 @@ import { User } from './entities/user.entity';
 import { UsersService } from './users.service';
 
 @Resolver()
-export class UserResolver {
+export class UsersResolver {
   constructor(
     private readonly usersService: UsersService, //
   ) {}
@@ -23,7 +23,6 @@ export class UserResolver {
     @Args('email') email: string, //
   ) {
     // 유저 정보 꺼내오기
-    console.log('fetchUser가 실행되었습니다!');
     return this.usersService.findOne({ email });
   }
 
@@ -45,7 +44,6 @@ export class UserResolver {
     @Args('createUserInput') createUserInput: CreateUserInput, //
   ) {
     // 유저 정보 생성하기
-    console.log('createUser가 실행되었습니다!');
     return this.usersService.create({ createUserInput });
   }
 
