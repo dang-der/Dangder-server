@@ -1,17 +1,20 @@
-import { Field, ObjectType, registerEnumType } from '@nestjs/graphql';
+import { Field, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
 import { AvoidBreed } from 'src/apis/avoidBreeds/entities/avoidBreed.entity';
 import { Character } from 'src/apis/characters/entities/character.entity';
-import { Breed } from 'src/apis/Breeds/entities/Breed.entity';
+import { Breed } from 'src/apis/breeds/entities/breed.entity';
 import { Interest } from 'src/apis/interests/entities/interest.entity';
 import { User } from 'src/apis/users/entities/user.entity';
 import {
   Column,
+  CreateDateColumn,
+  DeleteDateColumn,
   Entity,
   JoinColumn,
   JoinTable,
   ManyToMany,
   OneToOne,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 
 export enum GENDER_ENUM { // 실제 ENUM은 이거고
@@ -52,8 +55,8 @@ export class Dog {
   name: string;
 
   @Column()
-  @Field(() => String)
-  age: string;
+  @Field(() => Int)
+  age: number;
 
   @Column({ type: 'enum', enum: GENDER_ENUM })
   @Field(() => GENDER_ENUM)
@@ -74,6 +77,21 @@ export class Dog {
   @Column()
   @Field(() => String)
   registerNumber: string;
+
+  @Column()
+  @Field(() => String)
+  birthday: string;
+
+  @CreateDateColumn()
+  @Field(() => Date)
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  @Field(() => Date)
+  updatedAt: Date;
+
+  @DeleteDateColumn()
+  deletedAt: Date;
 
   @JoinTable()
   @Field(() => [Interest])
@@ -98,5 +116,5 @@ export class Dog {
   @JoinColumn()
   @Field(() => User)
   @OneToOne(() => User)
-  user: User;
+  userId: User;
 }
