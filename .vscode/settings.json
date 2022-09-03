@@ -1,5 +1,13 @@
 {
-  "cSpell.words": ["nestjs", "typeorm"],
+  "cSpell.words": [
+    "Auths",
+    "dangder",
+    "Kakao",
+    "Naver",
+    "nestjs",
+    "refreash",
+    "typeorm"
+  ],
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode"
 }
