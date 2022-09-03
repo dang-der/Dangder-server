@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { Interest } from '../interests/entities/interest.entity';
 import { Dog, GENDER_ENUM } from './entities/dog.entity';
 
 @Injectable()
@@ -8,16 +9,19 @@ export class DogsService {
   constructor(
     @InjectRepository(Dog)
     private readonly dogsRepository: Repository<Dog>,
+
+    @InjectRepository(Interest)
+    private readonly interestsRepository: Repository<Interest>,
   ) {}
 
-  findAll() {
-    return this.dogsRepository.find({});
+  async findAll() {
+    return this.dogsRepository.find();
   }
 
   async create({ createDogInput }) {
     return this.dogsRepository.save({
+      gender: GENDER_ENUM.FEMALE, //테스트를 위해 임시로 FEMALE로 고정해둠. 추후 변경예정
       ...createDogInput,
-      gender: GENDER_ENUM.FEMALE,
     });
   }
 
