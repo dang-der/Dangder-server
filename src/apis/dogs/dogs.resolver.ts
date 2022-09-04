@@ -16,14 +16,24 @@ export class DogsResolver {
     return this.dogsService.findAll();
   }
 
+  // @Query(() => [Dog])
+  // async fetchDogInfo(
+  //   @Args('registerNumber') registerNumber: string, //
+  //   @Args('name') name: string,
+  // ) {
+  //   const doginfo = await this.dogsService.getDogInfo({ registerNumber, name });
+  //   return doginfo;
+  //   // return this.dogsService.findAll();
+  // }
+
   @Mutation(() => Dog)
   async createDog(
     @Args('createDogInput') createDogInput: createDogInput, //
-    // @Req() req: Request,
-    // @Res() res: Response,
+    @Args('registerNumber') registerNumber: string, //
+    @Args('name') name: string,
   ) {
-    //   res.breed.id
-    return this.dogsService.create({ createDogInput });
+    const doginfo = await this.dogsService.getDogInfo({ registerNumber, name });
+    return this.dogsService.create({ doginfo, createDogInput });
   }
 
   @Mutation(() => Dog)

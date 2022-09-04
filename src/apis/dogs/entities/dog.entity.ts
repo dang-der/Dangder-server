@@ -58,8 +58,8 @@ export class Dog {
   @Field(() => Int)
   age: number;
 
-  @Column({ type: 'enum', enum: GENDER_ENUM })
-  @Field(() => GENDER_ENUM)
+  @Column()
+  @Field(() => String)
   gender: string;
 
   // @Column({ type: 'enum', enum: ISNEUT_ENUM })
