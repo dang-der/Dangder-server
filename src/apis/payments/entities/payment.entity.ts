@@ -1,6 +1,5 @@
 import { Field, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
 import { User } from 'src/apis/users/entities/user.entity';
-import { PAYMENT_TYPE_ENUM } from 'src/commons/type/enums';
 import {
   Column,
   Entity,
@@ -9,9 +8,14 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-registerEnumType(PAYMENT_TYPE_ENUM, {
+export enum PAYMENT_STATUS_ENUM {
+  PAYMENT = 'PAYMENT',
+  CANCEL = 'CANCEL',
+}
+
+registerEnumType(PAYMENT_STATUS_ENUM, {
   // 이것은 graphql에 등록하기 위해
-  name: 'PAYMENT_TYPE_ENUM',
+  name: 'PAYMENT_STATUS_ENUM',
 });
 
 @Entity()
@@ -25,8 +29,8 @@ export class Payment {
   @Field(() => Int)
   payMoney: number;
 
-  @Column({ type: 'enum', enum: PAYMENT_TYPE_ENUM })
-  @Field(() => PAYMENT_TYPE_ENUM)
+  @Column({ type: 'enum', enum: PAYMENT_STATUS_ENUM })
+  @Field(() => PAYMENT_STATUS_ENUM)
   paymentType: string;
 
   @JoinColumn()
