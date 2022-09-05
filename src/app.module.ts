@@ -23,6 +23,8 @@ import { ReportsModule } from './apis/reports/reports.module';
 import { AuthsModule } from './apis/auths/auths.module';
 import { RedisClientOptions } from 'redis';
 import * as redisStore from 'cache-manager-redis-store';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { PugAdapter } from '@nestjs-modules/mailer/dist/adapters/pug.adapter';
 
 @Module({
   imports: [
@@ -70,6 +72,27 @@ import * as redisStore from 'cache-manager-redis-store';
       store: redisStore,
       url: 'redis://my-redis:6379',
       isGlobal: true,
+    }),
+    // Mailer 사용을 위한 MailerModule 추가
+    MailerModule.forRoot({
+      transport: {
+        service: 'gmail',
+        secure: false,
+        auth: {
+          user: process.env.MAILER_GMAIL_USER,
+          pass: process.env.MAILER_GMAIL_PASS,
+        },
+      },
+      defaults: {
+        from: process.env.MAILER_GMAIL_SENDER,
+      },
+      template: {
+        dir: __dirname + '/templates',
+        adapter: new PugAdapter(),
+        options: {
+          strict: true,
+        },
+      },
     }),
   ],
   controllers: [AppController],

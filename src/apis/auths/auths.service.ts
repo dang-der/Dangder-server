@@ -1,7 +1,14 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  CACHE_MANAGER,
+  Inject,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { MailerService } from '@nestjs-modules/mailer';
 import { UsersService } from '../users/users.service';
 import * as jwt from 'jsonwebtoken';
+import { Cache } from 'cache-manager';
 
 // .env 내부 선언 데이터
 const { JWT_ACCESS_SECRET, JWT_REFRESH_SECRET, LOGIN_REDIRECT_URL } =
@@ -12,6 +19,11 @@ export class AuthsService {
   constructor(
     private readonly jwtService: JwtService, //
     private readonly usersService: UsersService, //
+    // Mailer 사용을 위한 서비스 주입
+    private readonly mailerService: MailerService,
+    // redis 사용을 위한 cacheManager 선언
+    @Inject(CACHE_MANAGER)
+    private readonly cacheManager: Cache,
   ) {}
 
   // Refresh Token 생성 -> response header 에 넣어주는 과정
@@ -73,5 +85,42 @@ export class AuthsService {
     } catch (error) {
       throw new UnauthorizedException(error.response.message);
     }
+  }
+
+  // 랜덤한 6자리 수 토큰 생성 후 메일보내기.
+  async sendMailToken({ email }) {
+    const token = String(Math.floor(Math.random() * 10 ** 6)).padStart(6, '0');
+
+    let result = false;
+    await this.mailerService
+      .sendMail({
+        to: email,
+        from: 'noreply@dangder.com',
+        subject: '[🐾Dangder] 메일 인증번호가 발급되었습니다.',
+        template: '/dangder/src/commons/mailTemplates/tokenSend', // The `.pug` or `.hbs` extension is appended automatically.
+        context: {
+          // Data to be sent to template engine.
+          code: token,
+        },
+      })
+      .then(() => {
+        result = true;
+      })
+      .catch((err) => {
+        result = false;
+        console.log(err);
+      });
+
+    // 유저의 계정 : 생성된 토큰 - key : value 값으로 Redis 저장.
+    await this.cacheManager.set(email, token, {
+      ttl: 300, // 5분
+    });
+    return result;
+  }
+
+  // Redis에 저장된 토큰값을 비교
+  async validateMailToken({ email, code }) {
+    const result = await this.cacheManager.get(email);
+    return result === code;
   }
 }
