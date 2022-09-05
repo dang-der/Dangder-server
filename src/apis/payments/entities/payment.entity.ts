@@ -2,6 +2,7 @@ import { Field, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
 import { User } from 'src/apis/users/entities/user.entity';
 import {
   Column,
+  CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
@@ -25,6 +26,11 @@ export class Payment {
   @Field(() => String)
   id: string;
 
+  // import Uid
+  @Column()
+  @Field(() => String)
+  impUid: string;
+
   @Column()
   @Field(() => Int)
   payMoney: number;
@@ -37,4 +43,10 @@ export class Payment {
   @Field(() => User)
   @ManyToOne(() => User)
   user: User;
+
+  // 생성된 시간 추가
+
+  @CreateDateColumn()
+  @Field(() => Date)
+  createdAt: Date;
 }
