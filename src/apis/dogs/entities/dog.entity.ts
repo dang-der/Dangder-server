@@ -16,6 +16,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Location } from 'src/apis/locations/entities/location.entity';
 
 export enum GENDER_ENUM { // 실제 ENUM은 이거고
   MALE = 'MALE',
@@ -112,6 +113,11 @@ export class Dog {
   @Field(() => [Breed])
   @ManyToMany(() => Breed, (breeds) => breeds.dogs)
   breeds: Breed[];
+
+  @JoinColumn()
+  @Field(() => Location)
+  @OneToOne(() => Location)
+  locations: Location;
 
   @JoinColumn()
   @Field(() => User)
