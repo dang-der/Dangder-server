@@ -10,7 +10,7 @@ import {
 
 @Entity()
 @ObjectType()
-export class Image {
+export class DogImage {
   @PrimaryGeneratedColumn('uuid')
   @Field(() => String)
   id: string;
