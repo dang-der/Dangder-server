@@ -7,6 +7,7 @@ import axios from 'axios';
 import { DogImage } from '../dogsImages/entities/dogimage.entity';
 import { Character } from '../characters/entities/character.entity';
 import { Location } from '../locations/entities/location.entity';
+import { Breed } from '../breeds/entities/breed.entity';
 
 @Injectable()
 export class DogsService {
@@ -19,6 +20,9 @@ export class DogsService {
 
     @InjectRepository(Character)
     private readonly charactersRepository: Repository<Character>,
+
+    @InjectRepository(Breed)
+    private readonly breedsRepository: Repository<Breed>,
 
     @InjectRepository(DogImage)
     private readonly dogsimagesRepository: Repository<DogImage>,
@@ -105,7 +109,19 @@ export class DogsService {
           }),
       ),
     );
-    console.log(createCharacters);
+
+    const createBreeds = [];
+    const prevBreed = await this.breedsRepository.findOne({
+      where: { name: doginfo.kindNm },
+    });
+    if (prevBreed) createBreeds.push(prevBreed);
+    else {
+      const newBreed = await this.breedsRepository.save({
+        name: doginfo.kindNm,
+      });
+      createBreeds.push(newBreed);
+    }
+
     const neut = doginfo.neuterYn === '미중성' ? false : true;
     const result = await this.dogsRepository.save({
       ...dog,
@@ -115,7 +131,8 @@ export class DogsService {
       isNeut: neut,
       interests: createInterests,
       characters: createCharacters,
-      breeds: doginfo.kindNm,
+      breeds: createBreeds,
+      locations: { ...location },
     });
 
     return result;
