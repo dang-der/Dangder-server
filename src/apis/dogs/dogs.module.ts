@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { Breed } from '../breeds/entities/breed.entity';
 import { Character } from '../characters/entities/character.entity';
 import { DogImage } from '../dogsImages/entities/dogimage.entity';
 import { Interest } from '../interests/entities/interest.entity';
@@ -15,7 +16,8 @@ import { Dog } from './entities/dog.entity';
       Interest, //
       Character, //
       DogImage, //
-      Location,
+      Location, //
+      Breed,
     ]),
   ],
   providers: [
