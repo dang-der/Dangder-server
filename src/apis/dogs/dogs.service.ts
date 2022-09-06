@@ -33,7 +33,7 @@ export class DogsService {
 
   async findAll() {
     return this.dogsRepository.find({
-      relations: ['locations', 'interests', 'characters'],
+      relations: ['locations', 'interests', 'characters', 'img'],
     });
   }
 
@@ -60,7 +60,6 @@ export class DogsService {
   async create({ doginfo, createDogInput }) {
     const { locations, img, interests, characters, ...dog } = createDogInput;
 
-    // 위치정보 저장 로직 미완성, 내일 이어서 진행할 예정
     const location = await this.locationsRepository.save({
       ...locations,
     });
@@ -135,24 +134,22 @@ export class DogsService {
       locations: { ...location },
     });
 
+    await Promise.all(
+      img.map(
+        (el, idx) =>
+          new Promise(async (resolve) => {
+            const image = el;
+            const ismain = idx === 0 ? true : false;
+            const newimage = await this.dogsimagesRepository.save({
+              img: image,
+              isMain: ismain,
+              dog: { id: result.id },
+            });
+            resolve(newimage);
+          }),
+      ),
+    );
     return result;
-    // 이미지 등록 테스트, 메인이미지여부와 GCP 연동 이후에 작업예정
-    // await Promise.all(
-    //   img.map(
-    //     (el, idx) =>
-    //       new Promise(async (resolve) => {
-    //         const image = el;
-    //         //첫번째 사진은 메인, 나머지는 서브로 등록
-    //         const ismain = idx === 0 ? true : false;
-    //         const newimage = await this.dogsimagesRepository.save({
-    //           image: image,
-    //           isMain: ismain,
-    //           dog: { id: result.id },
-    //         });
-    //         resolve(newimage);
-    //       }),
-    //   ),
-    // );
   }
 
   async update({ id, updatedogInput }) {
