@@ -1,13 +1,5 @@
-import { Field, ObjectType } from '@nestjs/graphql';
-import { Dog } from 'src/apis/dogs/entities/dog.entity';
-import {
-  Column,
-  Double,
-  Entity,
-  JoinColumn,
-  OneToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Field, Float, ObjectType } from '@nestjs/graphql';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 @ObjectType()
@@ -16,20 +8,13 @@ export class Location {
   @Field(() => String)
   id: string;
 
-  @Column()
-  @Field(() => Double)
+  //위도
+  @Column({ type: 'double' })
+  @Field(() => Float)
   lat: number;
 
-  //위도
-
-  @Column()
-  @Field(() => Double)
-  lng: number;
-
   //경도
-
-  @JoinColumn()
-  @Field(() => Dog)
-  @OneToOne(() => Dog)
-  dog: Dog;
+  @Column({ type: 'double' })
+  @Field(() => Float)
+  lng: number;
 }

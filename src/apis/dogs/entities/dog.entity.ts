@@ -1,4 +1,4 @@
-import { Field, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
+import { Field, Int, ObjectType } from '@nestjs/graphql';
 import { AvoidBreed } from 'src/apis/avoidBreeds/entities/avoidBreed.entity';
 import { Character } from 'src/apis/characters/entities/character.entity';
 import { Breed } from 'src/apis/breeds/entities/breed.entity';
@@ -18,32 +18,6 @@ import {
 } from 'typeorm';
 import { Location } from 'src/apis/locations/entities/location.entity';
 
-export enum GENDER_ENUM { // 실제 ENUM은 이거고
-  MALE = 'MALE',
-  FEMALE = 'FEMALE',
-}
-// 강아지 성별
-
-registerEnumType(GENDER_ENUM, {
-  // 이것은 graphql에 등록하기 위해
-  name: 'GENDER_ENUM',
-});
-
-// //GENDER 등록
-
-// export enum ISNEUT_ENUM { // 실제 ENUM은 이거고
-//   NEUT = 'NEUT',
-//   UNNEUT = 'UNNEUT',
-// }
-// // 중성화
-
-// registerEnumType(ISNEUT_ENUM, {
-//   // 이것은 graphql에 등록하기 위해
-//   name: 'ISNEUT_ENUM',
-// });
-
-// 혹시 ENUM을 나중에 쓸까봐 놔뒀습니다.
-
 @Entity()
 @ObjectType()
 export class Dog {
@@ -62,10 +36,6 @@ export class Dog {
   @Column()
   @Field(() => String)
   gender: string;
-
-  // @Column({ type: 'enum', enum: ISNEUT_ENUM })
-  // @Field(() => ISNEUT_ENUM)
-  // isNeut: string;
 
   @Column()
   @Field(() => Boolean)

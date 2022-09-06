@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Interest } from '../interests/entities/interest.entity';
-import { Dog, GENDER_ENUM } from './entities/dog.entity';
+import { Dog } from './entities/dog.entity';
 import axios from 'axios';
 import { DogImage } from '../dogsImages/entities/dogimage.entity';
 import { Character } from '../characters/entities/character.entity';
