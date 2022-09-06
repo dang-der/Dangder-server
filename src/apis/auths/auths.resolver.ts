@@ -48,7 +48,11 @@ export class AuthsResolver {
       );
 
     // 4. refreashToken ( -> JWT )을 만들어서, 프론트엔드 브라우저 쿠키에 저장하여 보내주기.
-    this.authsService.setRefreshToken({ user, res: Context.res });
+    this.authsService.setRefreshToken({
+      user,
+      res: Context.res,
+      req: Context.req,
+    });
 
     // 5. 입력받은 계정과 비밀번호가 일치할 때
     //    => accessToken( -> JWT ) 생성하여 브라우저에 전달하기.

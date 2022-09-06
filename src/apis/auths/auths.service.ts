@@ -27,7 +27,7 @@ export class AuthsService {
   ) {}
 
   // Refresh Token 생성 -> response header 에 넣어주는 과정
-  setRefreshToken({ user, res }) {
+  setRefreshToken({ user, res, req }) {
     const refreshToken = this.jwtService.sign(
       { email: user.email, sub: user.id },
       { secret: JWT_REFRESH_SECRET, expiresIn: '2w' },
@@ -39,6 +39,11 @@ export class AuthsService {
     // 배포환경 - path 와 domain 설정, Secure - https / httpOnly - http
     // res.setHeader('Set-Cookie', `refreshToken=${refreshToken}; path=/; domain=.dangder.shop; SameSite=None; Secure; httpOnly;`);
     // res.setHeader('Access-Control-Allow-Origin', 'https://dangder.shop');
+    const allowedOrigins = ['https://sha-ki.shop/', 'http://localhost:3000/'];
+    const origin = req.headers.origin;
+    if (allowedOrigins.includes(origin)) {
+      res.setHeader('Access-Control-Allow-Origin', origin);
+    }
 
     res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
     res.setHeader('Access-Control-Allow-Credentials', 'true');
@@ -74,7 +79,7 @@ export class AuthsService {
       });
     }
     // 3. 로그인 (AccessToken 만들어서 프론트에 주기)
-    this.setRefreshToken({ user, res });
+    this.setRefreshToken({ user, res, req });
     res.redirect(LOGIN_REDIRECT_URL);
   }
 
