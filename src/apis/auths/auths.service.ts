@@ -39,7 +39,11 @@ export class AuthsService {
     // 배포환경 - path 와 domain 설정, Secure - https / httpOnly - http
     // res.setHeader('Set-Cookie', `refreshToken=${refreshToken}; path=/; domain=.dangder.shop; SameSite=None; Secure; httpOnly;`);
     // res.setHeader('Access-Control-Allow-Origin', 'https://dangder.shop');
-    const allowedOrigins = ['https://sha-ki.shop/', 'http://localhost:3000/'];
+    const allowedOrigins = [
+      'https://recipemaker.shop',
+      'http://localhost:3000',
+      'https://dangder.shop',
+    ];
     const origin = req.headers.origin;
     if (allowedOrigins.includes(origin)) {
       res.setHeader('Access-Control-Allow-Origin', origin);
