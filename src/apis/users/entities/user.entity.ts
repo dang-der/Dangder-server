@@ -8,20 +8,6 @@ import {
   DeleteDateColumn,
 } from 'typeorm';
 
-// export enum CERT_ENUM { // 실제 ENUM은 이거고
-//   CERT = 'CERT', // 패스 구매 유저
-//   UNCERT = 'UNCERT', // 패스를 구매하지 않은 유저
-// }
-
-// registerEnumType(CERT_ENUM, {
-//   // 이것은 graphql에 등록하기 위해
-//   name: 'CERT_ENUM',
-// });
-
-// CERT_ENUM.CERT;
-
-// 혹시 ENUM으로 바꿀까봐 나뒀습니다.
-
 @Entity()
 @ObjectType()
 export class User {

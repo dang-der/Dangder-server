@@ -1,4 +1,4 @@
-import { ConflictException, HttpException, Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
@@ -22,8 +22,10 @@ export class UsersService {
     const user = await this.usersRepository.findOne({
       where: { email: createUserInput.email },
     });
-    if (user) throw new ConflictException('이미 등록된 이메일입니다.');
+
     //   throw new HttpException('이미 등록된 이메일입니다.', HttpStatus.CONFLICT);
+
+    if (user) throw new ConflictException('이미 등록된 이메일입니다.');
 
     return this.usersRepository.save({ ...createUserInput });
   }
