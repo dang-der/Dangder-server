@@ -5,8 +5,10 @@
     "Kakao",
     "Naver",
     "nestjs",
+    "recipemaker",
     "refreash",
-    "typeorm"
+    "typeorm",
+    "uuidv"
   ],
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode"

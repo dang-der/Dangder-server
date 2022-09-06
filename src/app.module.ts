@@ -1,30 +1,31 @@
+import { PugAdapter } from '@nestjs-modules/mailer/dist/adapters/pug.adapter';
+import { MailerModule } from '@nestjs-modules/mailer';
 import { CacheModule, Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { UsersModule } from './apis/users/users.module';
+import { RedisClientOptions } from 'redis';
+import * as redisStore from 'cache-manager-redis-store';
+
 import { AppController } from './app.controller';
+import { AuthsModule } from './apis/auths/auths.module';
 import { AvoidBreedsModule } from './apis/avoidBreeds/avoidBreeds.module';
 import { BlockUsersModule } from './apis/blockUsers/blockUsers.module';
 import { BreedsModule } from './apis/breeds/breeds.module';
 import { CharactersModule } from './apis/characters/characters.module';
 import { ChatMessagesModule } from './apis/chatMessages/chatMessages.module';
-import { DogsModule } from './apis/dogs/dogs.module';
 import { ChatRoomsModule } from './apis/chatRooms/chatRooms.module';
+import { DogsModule } from './apis/dogs/dogs.module';
+import { DogsImagesModule } from './apis/dogsImages/dogsImages.module';
 import { DonateIOsModule } from './apis/donateIOs/donateIOs.module';
 import { DonatesModule } from './apis/donates/donates.module';
-import { DogsImagesModule } from './apis/dogsImages/dogsImages.module';
+import { FilesModule } from './apis/files/files.module';
 import { InterestsModule } from './apis/interests/interests.module';
 import { LikesModule } from './apis/likes/likes.module';
 import { LocationsModule } from './apis/locations/locations.module';
-import { MailAuthTokensModule } from './apis/mailAuthTokens/mailAuthTokens.module';
 import { PaymentsModule } from './apis/payments/payments.module';
 import { ReportsModule } from './apis/reports/reports.module';
-import { AuthsModule } from './apis/auths/auths.module';
-import { RedisClientOptions } from 'redis';
-import * as redisStore from 'cache-manager-redis-store';
-import { MailerModule } from '@nestjs-modules/mailer';
-import { PugAdapter } from '@nestjs-modules/mailer/dist/adapters/pug.adapter';
+import { UsersModule } from './apis/users/users.module';
 
 @Module({
   imports: [
@@ -39,10 +40,10 @@ import { PugAdapter } from '@nestjs-modules/mailer/dist/adapters/pug.adapter';
     DogsImagesModule,
     DonateIOsModule,
     DonatesModule,
+    FilesModule,
     InterestsModule,
     LikesModule,
     LocationsModule,
-    MailAuthTokensModule,
     PaymentsModule,
     ReportsModule,
     UsersModule,
@@ -52,7 +53,7 @@ import { PugAdapter } from '@nestjs-modules/mailer/dist/adapters/pug.adapter';
       context: ({ req, res }) => ({ req, res }),
       // Cors 추가
       cors: {
-        origin: ['https://dangder.shop'],
+        origin: ['https://dangder.shop', 'http://localhost:3000'],
         credential: true,
       },
     }),
@@ -87,7 +88,7 @@ import { PugAdapter } from '@nestjs-modules/mailer/dist/adapters/pug.adapter';
         from: process.env.MAILER_GMAIL_SENDER,
       },
       template: {
-        dir: __dirname + '/templates',
+        dir: __dirname + '/commons/mailTemplates',
         adapter: new PugAdapter(),
         options: {
           strict: true,
