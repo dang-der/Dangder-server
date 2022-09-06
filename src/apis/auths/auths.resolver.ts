@@ -41,8 +41,7 @@ export class AuthsResolver {
       );
 
     // 3. 입력받은 비밀번호가 계정의 비밀번호가 다를 때, 오류메시지 전송
-    // const isAuth = await bcrypt.compare(password, user.password); // password 가 hash 되지 않았네요ㅠㅠ
-    const isAuth = password === user.password; // 임시처리. refactor 필요
+    const isAuth = await bcrypt.compare(password, user.password);
     if (!isAuth)
       throw new UnprocessableEntityException(
         '비밀번호가 일치하지 않습니다. 로그인 할 수 없습니다.',
@@ -106,5 +105,25 @@ export class AuthsResolver {
     );
 
     return '로그아웃에 성공했습니다.';
+  }
+
+  @Mutation(() => String)
+  async createMailToken(
+    @Args('email') email: string, //
+  ) {
+    const sendTokenToMail = await this.authsService.sendMailToken({ email });
+
+    return sendTokenToMail
+      ? '입력하신 메일로 인증번호가 발송되었습니다. 인증번호는 5분간 유효합니다.'
+      : '토큰 발급에 실패했습니다. 관리자에게 문의하세요';
+  }
+
+  @Mutation(() => Boolean)
+  async verifyMailToken(
+    @Args('email') email: string, //
+    @Args('code') code: string,
+  ) {
+    const isValid = await this.authsService.validateMailToken({ email, code });
+    return isValid;
   }
 }
