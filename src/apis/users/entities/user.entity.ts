@@ -23,7 +23,7 @@ export class User {
   @Field(() => String)
   password: string;
 
-  @Column()
+  @Column({ default: false })
   @Field(() => Boolean)
   pet: boolean;
 
@@ -34,7 +34,7 @@ export class User {
   ddMoney: number;
 
   @Column()
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   phone: string;
 
   @CreateDateColumn()

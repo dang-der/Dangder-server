@@ -2,6 +2,7 @@ import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -22,12 +23,18 @@ export class UsersService {
     const user = await this.usersRepository.findOne({
       where: { email: createUserInput.email },
     });
-
-    //   throw new HttpException('이미 등록된 이메일입니다.', HttpStatus.CONFLICT);
-
     if (user) throw new ConflictException('이미 등록된 이메일입니다.');
-
-    return this.usersRepository.save({ ...createUserInput });
+    // bcrypt 사용하기
+    // hash 알고리즘을 사용해 비밀번호를 암호화하는데 hash 메서드의 두 번째 인자는 salt이다.
+    // 원본 password를 salt 시켜 준다.
+    const hashedPassword = await bcrypt.hash(
+      createUserInput.password,
+      3.141592,
+    );
+    return this.usersRepository.save({
+      ...createUserInput,
+      password: hashedPassword,
+    });
   }
 
   async update({ email, updateUserInput }) {

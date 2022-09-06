@@ -89,7 +89,7 @@ export class AuthsService {
 
   // 랜덤한 6자리 수 토큰 생성 후 메일보내기.
   async sendMailToken({ email }) {
-    const token = String(Math.floor(Math.random() * 10 ** 6)).padStart(6, '0');
+    const token = String(Math.floor(Math.random() * 10 ** 4)).padStart(4, '0');
 
     let result = false;
     await this.mailerService
