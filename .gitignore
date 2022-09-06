@@ -215,3 +215,6 @@ lerna-debug.log*
 
 # 220831 추가
 schema.gql
+
+# GCP
+gcp*

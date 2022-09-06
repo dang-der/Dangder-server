@@ -34,12 +34,23 @@ export class AuthsService {
     );
 
     // 개발환경
-    res.setHeader('Set-Cookie', `refreshToken=${refreshToken}; path=/;`);
+    // res.setHeader('Set-Cookie', `refreshToken=${refreshToken}; path=/;`);
 
-    // 배포 시 refactor 필요
     // 배포환경 - path 와 domain 설정, Secure - https / httpOnly - http
     // res.setHeader('Set-Cookie', `refreshToken=${refreshToken}; path=/; domain=.dangder.shop; SameSite=None; Secure; httpOnly;`);
     // res.setHeader('Access-Control-Allow-Origin', 'https://dangder.shop');
+
+    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader('Access-Control-Allow-Methods', 'GET,HEAD,OPTIONS,POST,PUT');
+    res.setHeader(
+      'Access-Control-Allow-Headers',
+      'Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers',
+    );
+    res.setHeader(
+      'Set-Cookie',
+      `refreshToken=${refreshToken}; path=/; domain=.recipemaker.shop; SameSite=None; Secure; httpOnly;`,
+    );
   }
 
   // Access Token 생성 - secret키와 expire주기 설정
@@ -87,7 +98,7 @@ export class AuthsService {
     }
   }
 
-  // 랜덤한 6자리 수 토큰 생성 후 메일보내기.
+  // 랜덤한 4자리 수 토큰 생성 후 메일보내기.
   async sendMailToken({ email }) {
     const token = String(Math.floor(Math.random() * 10 ** 4)).padStart(4, '0');
 
