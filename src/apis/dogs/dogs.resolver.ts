@@ -16,22 +16,23 @@ export class DogsResolver {
     return this.dogsService.findAll();
   }
 
-  // @Query(() => [Dog])
-  // async fetchDogInfo(
-  //   @Args('registerNumber') registerNumber: string, //
-  //   @Args('name') name: string,
-  // ) {
-  //   const doginfo = await this.dogsService.getDogInfo({ registerNumber, name });
-  //   return doginfo;
-  //   // return this.dogsService.findAll();
-  // }
+  @Mutation(() => Boolean)
+  async getdoginfo(
+    @Args('registerNumber') registerNumber: string,
+    @Args('birth') birth: string,
+  ) {
+    const doginfo = await this.dogsService.getDogInfo({
+      registerNumber,
+      birth,
+    });
+    return doginfo ? true : false;
+  }
 
   @Mutation(() => Dog)
   async createDog(
     @Args('createDogInput') createDogInput: createDogInput, //
     @Args('registerNumber') registerNumber: string, //
     @Args('birth') birth: string,
-    @Context() context: IContext, //통신 이후에 브라우저의 응답값으로 대체하기위함.
   ) {
     const doginfo = await this.dogsService.getDogInfo({
       registerNumber,

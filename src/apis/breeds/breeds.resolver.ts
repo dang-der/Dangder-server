@@ -4,7 +4,9 @@ import { Breed } from './entities/breed.entity';
 
 @Resolver()
 export class BreedsResolver {
-  constructor(private readonly breedsService: BreedsService) {}
+  constructor(
+    private readonly breedsService: BreedsService, //
+  ) {}
 
   @Query(() => Breed)
   async fetchBreeds() {
