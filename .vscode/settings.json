@@ -2,13 +2,15 @@
   "cSpell.words": [
     "Auths",
     "dangder",
+    "Iamports",
     "Kakao",
     "Naver",
     "nestjs",
     "recipemaker",
     "refreash",
     "typeorm",
-    "uuidv"
+    "uuidv",
+    "websockets"
   ],
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode"

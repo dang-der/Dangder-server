@@ -20,12 +20,14 @@ import { DogsImagesModule } from './apis/dogsImages/dogsImages.module';
 import { DonateIOsModule } from './apis/donateIOs/donateIOs.module';
 import { DonatesModule } from './apis/donates/donates.module';
 import { FilesModule } from './apis/files/files.module';
+import { IamportsModule } from './apis/imports/imports.module';
 import { InterestsModule } from './apis/interests/interests.module';
 import { LikesModule } from './apis/likes/likes.module';
 import { LocationsModule } from './apis/locations/locations.module';
 import { PaymentsModule } from './apis/payments/payments.module';
 import { ReportsModule } from './apis/reports/reports.module';
 import { UsersModule } from './apis/users/users.module';
+import { AppGateway } from './app.gateway';
 
 @Module({
   imports: [
@@ -41,6 +43,7 @@ import { UsersModule } from './apis/users/users.module';
     DonateIOsModule,
     DonatesModule,
     FilesModule,
+    IamportsModule,
     InterestsModule,
     LikesModule,
     LocationsModule,
@@ -97,6 +100,6 @@ import { UsersModule } from './apis/users/users.module';
     }),
   ],
   controllers: [AppController],
-  providers: [],
+  providers: [AppGateway],
 })
 export class AppModule {}
