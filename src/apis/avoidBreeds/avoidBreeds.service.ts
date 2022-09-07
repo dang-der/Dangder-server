@@ -10,6 +10,10 @@ export class AvoidBreedsService {
     private readonly avoidBreedsRepository: Repository<AvoidBreed>,
   ) {}
 
+  findAll() {
+    return this.avoidBreedsRepository.find();
+  }
+
   async create(createAvoidBreedInput) {
     const { avoidBreed } = createAvoidBreedInput;
 

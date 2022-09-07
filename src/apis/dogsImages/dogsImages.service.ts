@@ -14,15 +14,6 @@ export class DogsImagesService {
     private readonly dogsRepository: Repository<Dog>,
   ) {}
 
-  async findAll({ dogId }) {
-    return this.dogsimagesRepository.find({
-      where: { id: dogId },
-      relations: {
-        dog: true,
-      },
-    });
-  }
-
   async findOne({ dogId }) {
     const result = await this.dogsimagesRepository.find({
       where: { dog: { id: dogId } },

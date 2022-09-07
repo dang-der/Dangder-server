@@ -33,7 +33,7 @@ export class DogsService {
 
   async findAll() {
     return this.dogsRepository.find({
-      relations: ['locations', 'interests', 'characters', 'img'],
+      relations: ['locations', 'interests', 'characters'],
     });
   }
 

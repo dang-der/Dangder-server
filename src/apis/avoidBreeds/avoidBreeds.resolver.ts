@@ -1,4 +1,4 @@
-import { Args, Mutation, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 
 import { AvoidBreedsService } from './avoidBreeds.service';
 import { createAvoidBreedInput } from './dto/avoidBreed.input';
@@ -9,6 +9,12 @@ export class AvoidBreedsResolver {
   constructor(
     private readonly avoidBreedsService: AvoidBreedsService, //
   ) {}
+
+  @Query(() => [AvoidBreed])
+  async fetchAvoidBreed() {
+    return this.avoidBreedsService.findAll();
+  }
+
   @Mutation(() => [AvoidBreed])
   async createAvoidBreed(
     @Args('createAvoidBreedInput') createAvoidBreedInput: createAvoidBreedInput, //

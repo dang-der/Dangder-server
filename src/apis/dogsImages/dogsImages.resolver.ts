@@ -9,13 +9,6 @@ export class DogsImagesResolver {
   ) {}
 
   @Query(() => [DogImage])
-  async fetchDogImages(
-    @Args('dogId') dogId: string, //
-  ) {
-    return this.dogsImagesService.findAll({ dogId });
-  }
-
-  @Query(() => [DogImage])
   async fetchDogImage(
     @Args('dogId') dogId: string, //
   ) {
