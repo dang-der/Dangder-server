@@ -111,7 +111,7 @@ export class AuthsResolver {
     return '로그아웃에 성공했습니다.';
   }
 
-  @Mutation(() => String)
+  @Mutation(() => Boolean)
   async createMailToken(
     @Args('email') email: string, //
   ) {
