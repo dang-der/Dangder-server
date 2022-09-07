@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { IamportsResolver } from '../imports/imports.resolver';
+import { IamportsService } from '../imports/imports.services';
 import { User } from '../users/entities/user.entity';
 import { Payment } from './entities/payment.entity';
 import { PaymentsResolver } from './payments.resolver';
@@ -15,6 +17,8 @@ import { PaymentsService } from './payments.service';
   providers: [
     PaymentsResolver, //
     PaymentsService,
+    IamportsResolver,
+    IamportsService,
   ],
 })
 export class PaymentsModule {}
