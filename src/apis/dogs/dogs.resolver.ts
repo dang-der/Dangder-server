@@ -1,5 +1,4 @@
-import { Args, Context, Mutation, Resolver, Query } from '@nestjs/graphql';
-import { IContext } from 'src/commons/type/context';
+import { Args, Mutation, Resolver, Query, Int } from '@nestjs/graphql';
 import { DogsService } from './dogs.service';
 import { createDogInput } from './dto/createDog.input';
 import { UpdateDogInput } from './dto/updateDog.input';
@@ -15,6 +14,29 @@ export class DogsResolver {
   fetchDogs() {
     return this.dogsService.findAll();
   }
+
+  @Query(() => Dog)
+  async fetchMyDog(
+    @Args('id') id: string, //
+  ) {
+    return await this.dogsService.findOne(id);
+  }
+
+  @Query(() => [Dog])
+  async fetchAroundDogs(
+    @Args('id') id: string, //
+  ) {
+    const myDog = await this.fetchMyDog(id);
+    console.log(myDog);
+    const Dogs = await this.fetchDogs();
+    return await this.dogsService.getAroundDogs({ myDog, Dogs });
+  }
+
+  @Mutation(() => Int)
+  async getDogsDistance(
+    @Args('myDogId') myDogId: string, //
+    @Args('targetDogId') targetDogId: string,
+  ) {}
 
   @Mutation(() => Boolean)
   async getdoginfo(
