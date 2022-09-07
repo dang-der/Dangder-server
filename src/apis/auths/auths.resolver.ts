@@ -117,9 +117,9 @@ export class AuthsResolver {
   ) {
     const sendTokenToMail = await this.authsService.sendMailToken({ email });
 
-    return sendTokenToMail
-      ? '입력하신 메일로 인증번호가 발송되었습니다. 인증번호는 5분간 유효합니다.'
-      : '토큰 발급에 실패했습니다. 관리자에게 문의하세요';
+    return sendTokenToMail;
+    // ? '입력하신 메일로 인증번호가 발송되었습니다. 인증번호는 5분간 유효합니다.'
+    // : '토큰 발급에 실패했습니다. 관리자에게 문의하세요';
   }
 
   @Mutation(() => Boolean)

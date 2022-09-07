@@ -49,7 +49,6 @@ export class AuthsService {
       res.setHeader('Access-Control-Allow-Origin', origin);
     }
 
-    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
     res.setHeader('Access-Control-Allow-Credentials', 'true');
     res.setHeader('Access-Control-Allow-Methods', 'GET,HEAD,OPTIONS,POST,PUT');
     res.setHeader(
