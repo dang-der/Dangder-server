@@ -4,11 +4,7 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import {
-  Connection,
-  QueryRunnerAlreadyReleasedError,
-  Repository,
-} from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { User } from '../users/entities/user.entity';
 import { Payment, PAYMENT_STATUS_ENUM } from './entities/payment.entity';
 
@@ -22,7 +18,7 @@ export class PaymentsService {
     private readonly usersRepository: Repository<User>,
 
     // 트랜잭션 적용을 위한 connection 선언
-    private readonly connection: Connection,
+    private readonly dataSource: DataSource,
   ) {}
 
   async checkIsAbleToCancel({ impUid, user }) {
@@ -116,7 +112,7 @@ export class PaymentsService {
   // 포인트 결제내역 (payment 생성)
   async createForPoints({ impUid, payMoney, user, paymentType }) {
     // === 데이터의 오염을 방지하기 위한 트랜잭션 적용 ==== //
-    const queryRunner = this.connection.createQueryRunner();
+    const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
 
     // ====================== transaction 시작 - SERIALIZABLE ================= //

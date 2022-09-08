@@ -88,10 +88,10 @@ export class PaymentsResolver {
     // *** 부분환불을 위한 전처리(아임포트 Docs 참조) *** //
 
     // 3-1. 조회한 결제정보로부터 imp_uid, amount(결제금액), cancel_amount환불된 총 금액) 추출
-    const { imp_uid, payMoney, cancel_payMoney } = paymentData;
+    const { imp_uid, amount, cancel_amount } = paymentData;
 
     // 3-2. 환불 가능 금액(= 결제금액 - 환불 된 총 금액) 계산
-    const cancelAblePayMoney = payMoney - cancel_payMoney;
+    const cancelAblePayMoney = amount - cancel_amount;
     if (cancelAblePayMoney <= 0) {
       // 이미 전액 환불된 경우
       return new UnprocessableEntityException('이미 전액 환불된 주문입니다.');
@@ -104,7 +104,7 @@ export class PaymentsResolver {
       access_token: impToken,
       reason: '이곳에 환불사유를 입력해주세요',
       imp_uid,
-      cancel_request_payMoney: payMoney, // 부분환불은 테스트모드에서 지원하지 않는다.
+      cancel_request_payMoney: amount, // 부분환불은 테스트모드에서 지원하지 않는다.
       cancelAblePayMoney, // 부분환불은 테스트모드에서 지원하지 않는다.
     });
 
@@ -114,7 +114,7 @@ export class PaymentsResolver {
     const user = context.req.user;
     return this.paymentsService.create({
       impUid,
-      payMoney: -payMoney, // 이게 맞나
+      payMoney: -amount,
       user,
       paymentType: PAYMENT_STATUS_ENUM.CANCEL,
     });
@@ -185,9 +185,9 @@ export class PaymentsResolver {
 
     // *** 부분환불을 위한 전처리(아임포트 Docs 참조) *** //
     // 3-1. 조회한 결제정보로부터 imp_uid, payMoney(결제금액), cancel_payMoney(환불된 총 금액) 추출
-    const { imp_uid, payMoney, cancel_payMoney } = paymentData;
+    const { imp_uid, amount, cancel_amount } = paymentData;
     // 3-2. 환불 가능 금액 (= 결제금액 - 환불 된 총 금액) 계산
-    const cancelAblePayMoney = payMoney - cancel_payMoney;
+    const cancelAblePayMoney = amount - cancel_amount;
     if (cancelAblePayMoney <= 0) {
       // 이미 전액 환불된 경우
       return new UnprocessableEntityException('이미 전액 환불된 주문입니다.');
@@ -196,21 +196,19 @@ export class PaymentsResolver {
     // *** 부분환불을 위한 전처리 끝 *** //
 
     // 4. 아임포트 서버에서 결제 취소 api 요청
-    const canceledPayment = await this.iamportsService.cancelImpPaymentData({
+    await this.iamportsService.cancelImpPaymentData({
       access_token: impToken,
       reason: '이곳에 환불사유를 입력해주세요',
       imp_uid,
-      cancel_request_payMoney: payMoney, // 부분환불은 테스트모드에서 지원하지 않았습니다.
+      cancel_request_payMoney: amount, // 부분환불은 테스트모드에서 지원하지 않았습니다.
       cancelAblePayMoney, // 부분환불은 테스트모드에서 지원하지 않았습니다.
     });
-
-    console.log(cancel_payMoney); // 취소내역 출력 테스트
 
     // 결제 취소 테이블 생성 - 결제를 생성한 유저와 연결하여 결제 취소 내역 저장
     const user = context.req.user;
     return this.paymentsService.createForPoints({
       impUid,
-      payMoney: -payMoney,
+      payMoney: -amount,
       user,
       paymentType: PAYMENT_STATUS_ENUM.CANCEL,
     });
