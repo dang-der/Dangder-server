@@ -19,9 +19,10 @@ export class Like {
   @Field(() => String)
   receiveId: string;
 
+  //이게 굳이 Dog 테이블과 연관 될 필요가 있을까? 고민
   @JoinColumn()
   @ManyToOne(() => Dog)
   @Field(() => Dog)
-  send: Dog;
+  sendId: Dog;
   // Like N : Dog 1 연결
 }

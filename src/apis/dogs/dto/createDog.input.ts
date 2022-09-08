@@ -28,6 +28,9 @@ export class createDogInput {
   @Field(() => [String])
   img: string[];
 
+  @Field(() => String)
+  userId: string;
+
   @Field(() => LocationInput)
   locations: LocationInput;
 }

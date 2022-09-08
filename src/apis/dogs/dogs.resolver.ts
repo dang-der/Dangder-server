@@ -1,4 +1,5 @@
-import { Args, Mutation, Resolver, Query, Int } from '@nestjs/graphql';
+import { Args, Mutation, Resolver, Query } from '@nestjs/graphql';
+import { DistanceType } from '../distancesType/entities/distanceType.entity';
 import { DogsService } from './dogs.service';
 import { createDogInput } from './dto/createDog.input';
 import { UpdateDogInput } from './dto/updateDog.input';
@@ -27,16 +28,16 @@ export class DogsResolver {
     @Args('id') id: string, //
   ) {
     const myDog = await this.fetchMyDog(id);
-    console.log(myDog);
     const Dogs = await this.fetchDogs();
-    return await this.dogsService.getAroundDogs({ myDog, Dogs });
+    return await this.dogsService.getAroundDogs({ id, myDog, Dogs });
   }
 
-  @Mutation(() => Int)
-  async getDogsDistance(
-    @Args('myDogId') myDogId: string, //
-    @Args('targetDogId') targetDogId: string,
-  ) {}
+  @Query(() => [DistanceType])
+  async fetchDogsDistance(
+    @Args('id') id: string, //
+  ) {
+    return await this.dogsService.getDogsDistance({ id });
+  }
 
   @Mutation(() => Boolean)
   async getdoginfo(
@@ -72,8 +73,9 @@ export class DogsResolver {
   }
 
   @Mutation(() => Boolean)
-  // 추후 유저의id로 변경예정
-  async deleteDog(@Args('id') id: string) {
+  async deleteDog(
+    @Args('id') id: string, //
+  ) {
     return this.dogsService.delete({ id });
   }
 }
