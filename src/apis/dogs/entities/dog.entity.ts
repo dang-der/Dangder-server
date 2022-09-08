@@ -12,11 +12,13 @@ import {
   JoinColumn,
   JoinTable,
   ManyToMany,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Location } from 'src/apis/locations/entities/location.entity';
+import { DogImage } from 'src/apis/dogsImages/entities/dogimage.entity';
 
 @Entity()
 @ObjectType()
@@ -93,4 +95,8 @@ export class Dog {
   @Field(() => User)
   @OneToOne(() => User)
   userId: User;
+
+  @OneToMany(() => DogImage, (dogImage) => dogImage.dog)
+  @Field(() => [DogImage])
+  img: DogImage[];
 }

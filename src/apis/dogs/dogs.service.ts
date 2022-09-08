@@ -8,6 +8,8 @@ import { DogImage } from '../dogsImages/entities/dogimage.entity';
 import { Character } from '../characters/entities/character.entity';
 import { Location } from '../locations/entities/location.entity';
 import { Breed } from '../breeds/entities/breed.entity';
+import { getDistance, isPointWithinRadius } from 'geolib';
+import { AvoidBreed } from '../avoidBreeds/entities/avoidBreed.entity';
 
 @Injectable()
 export class DogsService {
@@ -24,8 +26,11 @@ export class DogsService {
     @InjectRepository(Breed)
     private readonly breedsRepository: Repository<Breed>,
 
+    @InjectRepository(AvoidBreed)
+    private readonly avoidBreedsRepository: Repository<AvoidBreed>,
+
     @InjectRepository(DogImage)
-    private readonly dogsimagesRepository: Repository<DogImage>,
+    private readonly dogsImagesRepository: Repository<DogImage>,
 
     @InjectRepository(Location)
     private readonly locationsRepository: Repository<Location>,
@@ -33,8 +38,56 @@ export class DogsService {
 
   async findAll() {
     return this.dogsRepository.find({
-      relations: ['locations', 'interests', 'characters'],
+      relations: {
+        locations: true,
+        interests: true,
+        characters: true,
+        avoidBreeds: true,
+        img: true,
+      },
     });
+  }
+
+  async findOne(id) {
+    return this.dogsRepository.findOne({
+      where: { id },
+      relations: {
+        locations: true,
+        interests: true,
+        characters: true,
+        avoidBreeds: true,
+        img: true,
+      },
+    });
+  }
+
+  async getAroundDogs({ myDog, Dogs }) {
+    const myDoglat = myDog.locations.lat;
+    const myDoglng = myDog.locations.lng;
+
+    const resultDog = [];
+    for (let i = 0; i < Dogs.length; i++) {
+      const result = isPointWithinRadius(
+        { latitude: myDoglat, longitude: myDoglng },
+        { latitude: Dogs[i].locations.lat, longitude: Dogs[i].locations.lng },
+        5000,
+      );
+      if (result === true) resultDog.push(Dogs[i]);
+    }
+
+    const resultDistance = [];
+    for (let i = 0; i < resultDog.length; i++) {
+      const distance = getDistance(
+        { latitude: myDoglat, longitude: myDoglng },
+        {
+          latitude: resultDog[i].locations.lat,
+          longitude: resultDog[i].locations.lng,
+        },
+      );
+      if (distance !== 0) resultDistance.push(distance);
+    }
+
+    return resultDog;
   }
 
   async getDogInfo({ registerNumber, birth }) {
@@ -58,7 +111,8 @@ export class DogsService {
   }
 
   async create({ doginfo, createDogInput }) {
-    const { locations, img, interests, characters, ...dog } = createDogInput;
+    const { locations, img, interests, characters, avoidBreeds, ...dog } =
+      createDogInput;
 
     const location = await this.locationsRepository.save({
       ...locations,
@@ -109,6 +163,29 @@ export class DogsService {
       ),
     );
 
+    const createAvoidBreeds = await Promise.all(
+      avoidBreeds.map(
+        (el) =>
+          new Promise(async (resolve, reject) => {
+            try {
+              const prevAvoidBreed = await this.avoidBreedsRepository.findOne({
+                where: { avoidBreed: el },
+              });
+              if (prevAvoidBreed) {
+                resolve(prevAvoidBreed);
+              } else {
+                const newAvoidBreed = await this.avoidBreedsRepository.save({
+                  avoidBreed: el,
+                });
+                resolve(newAvoidBreed);
+              }
+            } catch (err) {
+              reject(err);
+            }
+          }),
+      ),
+    );
+
     const createBreeds = [];
     const prevBreed = await this.breedsRepository.findOne({
       where: { name: doginfo.kindNm },
@@ -131,6 +208,7 @@ export class DogsService {
       interests: createInterests,
       characters: createCharacters,
       breeds: createBreeds,
+      avoidBreeds: createAvoidBreeds,
       locations: { ...location },
     });
 
@@ -140,7 +218,7 @@ export class DogsService {
           new Promise(async (resolve) => {
             const image = el;
             const ismain = idx === 0 ? true : false;
-            const newimage = await this.dogsimagesRepository.save({
+            const newimage = await this.dogsImagesRepository.save({
               img: image,
               isMain: ismain,
               dog: { id: result.id },
