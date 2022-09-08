@@ -1,5 +1,5 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { Chatroom } from 'src/apis/chatRooms/entities/chatRoom.entity';
+import { ChatRoom } from 'src/apis/chatRooms/entities/chatRoom.entity';
 import {
   Column,
   CreateDateColumn,
@@ -16,17 +16,18 @@ export class ChatMessage {
   @Field(() => String)
   id: string;
 
+  // 보낸 유저의 id
+  @Column()
+  @Field(() => String)
+  senderId: string;
+
+  // 보낸 메시지
   @Column()
   @Field(() => String)
   sendMessage: string;
-  // 보낸 메시지
 
-  @Column()
-  @Field(() => String)
-  receiveMessage: string;
-  // 받은 메시지
-
-  @Column()
+  // 읽음 안 읽음
+  @Column({ default: false })
   @Field(() => Boolean)
   isRead: boolean;
 
@@ -38,8 +39,8 @@ export class ChatMessage {
   // 내가 직접 항목을 만들어서 둘 중 또는 셋 중 선택
 
   @JoinColumn()
-  @Field(() => Chatroom)
-  @OneToOne(() => Chatroom)
-  chatroom: Chatroom;
+  @Field(() => ChatRoom)
+  @OneToOne(() => ChatRoom)
+  chatRoom: ChatRoom;
   // ChatMessage 1 : Chatroom 1 연결
 }

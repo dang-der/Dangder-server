@@ -12,7 +12,7 @@ import {
 
 @Entity()
 @ObjectType()
-export class Chatroom {
+export class ChatRoom {
   @PrimaryGeneratedColumn('uuid')
   @Field(() => String)
   id: string;

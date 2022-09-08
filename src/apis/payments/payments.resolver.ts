@@ -1,21 +1,218 @@
 import { Args, Context, Mutation, Resolver } from '@nestjs/graphql';
-import { Payment } from './entities/payment.entity';
+import { Payment, PAYMENT_STATUS_ENUM } from './entities/payment.entity';
 import { PaymentsService } from './payments.service';
-import { UseGuards } from '@nestjs/common';
+import { UnprocessableEntityException, UseGuards } from '@nestjs/common';
 import { GqlAuthAccessGuard } from 'src/commons/auth/gql-auth.guard';
 import { IContext } from 'src/commons/type/context';
+import { IamportsService } from '../imports/imports.services';
 
 @Resolver()
 export class PaymentsResolver {
-  constructor(private readonly paymentsService: PaymentsService) {}
+  constructor(
+    private readonly paymentsService: PaymentsService,
+    private readonly iamportsService: IamportsService,
+  ) {}
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Payment)
-  createPayment(
+  async createPayment(
     @Args('impUid') impUid: string, //
     @Args('payMoney') payMoney: number,
     @Context() context: IContext,
   ) {
-    console.log(context);
-    return this.paymentsService.create({ impUid, payMoney, context });
+    // 기존의 로직
+    // console.log(context);
+    // return this.paymentsService.create({ impUid, payMoney, context });
+
+    // *** 결제 검증 시작 *** //
+
+    // 1. 아임포트 액세스 토큰 발급받기
+    const impToken = await this.iamportsService.getImpAccessToken();
+
+    // 2. imp_uid로 아임포트 서버에서 결제 정보 조회
+    const getPaymentData = await this.iamportsService.getImpPaymentData({
+      access_token: impToken,
+      imp_uid: impUid,
+    });
+
+    // 조회한 결제 정보
+    const paymentData = getPaymentData.data.response;
+
+    // 3. 결제정보의 결제금액과 요청받은 결제금액 검증하기
+
+    if (payMoney !== paymentData.amount) {
+      throw new UnprocessableEntityException(
+        '결제정보의 위조/변조 시도가 발견되었습니다. 요청하신 정보를 저장할 수 없습니다.',
+      );
+    }
+
+    // *** 결제 검증 종료 *** //
+
+    // 결제 테이블 생성 - 결제를 생성한 유저와 연결하여 결제 내역 저장
+    const user = context.req.user;
+    return this.paymentsService.create({
+      impUid,
+      payMoney,
+      user,
+      paymentType: PAYMENT_STATUS_ENUM.PAYMENT,
+    });
+  }
+
+  @UseGuards(GqlAuthAccessGuard)
+  @Mutation(() => Payment)
+  async cancelPayment(
+    @Args('impUid') impUid: string,
+    @Context() context: IContext,
+  ) {
+    // *** 취소 검증 시작 *** /
+
+    // 1. 입력받은 impUid 값을 통해 payment table에서 data 검증하기.
+    await this.paymentsService.checkIsAbleToCancel({
+      impUid,
+      user: context.req.user,
+    });
+
+    // 2. 아임포트 액세스 토큰 발급받기
+    const impToken = await this.iamportsService.getImpAccessToken();
+
+    // 3. imp_uid로 아임포트 서버에서 결제 정보 조회
+    const getPaymentData = await this.iamportsService.getImpPaymentData({
+      access_token: impToken,
+      imp_uid: impUid,
+    });
+
+    // *** 취소 검증 종료 *** //
+
+    // 조회한 결제 정보
+    const paymentData = getPaymentData.data.response;
+
+    // *** 부분환불을 위한 전처리(아임포트 Docs 참조) *** //
+
+    // 3-1. 조회한 결제정보로부터 imp_uid, amount(결제금액), cancel_amount환불된 총 금액) 추출
+    const { imp_uid, payMoney, cancel_payMoney } = paymentData;
+
+    // 3-2. 환불 가능 금액(= 결제금액 - 환불 된 총 금액) 계산
+    const cancelAblePayMoney = payMoney - cancel_payMoney;
+    if (cancelAblePayMoney <= 0) {
+      // 이미 전액 환불된 경우
+      return new UnprocessableEntityException('이미 전액 환불된 주문입니다.');
+    }
+
+    // *** 부분환불을 위한 전처리 끝 *** //
+
+    // 4. 아임포트 서버에서 결제 취소 api 요청
+    const canceledPayment = await this.iamportsService.cancelImpPaymentData({
+      access_token: impToken,
+      reason: '이곳에 환불사유를 입력해주세요',
+      imp_uid,
+      cancel_request_payMoney: payMoney, // 부분환불은 테스트모드에서 지원하지 않는다.
+      cancelAblePayMoney, // 부분환불은 테스트모드에서 지원하지 않는다.
+    });
+
+    console.log(canceledPayment);
+
+    // 결제 취소 테이블 생성 - 결제를 생성한 유저와 연결하여 결제 취소 내역 저장
+    const user = context.req.user;
+    return this.paymentsService.create({
+      impUid,
+      payMoney: -payMoney, // 이게 맞나
+      user,
+      paymentType: PAYMENT_STATUS_ENUM.CANCEL,
+    });
+  }
+
+  @UseGuards(GqlAuthAccessGuard)
+  @Mutation(() => Payment)
+  async createPaymentForPoints(
+    @Args('impUid') impUid: string,
+    @Args('payMoney') payMoney: number,
+    @Context() context: IContext,
+  ) {
+    // *** 결제 검증 시작 *** //
+    // 1. 아임포트 액세스 토큰 발급받기
+    const impToken = await this.iamportsService.getImpAccessToken();
+    // 2. imp_uid로 아임포트 서버에서 결제 정보 조회
+    const getPaymentData = await this.iamportsService.getImpPaymentData({
+      access_token: impToken,
+      imp_uid: impUid,
+    });
+    // 조회한 결제 정보
+    const paymentData = getPaymentData.data.response;
+    // 3. 결제정보의 결제금액과 요청받은 결제금액 검증하기
+    if (payMoney !== paymentData.payMoney) {
+      throw new UnprocessableEntityException(
+        '결제정보의 위조/변조 시도가 발견되었습니다. 요청하신 정보를 저장할 수 없습니다.',
+      );
+    }
+
+    // *** 결제 검증 종료 *** //
+
+    // 포인트 충전을 위한 결제 테이블 생성 - 결제를 생성한 유저와 연결하여 결제 내역 저장
+    const user = context.req.user;
+    return this.paymentsService.createForPoints({
+      impUid,
+      payMoney,
+      user,
+      paymentType: PAYMENT_STATUS_ENUM.PAYMENT,
+    });
+  }
+
+  @UseGuards(GqlAuthAccessGuard)
+  @Mutation(() => Payment)
+  async cancelPaymentForPoints(
+    @Args('impUid') impUid: string,
+    @Context() context: IContext,
+  ) {
+    /***   취소 검증 시작   ***/
+
+    // 1. 입력받은 impUid 값을 통해 payment table에서 data 검증하기.
+    await this.paymentsService.checkIsAbleToCancel({
+      impUid,
+      user: context.req.user,
+    });
+
+    // 2. 아임포트 액세스 토큰 발급받기
+    const impToken = await this.iamportsService.getImpAccessToken();
+
+    // 3. imp_uid로 아임포트 서버에서 결제 정보 조회
+    const getPaymentData = await this.iamportsService.getImpPaymentData({
+      access_token: impToken,
+      imp_uid: impUid,
+    });
+    // *** 취소 검증 종료 *** //
+
+    // 조회한 결제 정보
+    const paymentData = getPaymentData.data.response;
+
+    // *** 부분환불을 위한 전처리(아임포트 Docs 참조) *** //
+    // 3-1. 조회한 결제정보로부터 imp_uid, payMoney(결제금액), cancel_payMoney(환불된 총 금액) 추출
+    const { imp_uid, payMoney, cancel_payMoney } = paymentData;
+    // 3-2. 환불 가능 금액 (= 결제금액 - 환불 된 총 금액) 계산
+    const cancelAblePayMoney = payMoney - cancel_payMoney;
+    if (cancelAblePayMoney <= 0) {
+      // 이미 전액 환불된 경우
+      return new UnprocessableEntityException('이미 전액 환불된 주문입니다.');
+    }
+
+    // *** 부분환불을 위한 전처리 끝 *** //
+
+    // 4. 아임포트 서버에서 결제 취소 api 요청
+    const canceledPayment = await this.iamportsService.cancelImpPaymentData({
+      access_token: impToken,
+      reason: '이곳에 환불사유를 입력해주세요',
+      imp_uid,
+      cancel_request_payMoney: payMoney, // 부분환불은 테스트모드에서 지원하지 않았습니다.
+      cancelAblePayMoney, // 부분환불은 테스트모드에서 지원하지 않았습니다.
+    });
+
+    console.log(cancel_payMoney); // 취소내역 출력 테스트
+
+    // 결제 취소 테이블 생성 - 결제를 생성한 유저와 연결하여 결제 취소 내역 저장
+    const user = context.req.user;
+    return this.paymentsService.createForPoints({
+      impUid,
+      payMoney: -payMoney,
+      user,
+      paymentType: PAYMENT_STATUS_ENUM.CANCEL,
+    });
   }
 }
