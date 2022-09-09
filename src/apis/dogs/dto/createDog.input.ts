@@ -9,20 +9,16 @@ export class createDogInput {
   @Field(() => String)
   description: string;
 
-  //테스트용, 추후 수정예정
   @Field(() => String)
   birthday: string;
 
-  //테스트용, 추후 수정예정
-  @Field(() => [String])
+  @Field(() => [String], { nullable: true })
   interests: string[];
 
-  //테스트용, 추후 수정예정
-  @Field(() => [String])
+  @Field(() => [String], { nullable: true })
   avoidBreeds: string[];
 
-  //테스트용, 추후 수정예정
-  @Field(() => [String])
+  @Field(() => [String], { nullable: true })
   characters: string[];
 
   @Field(() => [String])

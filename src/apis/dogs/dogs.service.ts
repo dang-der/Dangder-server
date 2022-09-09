@@ -115,17 +115,17 @@ export class DogsService {
         (tmp.distance = Object.values(distance)[i]);
       result.push(tmp);
     }
-
+console.log(result)
     return result;
   }
 
-  async getDogInfo({ registerNumber, birth }) {
+  async getDogInfo({ dogRegNum, ownerBirth }) {
     const getDogInfo = await axios({
       url: 'http://apis.data.go.kr/1543061/animalInfoSrvc/animalInfo',
       method: 'get',
       params: {
-        dog_reg_no: registerNumber,
-        owner_birth: birth,
+        dog_reg_no: dogRegNum,
+        owner_birth: ownerBirth,
         serviceKey: process.env.OPENAPI_SERVICEKEY,
         _type: 'json',
       },
@@ -139,100 +139,109 @@ export class DogsService {
     return getDogInfo['data'].response.body.item;
   }
 
-  async create({ doginfo, createDogInput }) {
+  async create({ dogInfo, createDogInput }) {
     const { locations, img, interests, characters, avoidBreeds, ...dog } =
       createDogInput;
 
     const location = await this.locationsRepository.save({
       ...locations,
     });
-    const createInterests = await Promise.all(
-      interests.map(
-        (el) =>
-          new Promise(async (resolve, reject) => {
-            try {
-              const prevInterest = await this.interestsRepository.findOne({
-                where: { interest: el },
-              });
-              if (prevInterest) {
-                resolve(prevInterest);
-              } else {
-                const newInterest = await this.interestsRepository.save({
-                  interest: el,
+    let createInterests = null;
+    if (interests) {
+      createInterests = await Promise.all(
+        interests.map(
+          (el) =>
+            new Promise(async (resolve, reject) => {
+              try {
+                const prevInterest = await this.interestsRepository.findOne({
+                  where: { interest: el },
                 });
-                resolve(newInterest);
+                if (prevInterest) {
+                  resolve(prevInterest);
+                } else {
+                  const newInterest = await this.interestsRepository.save({
+                    interest: el,
+                  });
+                  resolve(newInterest);
+                }
+              } catch (err) {
+                reject(err);
               }
-            } catch (err) {
-              reject(err);
-            }
-          }),
-      ),
-    );
+            }),
+        ),
+      );
+    }
 
-    const createCharacters = await Promise.all(
-      characters.map(
-        (el) =>
-          new Promise(async (resolve, reject) => {
-            try {
-              const prevCharacter = await this.charactersRepository.findOne({
-                where: { character: el },
-              });
-              if (prevCharacter) {
-                resolve(prevCharacter);
-              } else {
-                const newCharacter = await this.charactersRepository.save({
-                  character: el,
+    let createCharacters = null;
+    if (characters) {
+      createCharacters = await Promise.all(
+        characters.map(
+          (el) =>
+            new Promise(async (resolve, reject) => {
+              try {
+                const prevCharacter = await this.charactersRepository.findOne({
+                  where: { character: el },
                 });
-                resolve(newCharacter);
+                if (prevCharacter) {
+                  resolve(prevCharacter);
+                } else {
+                  const newCharacter = await this.charactersRepository.save({
+                    character: el,
+                  });
+                  resolve(newCharacter);
+                }
+              } catch (err) {
+                reject(err);
               }
-            } catch (err) {
-              reject(err);
-            }
-          }),
-      ),
-    );
-
-    const createAvoidBreeds = await Promise.all(
-      avoidBreeds.map(
-        (el) =>
-          new Promise(async (resolve, reject) => {
-            try {
-              const prevAvoidBreed = await this.avoidBreedsRepository.findOne({
-                where: { avoidBreed: el },
-              });
-              if (prevAvoidBreed) {
-                resolve(prevAvoidBreed);
-              } else {
-                const newAvoidBreed = await this.avoidBreedsRepository.save({
-                  avoidBreed: el,
-                });
-                resolve(newAvoidBreed);
+            }),
+        ),
+      );
+    }
+    let createAvoidBreeds = null;
+    if (avoidBreeds) {
+      createAvoidBreeds = await Promise.all(
+        avoidBreeds.map(
+          (el) =>
+            new Promise(async (resolve, reject) => {
+              try {
+                const prevAvoidBreed = await this.avoidBreedsRepository.findOne(
+                  {
+                    where: { avoidBreed: el },
+                  },
+                );
+                if (prevAvoidBreed) {
+                  resolve(prevAvoidBreed);
+                } else {
+                  const newAvoidBreed = await this.avoidBreedsRepository.save({
+                    avoidBreed: el,
+                  });
+                  resolve(newAvoidBreed);
+                }
+              } catch (err) {
+                reject(err);
               }
-            } catch (err) {
-              reject(err);
-            }
-          }),
-      ),
-    );
-
+            }),
+        ),
+      );
+    }
     const createBreeds = [];
     const prevBreed = await this.breedsRepository.findOne({
-      where: { name: doginfo.kindNm },
+      where: { name: dogInfo.kindNm },
     });
     if (prevBreed) createBreeds.push(prevBreed);
     else {
       const newBreed = await this.breedsRepository.save({
-        name: doginfo.kindNm,
+        name: dogInfo.kindNm,
       });
       createBreeds.push(newBreed);
     }
 
-    const neut = doginfo.neuterYn === '미중성' ? false : true;
+    const neut = dogInfo.neuterYn === '미중성' ? false : true;
     const result = await this.dogsRepository.save({
       ...dog,
-      name: doginfo.dogNm,
-      registerNumber: doginfo.dogRegNo,
-      gender: doginfo.sexNm,
+      name: dogInfo.dogNm,
+      registerNumber: dogInfo.dogRegNo,
+      gender: dogInfo.sexNm,
       isNeut: neut,
       interests: createInterests,
       characters: createCharacters,

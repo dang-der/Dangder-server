@@ -40,28 +40,28 @@ export class DogsResolver {
   }
 
   @Mutation(() => Boolean)
-  async getdoginfo(
-    @Args('registerNumber') registerNumber: string,
-    @Args('birth') birth: string,
+  async getDogInfo(
+    @Args('dogRegNum') dogRegNum: string,
+    @Args('ownerBirth') ownerBirth: string,
   ) {
-    const doginfo = await this.dogsService.getDogInfo({
-      registerNumber,
-      birth,
+    const dogInfo = await this.dogsService.getDogInfo({
+      dogRegNum,
+      ownerBirth,
     });
-    return doginfo ? true : false;
+    return dogInfo ? true : false;
   }
 
   @Mutation(() => Dog)
   async createDog(
     @Args('createDogInput') createDogInput: createDogInput, //
-    @Args('registerNumber') registerNumber: string, //
-    @Args('birth') birth: string,
+    @Args('dogRegNum') dogRegNum: string, //
+    @Args('ownerBirth') ownerBirth: string,
   ) {
-    const doginfo = await this.dogsService.getDogInfo({
-      registerNumber,
-      birth,
+    const dogInfo = await this.dogsService.getDogInfo({
+      dogRegNum,
+      ownerBirth,
     });
-    return this.dogsService.create({ doginfo, createDogInput });
+    return this.dogsService.create({ dogInfo, createDogInput });
   }
 
   @Mutation(() => Dog)
