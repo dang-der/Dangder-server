@@ -19,7 +19,7 @@ export class Report {
 
   @Column()
   @Field(() => String)
-  reportId: string;
+  targetId: string;
 
   @Column()
   @Field(() => String)

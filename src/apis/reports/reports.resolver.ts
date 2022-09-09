@@ -7,20 +7,20 @@ import { ReportsService } from './reports.service';
 export class ReportsResolver {
   constructor(private readonly reportsService: ReportsService) {}
 
-  // id로 신고게시판 조회
-  @Query(() => Report)
-  async fetchReport(
-    @Args('id') id: string, //
+  // 누가 신고했는가?
+  @Query(() => Report, { description: 'userId를 통해 신고게시판 조회' })
+  async fetchWhoReport(
+    @Args('userId') userId: string, //
   ) {
-    return this.reportsService.findreportId({ id });
+    return this.reportsService.findByUserId({ userId });
   }
 
-  // reportedId로 신고게시판 조회
+  // targetId로 신고게시판 조회
   @Query(() => Report)
-  async fetchReported(
-    @Args('reportedId') reportId: string, //
+  async fetchTarget(
+    @Args('targetId') targetId: string, //
   ) {
-    return this.reportsService.findreportedId({ reportId });
+    return this.reportsService.findByTargetId({ targetId });
   }
 
   // 신고 게시판 생성하기

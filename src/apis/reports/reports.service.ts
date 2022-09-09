@@ -10,14 +10,14 @@ export class ReportsService {
     private readonly reportsRepository: Repository<Report>,
   ) {}
 
-  // 신고한 Id 찾기
-  findreportId({ id }) {
-    return this.reportsRepository.findOne({ where: { id } });
+  // 신고한 userId로 찾기
+  findByUserId({ userId }) {
+    return this.reportsRepository.findOne({ where: { user: { id: userId } } });
   }
 
-  // 신고당한 Id 찾기
-  findreportedId({ reportId }) {
-    return this.reportsRepository.findOne({ where: { reportId } });
+  // 신고당한 Id로찾기
+  findByTargetId({ targetId }) {
+    return this.reportsRepository.findOne({ where: { targetId } });
   }
 
   // 신고 게시물 만들기
