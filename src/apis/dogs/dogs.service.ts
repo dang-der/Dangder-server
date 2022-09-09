@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Interest } from '../interests/entities/interest.entity';
@@ -10,6 +10,9 @@ import { Location } from '../locations/entities/location.entity';
 import { Breed } from '../breeds/entities/breed.entity';
 import { getDistance, isPointWithinRadius } from 'geolib';
 import { AvoidBreed } from '../avoidBreeds/entities/avoidBreed.entity';
+import { Cache } from 'cache-manager';
+import { DistanceType } from '../distancesType/entities/distanceType.entity';
+import { User } from '../users/entities/user.entity';
 
 @Injectable()
 export class DogsService {
@@ -34,6 +37,12 @@ export class DogsService {
 
     @InjectRepository(Location)
     private readonly locationsRepository: Repository<Location>,
+
+    @InjectRepository(User)
+    private readonly usersRepository: Repository<User>,
+
+    @Inject(CACHE_MANAGER)
+    private readonly cacheManager: Cache,
   ) {}
 
   async findAll() {
@@ -44,6 +53,7 @@ export class DogsService {
         characters: true,
         avoidBreeds: true,
         img: true,
+        userId: true,
       },
     });
   }
@@ -57,11 +67,12 @@ export class DogsService {
         characters: true,
         avoidBreeds: true,
         img: true,
+        userId: true,
       },
     });
   }
 
-  async getAroundDogs({ myDog, Dogs }) {
+  async getAroundDogs({ id, myDog, Dogs }) {
     const myDoglat = myDog.locations.lat;
     const myDoglng = myDog.locations.lng;
 
@@ -74,8 +85,7 @@ export class DogsService {
       );
       if (result === true) resultDog.push(Dogs[i]);
     }
-
-    const resultDistance = [];
+    const resultDistance = {};
     for (let i = 0; i < resultDog.length; i++) {
       const distance = getDistance(
         { latitude: myDoglat, longitude: myDoglng },
@@ -84,10 +94,29 @@ export class DogsService {
           longitude: resultDog[i].locations.lng,
         },
       );
-      if (distance !== 0) resultDistance.push(distance);
+      if (distance !== 0)
+        resultDistance[resultDog[i].id] = Math.floor(distance / 1000);
     }
 
+    await this.cacheManager.set(id, resultDistance, {
+      ttl: 60 * 60, //1시간
+    });
+
     return resultDog;
+  }
+
+  async getDogsDistance({ id }) {
+    const result = [];
+    const distance = await this.cacheManager.get(id);
+
+    for (let i = 0; i < Object.keys(distance).length; i++) {
+      const tmp = new DistanceType(); //객체 타입 리턴 받기 위해 새로운 타입 지정
+      (tmp.dogId = Object.keys(distance)[i]),
+        (tmp.distance = Object.values(distance)[i]);
+      result.push(tmp);
+    }
+
+    return result;
   }
 
   async getDogInfo({ registerNumber, birth }) {
