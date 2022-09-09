@@ -15,6 +15,8 @@ export class Report {
   @Field(() => String)
   id: string;
 
+  // 신고대상 유저Id
+
   @Column()
   @Field(() => String)
   reportId: string;
