@@ -21,10 +21,18 @@ export class AppGateway
   @WebSocketServer() server: Server;
   private logger: Logger = new Logger('AppGateway');
 
-  @SubscribeMessage('msgToServer')
-  handleMessage(client: Socket, payload: string): void {
-    this.server.emit('msgToClient', payload);
-    console.log(payload);
+  @SubscribeMessage('init')
+  initChatRoom(client: Socket, payload: any): void {
+    const { room, name } = payload;
+    const welcome = `[${room}] 방에 ${name}님이 입장하셨습니다.`;
+    this.server.emit('join', welcome);
+    console.log(`[${room}] 입장 : ${name}`);
+  }
+  @SubscribeMessage('send')
+  sendMessage(client: Socket, payload: any): void {
+    const { room } = payload;
+    this.server.emit('sendToWindow', payload);
+    console.log(payload, room);
     // console.log(client.id);
     // console.log(client.handshake.headers);
     // console.log(client.handshake.time);
@@ -33,14 +41,16 @@ export class AppGateway
   }
 
   afterInit(server: Server) {
-    this.logger.log(`Socket Server initialized {${server.sockets.sockets}}`);
+    this.logger.log(
+      `================== Socket Server initialized ==================`,
+    );
   }
 
   handleDisconnect(client: Socket) {
     this.logger.log(`Client disconnected: ${client.id}`);
   }
 
-  handleConnection(client: Socket, ...args: any[]) {
+  handleConnection(client: Socket) {
     this.logger.log(`Client connected: ${client.id}`);
   }
 }

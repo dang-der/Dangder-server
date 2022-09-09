@@ -38,6 +38,9 @@
             <div class="card">
               <div id="messages" class="card-block">
                 <ul>
+                  <ol v-for="welcome of welcomes" class="text-center">
+                    {{ welcome }}
+                  </ol>
                   <li v-for="message of messages">
                     {{ message.name }}: {{ message.text }}
                   </li>
@@ -54,6 +57,9 @@
             <br />
             <button id="send" class="btn" @click.prevent="sendMessage">
               Send
+            </button>
+            <button id="send2" class="btn" @click.prevent="changeChatRoom">
+              ChangeChatRoom
             </button>
           </div>
         </div>
