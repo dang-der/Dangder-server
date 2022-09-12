@@ -19,6 +19,7 @@ import {
 } from 'typeorm';
 import { Location } from 'src/apis/locations/entities/location.entity';
 import { DogImage } from 'src/apis/dogsImages/entities/dogimage.entity';
+import { Like } from 'src/apis/likes/entities/like.entity';
 
 @Entity()
 @ObjectType()
@@ -96,7 +97,15 @@ export class Dog {
   @OneToOne(() => User)
   userId: User;
 
-  @OneToMany(() => DogImage, (dogImage) => dogImage.dog)
+  @OneToMany(() => DogImage, (dogImage) => dogImage.dog, {
+    cascade: true,
+    onUpdate: 'CASCADE',
+    onDelete: 'CASCADE',
+  })
   @Field(() => [DogImage])
   img: DogImage[];
+
+  @OneToMany(() => Like, (like) => like.sendId)
+  @Field(() => [Like])
+  sendId: Like[];
 }

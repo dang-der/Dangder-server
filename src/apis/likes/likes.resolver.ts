@@ -1,4 +1,5 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Resolver } from '@nestjs/graphql';
+import { createLikeInput } from './dto/createLike.input';
 import { Like } from './entities/like.entity';
 import { LikesService } from './likes.service';
 
@@ -8,18 +9,22 @@ export class LikesResolver {
     private readonly likesService: LikesService, //
   ) {}
 
-  @Query(() => [Like])
-  async fetchLikes(
-    @Args('receiveId') receiveId: string, // 내가받은 좋아요 목록 조회
+  @Mutation(() => Boolean, {
+    description: '내가 좋아요 누른 댕댕이가 나를 좋아요 누른 기록 있는지 조회',
+  })
+  async isLike(
+    @Args('sendId') sendId: string, //
+    @Args('receivedId') receivedId: string, //
   ) {
-    return this.likesService.findAll(receiveId);
+    return this.likesService.isLike({ sendId, receivedId });
   }
 
-  @Mutation(() => Like)
+  @Mutation(() => Like, {
+    description: '이 댕댕이에게 좋아요를 누르기',
+  })
   async createLike(
-    @Args('sendId') sendId: string, //
-    @Args('receiveId') receiveId: string,
+    @Args('createLikeInput') createLikeInput: createLikeInput, //
   ) {
-    return this.likesService.create(sendId, receiveId);
+    return this.likesService.create(createLikeInput);
   }
 }

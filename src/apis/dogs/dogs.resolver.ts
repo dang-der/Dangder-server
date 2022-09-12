@@ -17,7 +17,7 @@ export class DogsResolver {
   }
 
   @Query(() => Dog)
-  async fetchMyDog(
+  async fetchOneDog(
     @Args('id') id: string, //
   ) {
     return await this.dogsService.findOne(id);
@@ -27,7 +27,7 @@ export class DogsResolver {
   async fetchAroundDogs(
     @Args('id') id: string, //
   ) {
-    const myDog = await this.fetchMyDog(id);
+    const myDog = await this.fetchOneDog(id);
     const Dogs = await this.fetchDogs();
     return await this.dogsService.getAroundDogs({ id, myDog, Dogs });
   }
