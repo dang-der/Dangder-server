@@ -7,7 +7,6 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { RedisClientOptions } from 'redis';
 import * as redisStore from 'cache-manager-redis-store';
 
-import { AppController } from './app.controller';
 import { AuthsModule } from './apis/auths/auths.module';
 import { AvoidBreedsModule } from './apis/avoidBreeds/avoidBreeds.module';
 import { BlockUsersModule } from './apis/blockUsers/blockUsers.module';
@@ -27,10 +26,14 @@ import { LocationsModule } from './apis/locations/locations.module';
 import { PaymentsModule } from './apis/payments/payments.module';
 import { ReportsModule } from './apis/reports/reports.module';
 import { UsersModule } from './apis/users/users.module';
+
+import { AppController } from './app.controller';
 import { AppGateway } from './app.gateway';
+import { AdminUsersModule } from './apis/adminUsers/adminUsers.module';
 
 @Module({
   imports: [
+    AdminUsersModule,
     AuthsModule,
     AvoidBreedsModule,
     BlockUsersModule,
@@ -74,7 +77,7 @@ import { AppGateway } from './app.gateway';
     // redis 연결을 위한 CacheModule 추가
     CacheModule.register<RedisClientOptions>({
       store: redisStore,
-      url: 'redis://my-redis:6379',
+      url: process.env.CACHE_REDIS_URL,
       isGlobal: true,
     }),
     // Mailer 사용을 위한 MailerModule 추가
