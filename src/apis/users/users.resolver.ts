@@ -13,15 +13,15 @@ export class UsersResolver {
   ) {}
 
   // 모든 사용자 출력
-  @Query(() => [User])
+  @Query(() => [User], { description: 'Return : 전체 유저 정보' })
   fetchUsers() {
     return this.usersService.findAll();
   }
 
   // Email 값이 일치하는 사용자 출력
-  @Query(() => User)
+  @Query(() => User, { description: 'Return : 유저 정보' })
   async fetchUser(
-    @Args('email') email: string, //
+    @Args('email', { description: '회원의 계정(메일주소)' }) email: string, //
   ) {
     // 유저 정보 꺼내오기
     return this.usersService.findOne({ email });
@@ -29,17 +29,18 @@ export class UsersResolver {
 
   // 로그인(userLogin)중인 user 한 사람 조회 API
   @UseGuards(GqlAuthAccessGuard)
-  @Query(() => User)
+  @Query(() => User, { description: 'Return : 로그인한 유저 데이터' })
   async fetchLoginUser(
     @Context() context: any, //
   ) {
     return this.usersService.findOne({ email: context.req.user.email });
   }
 
-  @Mutation(() => User)
+  @Mutation(() => User, { description: 'Return : 바뀐 유저 정보' })
   updateUser(
-    @Args('email') email: string,
-    @Args('updateUserInput') updateUserInput: UpdateUserInput,
+    @Args('email', { description: '회원의 계정(메일주소)' }) email: string,
+    @Args('updateUserInput', { description: '바꾸고 싶은 유저 정보' })
+    updateUserInput: UpdateUserInput,
   ) {
     // 유저 정보 변경하기
 
@@ -49,18 +50,21 @@ export class UsersResolver {
     });
   }
 
-  @Mutation(() => User)
+  @Mutation(() => User, { description: 'Return : 가입된 유저 정보' })
   async createUser(
-    @Args('createUserInput') createUserInput: CreateUserInput, //
+    @Args('createUserInput', { description: '회원의 정보 입력' })
+    createUserInput: CreateUserInput, //
   ) {
     // 유저 정보 생성하기
     return this.usersService.create({ createUserInput });
   }
 
   // 유저 삭제(탈퇴)
-  @Mutation(() => Boolean)
+  @Mutation(() => Boolean, {
+    description: 'Return : deletedAt(유저 정보 삭제된 시간)',
+  })
   deleteUser(
-    @Args('email') email: string, //
+    @Args('email', { description: '회원의 계정(메일주소)' }) email: string, //
   ) {
     return this.usersService.delete({ email });
   }

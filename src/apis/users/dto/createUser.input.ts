@@ -8,9 +8,9 @@ export class CreateUserInput {
   @Field(() => String)
   password: string;
 
-  @Field(() => Boolean)
+  @Field(() => Boolean, { nullable: true })
   pet: boolean;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   phone: string;
 }

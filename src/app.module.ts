@@ -30,6 +30,8 @@ import { UsersModule } from './apis/users/users.module';
 import { AppController } from './app.controller';
 import { AppGateway } from './app.gateway';
 import { AdminUsersModule } from './apis/adminUsers/adminUsers.module';
+import { OrdersModule } from './apis/orders/orders.module';
+import { ProductsModule } from './apis/products/products.module';
 
 @Module({
   imports: [
@@ -50,7 +52,9 @@ import { AdminUsersModule } from './apis/adminUsers/adminUsers.module';
     InterestsModule,
     LikesModule,
     LocationsModule,
+    OrdersModule,
     PaymentsModule,
+    ProductsModule,
     ReportsModule,
     UsersModule,
     GraphQLModule.forRoot<ApolloDriverConfig>({
