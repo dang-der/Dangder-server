@@ -3,7 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AvoidBreed } from '../avoidBreeds/entities/avoidBreed.entity';
 import { Breed } from '../breeds/entities/breed.entity';
 import { Character } from '../characters/entities/character.entity';
-import { DogImage } from '../dogsImages/entities/dogimage.entity';
+import { DogImage } from '../dogsImages/entities/dogImage.entity';
 import { Interest } from '../interests/entities/interest.entity';
 import { Like } from '../likes/entities/like.entity';
 import { Location } from '../locations/entities/location.entity';

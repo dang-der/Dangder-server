@@ -1,7 +1,7 @@
 import { Field, InputType } from '@nestjs/graphql';
 
 @InputType()
-export class createAvoidBreedInput {
-  @Field(() => [String])
+export class CreateAvoidBreedsInput {
+  @Field(() => [String], { description: '기피견종명' })
   avoidBreed: string[];
 }

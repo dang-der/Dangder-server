@@ -8,7 +8,7 @@ export class BreedsResolver {
     private readonly breedsService: BreedsService, //
   ) {}
 
-  @Query(() => Breed)
+  @Query(() => Breed, { description: '견종 종류 조회' })
   async fetchBreeds() {
     return this.breedsService.findAll();
   }

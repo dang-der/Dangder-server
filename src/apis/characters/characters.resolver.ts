@@ -8,7 +8,7 @@ export class CharactersResolver {
     private readonly charactersService: CharactersService, //
   ) {}
 
-  @Query(() => [Character])
+  @Query(() => [Character], { description: '성격 정보 조회' })
   async fetchCharacters() {
     return this.charactersService.findAll();
   }

@@ -18,7 +18,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Location } from 'src/apis/locations/entities/location.entity';
-import { DogImage } from 'src/apis/dogsImages/entities/dogimage.entity';
+import { DogImage } from 'src/apis/dogsImages/entities/dogImage.entity';
 import { Like } from 'src/apis/likes/entities/like.entity';
 
 @Entity()
@@ -69,7 +69,9 @@ export class Dog {
 
   @JoinTable()
   @Field(() => [Interest])
-  @ManyToMany(() => Interest, (interests) => interests.dogs)
+  @ManyToMany(() => Interest, (interests) => interests.dogs, {
+    cascade: ['update'],
+  })
   interests: Interest[];
 
   @JoinTable()
@@ -101,6 +103,7 @@ export class Dog {
     cascade: true,
     onUpdate: 'CASCADE',
     onDelete: 'CASCADE',
+    orphanedRowAction: 'delete',
   })
   @Field(() => [DogImage])
   img: DogImage[];
