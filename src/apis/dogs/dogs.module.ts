@@ -5,6 +5,7 @@ import { Breed } from '../breeds/entities/breed.entity';
 import { Character } from '../characters/entities/character.entity';
 import { DogImage } from '../dogsImages/entities/dogimage.entity';
 import { Interest } from '../interests/entities/interest.entity';
+import { Like } from '../likes/entities/like.entity';
 import { Location } from '../locations/entities/location.entity';
 import { User } from '../users/entities/user.entity';
 import { DogsResolver } from './dogs.resolver';
@@ -21,6 +22,7 @@ import { Dog } from './entities/dog.entity';
       DogImage, //
       Location, //
       Breed, //
+      Like, //
       User,
     ]),
   ],

@@ -13,6 +13,8 @@ import { AvoidBreed } from '../avoidBreeds/entities/avoidBreed.entity';
 import { Cache } from 'cache-manager';
 import { DistanceType } from '../distancesType/entities/distanceType.entity';
 import { User } from '../users/entities/user.entity';
+import { Like } from '../likes/entities/like.entity';
+import { getToday } from 'src/commons/libraries/utils';
 
 @Injectable()
 export class DogsService {
@@ -41,6 +43,9 @@ export class DogsService {
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
 
+    @InjectRepository(Like)
+    private readonly likesRepository: Repository<Like>,
+
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
   ) {}
@@ -54,6 +59,7 @@ export class DogsService {
         avoidBreeds: true,
         img: true,
         userId: true,
+        sendId: true,
       },
     });
   }
@@ -68,6 +74,7 @@ export class DogsService {
         avoidBreeds: true,
         img: true,
         userId: true,
+        sendId: true,
       },
     });
   }
@@ -115,7 +122,7 @@ export class DogsService {
         (tmp.distance = Object.values(distance)[i]);
       result.push(tmp);
     }
-console.log(result)
+
     return result;
   }
 
