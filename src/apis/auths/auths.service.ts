@@ -10,35 +10,34 @@ import { UsersService } from '../users/users.service';
 import * as jwt from 'jsonwebtoken';
 import { Cache } from 'cache-manager';
 
-// .env 내부 선언 데이터
 const { JWT_ACCESS_SECRET, JWT_REFRESH_SECRET, LOGIN_REDIRECT_URL } =
   process.env;
 
+/**
+ * Auth Service
+ */
 @Injectable()
 export class AuthsService {
   constructor(
-    private readonly jwtService: JwtService, //
-    private readonly usersService: UsersService, //
-    // Mailer 사용을 위한 서비스 주입
+    private readonly jwtService: JwtService,
+    private readonly usersService: UsersService,
     private readonly mailerService: MailerService,
-    // redis 사용을 위한 cacheManager 선언
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
   ) {}
 
-  // Refresh Token 생성 -> response header 에 넣어주는 과정
+  /**
+   * Set Refresh Token On Header
+   * @param user 접속한 유저 정보.
+   * @param res Response
+   * @param req 전송할 Request
+   */
   setRefreshToken({ user, res, req }) {
     const refreshToken = this.jwtService.sign(
       { email: user.email, sub: user.id },
       { secret: JWT_REFRESH_SECRET, expiresIn: '2w' },
     );
 
-    // 개발환경
-    // res.setHeader('Set-Cookie', `refreshToken=${refreshToken}; path=/;`);
-
-    // 배포환경 - path 와 domain 설정, Secure - https / httpOnly - http
-    // res.setHeader('Set-Cookie', `refreshToken=${refreshToken}; path=/; domain=.dangder.shop; SameSite=None; Secure; httpOnly;`);
-    // res.setHeader('Access-Control-Allow-Origin', 'https://dangder.shop');
     const allowedOrigins = [
       'https://recipemaker.shop',
       'http://localhost:3000',
@@ -48,7 +47,6 @@ export class AuthsService {
     if (allowedOrigins.includes(origin)) {
       res.setHeader('Access-Control-Allow-Origin', origin);
     }
-
     res.setHeader('Access-Control-Allow-Credentials', 'true');
     res.setHeader('Access-Control-Allow-Methods', 'GET,HEAD,OPTIONS,POST,PUT');
     res.setHeader(
@@ -61,7 +59,11 @@ export class AuthsService {
     );
   }
 
-  // Access Token 생성 - secret키와 expire주기 설정
+  /**
+   * Generate Access Token
+   * @param user 접속한 유저 정보.
+   * @returns 발급된 Access Token
+   */
   getAccessToken({ user }) {
     return this.jwtService.sign(
       { email: user.email, sub: user.id },
@@ -69,7 +71,11 @@ export class AuthsService {
     );
   }
 
-  // Social Login on Google, Naver, Kakao
+  /**
+   * social Login - google, naver, kakao
+   * @param res Response
+   * @param req Request
+   */
   async socialLogin({ req, res }) {
     // 1. 가입확인
     let user = await this.usersService.findOne({ email: req.user.email });
@@ -86,7 +92,14 @@ export class AuthsService {
     res.redirect(LOGIN_REDIRECT_URL);
   }
 
-  // jsonwebtoken 을 이용한 토큰 검증
+  //
+
+  /**
+   * Verify Tokens : JWT 을 이용한 토큰 검증
+   * @param accessToken 입력받은 Access Token
+   * @param refreshToken 입력받은 Refresh Token
+   * @returns 인증완료된 AT, RT
+   */
   verifyTokens({ accessToken, refreshToken }) {
     try {
       const validAccessToken = jwt.verify(accessToken, JWT_ACCESS_SECRET);
@@ -106,7 +119,11 @@ export class AuthsService {
     }
   }
 
-  // 랜덤한 4자리 수 토큰 생성 후 메일보내기.
+  /**
+   * Send Mail Token : 임의 생성된 4자리 숫자를 메일로 전송
+   * @param email 입력받은 메일주소
+   * @returns 전송 성공 여부
+   */
   async sendMailToken({ email }) {
     const token = String(Math.floor(Math.random() * 10 ** 4)).padStart(4, '0');
 
@@ -125,9 +142,9 @@ export class AuthsService {
       .then(() => {
         result = true;
       })
-      .catch((err) => {
+      .catch((e) => {
         result = false;
-        console.log(err);
+        console.log(e);
       });
 
     // 유저의 계정 : 생성된 토큰 - key : value 값으로 Redis 저장.
@@ -137,7 +154,12 @@ export class AuthsService {
     return result;
   }
 
-  // Redis에 저장된 토큰값을 비교
+  /**
+   * Send Mail Token : Redis에 저장된 토큰값을 비교
+   * @param email 입력받은 메일주소
+   * @param code 입력받은 인증코드
+   * @returns 저장된 값과 입력받은 코드의 일치 여부
+   */
   async validateMailToken({ email, code }) {
     const result = await this.cacheManager.get(email);
     return result === code;

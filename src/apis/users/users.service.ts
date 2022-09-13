@@ -27,9 +27,10 @@ export class UsersService {
     // bcrypt 사용하기
     // hash 알고리즘을 사용해 비밀번호를 암호화하는데 hash 메서드의 두 번째 인자는 salt이다.
     // 원본 password를 salt 시켜 준다.
+    const salt = process.env.BCRYPT_USER_SALT;
     const hashedPassword = await bcrypt.hash(
       createUserInput.password,
-      3.141592,
+      Number(salt),
     );
     return this.usersRepository.save({
       ...createUserInput,
