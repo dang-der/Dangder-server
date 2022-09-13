@@ -16,10 +16,16 @@ export class ChatRoomsService {
   }
 
   // 채팅방을 찾는 로직. dogId와 chatPairId로 찾는다.
-  findChatRoom({ dogId, chatPairId }) {
-    return this.chatRoomsRepository.find({
-      where: { dog: { id: dogId }, chatPairId },
-    });
+  async findChatRoom({ dogId, chatPairId }) {
+    let result: boolean | ChatRoom;
+    try {
+      result = await this.chatRoomsRepository.findOne({
+        where: { dog: { id: dogId }, chatPairId },
+      });
+    } catch (e) {
+      result = false;
+    }
+    return result;
   }
 
   async delete({ id }) {
