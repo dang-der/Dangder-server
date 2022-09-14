@@ -11,6 +11,8 @@ services:
       - 3000:3000
     env_file:
       - ./.env.dev
+    environment:
+      - TZ=Asia/Seoul
 
   my-database:
     platform: linux/x86_64
@@ -18,6 +20,7 @@ services:
     environment:
       MYSQL_DATABASE: 'dangder'
       MYSQL_ROOT_PASSWORD: 'root'
+      TZ: Asia/Seoul
     ports:
       - 3306:3306
 
