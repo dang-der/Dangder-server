@@ -3,7 +3,7 @@ import { Field, InputType } from '@nestjs/graphql';
 @InputType()
 export class createLikeInput {
   @Field(() => String)
-  receivedId: string;
+  receiveId: string;
 
   @Field(() => String)
   sendId: string;

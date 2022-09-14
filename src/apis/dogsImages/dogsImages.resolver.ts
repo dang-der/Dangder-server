@@ -1,6 +1,6 @@
 import { Args, Query, Resolver } from '@nestjs/graphql';
 import { DogsImagesService } from './dogsImages.service';
-import { DogImage } from './entities/dogimage.entity';
+import { DogImage } from './entities/dogImage.entity';
 
 @Resolver()
 export class DogsImagesResolver {

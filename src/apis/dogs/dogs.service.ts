@@ -1,10 +1,11 @@
 import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { DataSource } from 'typeorm';
 import { Interest } from '../interests/entities/interest.entity';
 import { Dog } from './entities/dog.entity';
 import axios from 'axios';
-import { DogImage } from '../dogsImages/entities/dogimage.entity';
+import { DogImage } from '../dogsImages/entities/dogImage.entity';
 import { Character } from '../characters/entities/character.entity';
 import { Location } from '../locations/entities/location.entity';
 import { Breed } from '../breeds/entities/breed.entity';
@@ -50,8 +51,10 @@ export class DogsService {
     private readonly cacheManager: Cache,
   ) {}
 
-  async findAll() {
-    return this.dogsRepository.find({
+  async findAll(page) {
+    return await this.dogsRepository.find({
+      skip: (page - 1) * 10, // 1페이지당 10마리씩 조회, 이미 조회한 만큼은 스킵
+      take: 10,
       relations: {
         locations: true,
         interests: true,
@@ -84,26 +87,27 @@ export class DogsService {
     const myDoglng = myDog.locations.lng;
 
     const resultDog = [];
-    for (let i = 0; i < Dogs.length; i++) {
+
+    await Dogs.map((el) => {
       const result = isPointWithinRadius(
         { latitude: myDoglat, longitude: myDoglng },
-        { latitude: Dogs[i].locations.lat, longitude: Dogs[i].locations.lng },
+        { latitude: el.locations.lat, longitude: el.locations.lng },
         5000,
       );
-      if (result === true) resultDog.push(Dogs[i]);
-    }
+      if (result === true) resultDog.push(el);
+    });
+
     const resultDistance = {};
-    for (let i = 0; i < resultDog.length; i++) {
+    resultDog.map((el) => {
       const distance = getDistance(
         { latitude: myDoglat, longitude: myDoglng },
         {
-          latitude: resultDog[i].locations.lat,
-          longitude: resultDog[i].locations.lng,
+          latitude: el.locations.lat,
+          longitude: el.locations.lng,
         },
       );
-      if (distance !== 0)
-        resultDistance[resultDog[i].id] = Math.floor(distance / 1000);
-    }
+      if (distance !== 0) resultDistance[el.id] = Math.ceil(distance / 1000); //소수점 이하 절상
+    });
 
     await this.cacheManager.set(id, resultDistance, {
       ttl: 60 * 60, //1시간
@@ -257,6 +261,14 @@ export class DogsService {
       locations: { ...location },
     });
 
+    const user = await this.usersRepository.findOne({
+      where: { id: createDogInput.userId },
+    });
+    await this.usersRepository.save({
+      ...user,
+      pet: true,
+    });
+
     await Promise.all(
       img.map(
         (el, idx) =>
@@ -278,9 +290,12 @@ export class DogsService {
   async update({ id, updatedogInput }) {
     const dog = await this.dogsRepository.findOne({
       where: { id },
+      relations: {
+        interests: true,
+      },
     });
 
-    const result = this.dogsRepository.save({
+    const result = await this.dogsRepository.save({
       ...dog,
       id,
       ...updatedogInput,

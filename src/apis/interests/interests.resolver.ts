@@ -13,16 +13,16 @@ export class InterestsResolver {
     return this.interestsService.findAll();
   }
 
-  @Mutation(() => Interest)
+  @Mutation(() => Interest, { description: '관심사 항목 생성' })
   async createInterest(
-    @Args('interest') interest: string, //
+    @Args('interest', { description: '관심사 내용' }) interest: string, //
   ) {
     return this.interestsService.create(interest); //
   }
 
   @Mutation(() => Boolean)
   deleteInterest(
-    @Args('id') id: string, //
+    @Args('id', { description: '관심사 uuid' }) id: string, //
   ) {
     return this.interestsService.delete({ id });
   }

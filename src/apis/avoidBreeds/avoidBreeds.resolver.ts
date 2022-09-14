@@ -1,7 +1,7 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 
 import { AvoidBreedsService } from './avoidBreeds.service';
-import { createAvoidBreedInput } from './dto/avoidBreed.input';
+import { CreateAvoidBreedsInput } from './dto/avoidBreed.input';
 import { AvoidBreed } from './entities/avoidBreed.entity';
 
 @Resolver()
@@ -10,15 +10,16 @@ export class AvoidBreedsResolver {
     private readonly avoidBreedsService: AvoidBreedsService, //
   ) {}
 
-  @Query(() => [AvoidBreed])
-  async fetchAvoidBreed() {
+  @Query(() => [AvoidBreed], { description: '기피 견종 목록 조회' })
+  async fetchAvoidBreeds() {
     return this.avoidBreedsService.findAll();
   }
 
-  @Mutation(() => [AvoidBreed])
-  async createAvoidBreed(
-    @Args('createAvoidBreedInput') createAvoidBreedInput: createAvoidBreedInput, //
+  @Mutation(() => [AvoidBreed], { description: '기피견종 목록 추가' })
+  async createAvoidBreeds(
+    @Args('CreateAvoidBreedsInput')
+    CreateAvoidBreedsInput: CreateAvoidBreedsInput, //
   ) {
-    return this.avoidBreedsService.create(createAvoidBreedInput);
+    return this.avoidBreedsService.create(CreateAvoidBreedsInput);
   }
 }

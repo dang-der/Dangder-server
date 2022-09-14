@@ -3,7 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Dog } from '../dogs/entities/dog.entity';
 import { DogsImagesResolver } from './dogsImages.resolver';
 import { DogsImagesService } from './dogsImages.service';
-import { DogImage } from './entities/dogimage.entity';
+import { DogImage } from './entities/dogImage.entity';
 
 @Module({
   imports: [

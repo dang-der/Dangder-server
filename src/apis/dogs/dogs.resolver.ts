@@ -11,12 +11,12 @@ export class DogsResolver {
     private readonly dogsService: DogsService, //
   ) {}
 
-  @Query(() => [Dog])
-  fetchDogs() {
-    return this.dogsService.findAll();
+  @Query(() => [Dog], { description: ' Return : 모든 강아지 정보' })
+  fetchDogs(@Args('page') page: number) {
+    return this.dogsService.findAll(page);
   }
 
-  @Query(() => Dog)
+  @Query(() => Dog, { description: '한마리의 강아지 정보 조회' })
   async fetchOneDog(
     @Args('id') id: string, //
   ) {
@@ -26,9 +26,10 @@ export class DogsResolver {
   @Query(() => [Dog])
   async fetchAroundDogs(
     @Args('id') id: string, //
+    @Args('page') page: number,
   ) {
     const myDog = await this.fetchOneDog(id);
-    const Dogs = await this.fetchDogs();
+    const Dogs = await this.fetchDogs(page);
     return await this.dogsService.getAroundDogs({ id, myDog, Dogs });
   }
 
