@@ -24,7 +24,10 @@ export class DogImage {
   isMain: boolean;
 
   @JoinColumn()
-  @ManyToOne(() => Dog, (dog) => dog.img)
+  @ManyToOne(() => Dog, (dog) => dog.img, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   @Field(() => Dog)
   dog: Dog;
   // Image N : Dog 1 연결

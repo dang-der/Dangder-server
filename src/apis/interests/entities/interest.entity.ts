@@ -23,7 +23,7 @@ export class Interest {
   deletedAt: Date;
 
   @Field(() => [Dog])
-  @ManyToMany(() => Dog, (dogs) => dogs.interests)
+  @ManyToMany(() => Dog, (dogs) => dogs.interests, { cascade: ['update'] })
   dogs: Dog[];
   // Interest N : Dog M 연결
 }
