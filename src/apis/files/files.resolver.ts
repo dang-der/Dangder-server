@@ -9,7 +9,10 @@ export class FilesResolver {
   ) {}
 
   // 파일(미디어 파일)을 클라우드로 업로드하기 위한 함수 -> 저장된 url들 리턴
-  @Mutation(() => [String])
+  @Mutation(() => [String], {
+    description:
+      'Return : 버킷 주소 (파일 위치). prefix : [https://storage.googleapis.com/]',
+  })
   uploadFile(
     @Args({ name: 'files', type: () => [GraphQLUpload] }) files: FileUpload[], //
   ) {
