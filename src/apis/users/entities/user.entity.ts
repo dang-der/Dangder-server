@@ -1,4 +1,7 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql';
+import { Dog } from 'src/apis/dogs/entities/dog.entity';
+import { Payment } from 'src/apis/payments/entities/payment.entity';
+import { Report } from 'src/apis/reports/entities/report.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -6,6 +9,8 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   DeleteDateColumn,
+  OneToOne,
+  OneToMany,
 } from 'typeorm';
 
 @Entity()
@@ -32,8 +37,8 @@ export class User {
   @Field(() => Int)
   ddMoney: number;
 
-  @Column()
-  @Field(() => String, { nullable: true })
+  @Column({ nullable: true })
+  @Field(() => String)
   phone: string;
 
   @CreateDateColumn()
@@ -60,15 +65,26 @@ export class User {
   // isCert: string;
   // isCert -> ENUM 전환하려면
 
+  // 이 회원이 패스를 구매했는가?
+
   @Column({ default: false })
   @Field(() => Boolean)
   isCert: boolean;
 
-  // 이 회원이 패스를 구매했는가?
-
+  //후원 등급
   @Column({ default: '일반회원' })
   @Field(() => String)
   donateGrade: string;
 
-  //후원 등급
+  @Field(() => Dog)
+  @OneToOne(() => Dog, (dog) => dog.userId)
+  dog: Dog;
+
+  @OneToMany(() => Report, (report) => report.id)
+  @Field(() => Report)
+  report: Report;
+
+  @OneToMany(() => Payment, (payment) => payment.id)
+  @Field(() => Payment)
+  payment: Payment;
 }
