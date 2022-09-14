@@ -82,6 +82,21 @@ export class DogsService {
     });
   }
 
+  async findMyDog(userId) {
+    return this.dogsRepository.findOne({
+      where: { userId: { id: userId } },
+      relations: {
+        locations: true,
+        interests: true,
+        characters: true,
+        avoidBreeds: true,
+        img: true,
+        userId: true,
+        sendId: true,
+      },
+    });
+  }
+
   async getAroundDogs({ id, myDog, Dogs }) {
     const myDoglat = myDog.locations.lat;
     const myDoglng = myDog.locations.lng;

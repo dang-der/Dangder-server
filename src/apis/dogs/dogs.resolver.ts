@@ -23,6 +23,13 @@ export class DogsResolver {
     return await this.dogsService.findOne(id);
   }
 
+  @Query(() => Dog, { description: '유저 정보로 내 강아지 정보 조회' })
+  async fetchMyDog(
+    @Args('userId', { description: '유저의 uuid' }) userId: string, //
+  ) {
+    return await this.dogsService.findMyDog(userId);
+  }
+
   @Query(() => [Dog])
   async fetchAroundDogs(
     @Args('id') id: string, //
