@@ -11,24 +11,25 @@ export class BlockUserResolver {
 
   // 모든 차단된 유저 출력
 
-  @Query(() => [BlockUser])
+  @Query(() => [BlockUser], { description: 'Return : 차단된 모든 유저 정보' })
   fetchBlockUsers() {
     return this.blockUsersService.findAll();
   }
 
-  // Blockid 값이 일치하는 사용자 출력
+  // blockId 값이 일치하는 사용자 출력
 
-  @Query(() => BlockUser)
+  @Query(() => BlockUser, { description: 'Return : 차단된 유저 정보' })
   fetchBlockUser(
-    @Args('blockId') blockId: string, //
+    @Args('blockId', { description: '차단된 유저 Id' }) blockId: string, //
   ) {
     // 유저 정보 꺼내오기
     return this.blockUsersService.findOne({ blockId });
   }
 
-  @Mutation(() => BlockUser)
+  @Mutation(() => BlockUser, { description: 'Return : 차단된 유저 정보' })
   createBlockUser(
-    @Args('createBlockUserInput') createBlockUserInput: CreateBlockUserInput, //
+    @Args('createBlockUserInput', { description: '차단할 유저 정보' })
+    createBlockUserInput: CreateBlockUserInput, //
   ) {
     // 차단될 유저 정보 생성하기
     return this.blockUsersService.create({ createBlockUserInput });

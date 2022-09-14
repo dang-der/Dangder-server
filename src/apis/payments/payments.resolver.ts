@@ -13,10 +13,10 @@ export class PaymentsResolver {
     private readonly iamportsService: IamportsService,
   ) {}
   @UseGuards(GqlAuthAccessGuard)
-  @Mutation(() => Payment)
+  @Mutation(() => Payment, { description: 'Return : 생성된 결제 정보' })
   async createPayment(
-    @Args('impUid') impUid: string, //
-    @Args('payMoney') payMoney: number,
+    @Args('impUid', { description: '아임포트 결제번호' }) impUid: string, //
+    @Args('payMoney', { description: '결제 금액' }) payMoney: number,
     @Context() context: IContext,
   ) {
     // 기존의 로직
@@ -58,9 +58,9 @@ export class PaymentsResolver {
   }
 
   @UseGuards(GqlAuthAccessGuard)
-  @Mutation(() => Payment)
+  @Mutation(() => Payment, { description: 'Return : 삭제된 결제 정보' })
   async cancelPayment(
-    @Args('impUid') impUid: string,
+    @Args('impUid', { description: '아임포트 결제번호' }) impUid: string,
     @Context() context: IContext,
   ) {
     // *** 취소 검증 시작 *** /
@@ -121,10 +121,10 @@ export class PaymentsResolver {
   }
 
   @UseGuards(GqlAuthAccessGuard)
-  @Mutation(() => Payment)
+  @Mutation(() => Payment, { description: 'Return : 포인트 결제내역' })
   async createPaymentForPoints(
-    @Args('impUid') impUid: string,
-    @Args('payMoney') payMoney: number,
+    @Args('impUid', { description: '아임포트 결제번호' }) impUid: string,
+    @Args('payMoney', { description: '결제 금액' }) payMoney: number,
     @Context() context: IContext,
   ) {
     // *** 결제 검증 시작 *** //
@@ -157,9 +157,9 @@ export class PaymentsResolver {
   }
 
   @UseGuards(GqlAuthAccessGuard)
-  @Mutation(() => Payment)
+  @Mutation(() => Payment, { description: 'Return : 포인트 취소내역' })
   async cancelPaymentForPoints(
-    @Args('impUid') impUid: string,
+    @Args('impUid', { description: '아임포트 결제번호' }) impUid: string,
     @Context() context: IContext,
   ) {
     /***   취소 검증 시작   ***/
