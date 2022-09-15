@@ -1,4 +1,4 @@
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Field, Int, ObjectType } from '@nestjs/graphql';
 
 @ObjectType({ description: '인기댕댕' })
 export class TodayLikeDogOutput {
@@ -6,8 +6,11 @@ export class TodayLikeDogOutput {
   id: string;
 
   @Field(() => String)
-  sendId: string;
+  mainImg: string;
 
   @Field(() => String)
-  receivedId: string;
+  name: string;
+
+  @Field(() => Int)
+  age: number;
 }

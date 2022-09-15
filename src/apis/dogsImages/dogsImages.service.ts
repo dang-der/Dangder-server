@@ -27,9 +27,6 @@ export class DogsImagesService {
   async findMainImage({ dogId }) {
     const result = await this.dogsImagesRepository.find({
       where: { dog: { id: dogId }, isMain: true },
-      relations: {
-        dog: true,
-      },
     });
 
     return result;

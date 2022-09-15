@@ -20,9 +20,9 @@ export class Like {
   @Field(() => String)
   receiveId: string;
 
-  @CreateDateColumn()
-  @Field(() => Date)
-  createdAt: Date;
+  @Column()
+  @Field(() => String)
+  createdAt: string;
 
   @JoinColumn()
   @ManyToOne(() => Dog, (dog) => dog.sendId)

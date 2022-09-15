@@ -70,7 +70,7 @@ export class Dog {
   @JoinTable()
   @Field(() => [Interest])
   @ManyToMany(() => Interest, (interests) => interests.dogs, {
-    cascade: ['update'],
+    cascade: true,
   })
   interests: Interest[];
 
@@ -91,7 +91,7 @@ export class Dog {
 
   @JoinColumn()
   @Field(() => Location)
-  @OneToOne(() => Location)
+  @OneToOne(() => Location, { cascade: true, onDelete: 'CASCADE' })
   locations: Location;
 
   @JoinColumn()
@@ -101,9 +101,6 @@ export class Dog {
 
   @OneToMany(() => DogImage, (dogImage) => dogImage.dog, {
     cascade: true,
-    onUpdate: 'CASCADE',
-    onDelete: 'CASCADE',
-    orphanedRowAction: 'delete',
   })
   @Field(() => [DogImage])
   img: DogImage[];
