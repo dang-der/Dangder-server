@@ -36,14 +36,14 @@ export class UsersResolver {
     return this.usersService.findOne({ email: context.req.user.email });
   }
 
+  // 유저 정보 변경하기
+
   @Mutation(() => User, { description: 'Return : 바뀐 유저 정보' })
   updateUser(
     @Args('email', { description: '회원의 계정(메일주소)' }) email: string,
     @Args('updateUserInput', { description: '바꾸고 싶은 유저 정보' })
     updateUserInput: UpdateUserInput,
   ) {
-    // 유저 정보 변경하기
-
     return this.usersService.update({
       email,
       updateUserInput,

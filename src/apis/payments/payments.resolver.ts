@@ -1,7 +1,13 @@
 import { Args, Context, Mutation, Resolver } from '@nestjs/graphql';
 import { Payment, PAYMENT_STATUS_ENUM } from './entities/payment.entity';
 import { PaymentsService } from './payments.service';
-import { UnprocessableEntityException, UseGuards } from '@nestjs/common';
+import {
+  CACHE_MANAGER,
+  Inject,
+  UnprocessableEntityException,
+  UseGuards,
+} from '@nestjs/common';
+import { Cache } from 'cache-manager';
 import { GqlAuthAccessGuard } from 'src/commons/auth/gql-auth.guard';
 import { IContext } from 'src/commons/type/context';
 import { IamportsService } from '../imports/imports.services';
@@ -11,6 +17,9 @@ export class PaymentsResolver {
   constructor(
     private readonly paymentsService: PaymentsService,
     private readonly iamportsService: IamportsService,
+
+    @Inject(CACHE_MANAGER)
+    private readonly cacheManager: Cache,
   ) {}
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Payment, { description: 'Return : 생성된 결제 정보' })
@@ -49,12 +58,28 @@ export class PaymentsResolver {
 
     // 결제 테이블 생성 - 결제를 생성한 유저와 연결하여 결제 내역 저장
     const user = context.req.user;
-    return this.paymentsService.create({
+    const result = this.paymentsService.create({
       impUid,
       payMoney,
       user,
       paymentType: PAYMENT_STATUS_ENUM.PAYMENT,
     });
+
+    // redis
+
+    // 1. 캐시에 등록
+
+    await this.cacheManager.set(`${user.email}:cert`, true, {
+      ttl: 60 * 60 * 24 * 30,
+    });
+    console.log(user.email);
+
+    // 2. 캐시에서 조회
+
+    const mycache = await this.cacheManager.get(`${user.email}:cert`);
+    console.log(mycache);
+
+    return result;
   }
 
   @UseGuards(GqlAuthAccessGuard)

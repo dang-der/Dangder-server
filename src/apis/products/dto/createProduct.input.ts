@@ -6,8 +6,8 @@ export class CreateProductInput {
   @Field(() => String)
   productName: string;
 
-  @Column()
-  @Field(() => Int, { defaultValue: 0 })
+  @Column({ default: 0 })
+  @Field(() => Int)
   price: number;
 
   @Column()
