@@ -25,7 +25,9 @@ export class Like {
   createdAt: string;
 
   @JoinColumn()
-  @ManyToOne(() => Dog, (dog) => dog.sendId)
+  @ManyToOne(() => Dog, (dog) => dog.sendId, {
+    onDelete: 'CASCADE',
+  })
   @Field(() => Dog)
   sendId: Dog;
 }

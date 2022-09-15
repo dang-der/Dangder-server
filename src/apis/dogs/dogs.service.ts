@@ -1,7 +1,6 @@
 import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { getConnection, Repository } from 'typeorm';
-import { DataSource } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { Interest } from '../interests/entities/interest.entity';
 import { Dog } from './entities/dog.entity';
 import axios from 'axios';
@@ -15,7 +14,6 @@ import { Cache } from 'cache-manager';
 import { DistanceType } from '../distancesType/entities/distanceType.entity';
 import { User } from '../users/entities/user.entity';
 import { Like } from '../likes/entities/like.entity';
-import { getToday } from 'src/commons/libraries/utils';
 
 @Injectable()
 export class DogsService {
@@ -44,16 +42,15 @@ export class DogsService {
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
 
-    @InjectRepository(Like)
-    private readonly likesRepository: Repository<Like>,
-
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
+
+    private readonly dataSource: DataSource,
   ) {}
 
   async findAll(page) {
     return await this.dogsRepository.find({
-      skip: (page - 1) * 10, // 1페이지당 10마리씩 조회, 이미 조회한 만큼은 스킵
+      skip: page ? (page - 1) * 10 : 0, // 1페이지당 10마리씩 조회, 이미 조회한 만큼은 스킵
       take: 10,
       relations: {
         locations: true,
@@ -302,20 +299,203 @@ export class DogsService {
     return result;
   }
 
-  async update({ id, updatedogInput }) {
-    const dog = await this.dogsRepository.findOne({
-      where: { id },
-      relations: {
-        interests: true,
-      },
-    });
+  async update({ dogId, updatedogInput, dogRegNum, ownerBirth }) {
+    const { img, interests, characters, avoidBreeds, ...dog } = updatedogInput;
 
-    const result = await this.dogsRepository.save({
-      ...dog,
-      id,
-      ...updatedogInput,
-    });
-    return result;
+    let createInterests = null;
+    if (interests) {
+      await this.dataSource.manager
+        .createQueryBuilder()
+        .delete()
+        .from('dog_interests_interest')
+        .where('dogId = :dogId', {
+          dogId: dogId,
+        })
+        .execute();
+      createInterests = await Promise.all(
+        interests.map(
+          (el) =>
+            new Promise(async (resolve, reject) => {
+              try {
+                const prevInterest = await this.interestsRepository.findOne({
+                  where: { interest: el },
+                });
+                if (prevInterest) {
+                  resolve(prevInterest);
+                } else {
+                  const newInterest = await this.interestsRepository.save({
+                    interest: el,
+                  });
+                  resolve(newInterest);
+                }
+              } catch (err) {
+                reject(err);
+              }
+            }),
+        ),
+      );
+    }
+
+    let createCharacters = null;
+    if (characters) {
+      await this.dataSource.manager
+        .createQueryBuilder()
+        .delete()
+        .from('dangder.dog_characters_character')
+        .where('dogId = :dogId', {
+          dogId: dogId,
+        })
+        .execute();
+
+      createCharacters = await Promise.all(
+        characters.map(
+          (el) =>
+            new Promise(async (resolve, reject) => {
+              try {
+                const prevCharacter = await this.charactersRepository.findOne({
+                  where: { character: el },
+                });
+                if (prevCharacter) {
+                  resolve(prevCharacter);
+                } else {
+                  const newCharacter = await this.charactersRepository.save({
+                    character: el,
+                  });
+                  resolve(newCharacter);
+                }
+              } catch (err) {
+                reject(err);
+              }
+            }),
+        ),
+      );
+    }
+
+    let createAvoidBreeds = null;
+    if (avoidBreeds) {
+      await this.dataSource.manager
+        .createQueryBuilder()
+        .delete()
+        .from('dangder.dog_avoid_breeds_avoid_breed')
+        .where('dogId = :dogId', {
+          dogId: dogId,
+        })
+        .execute();
+
+      createAvoidBreeds = await Promise.all(
+        avoidBreeds.map(
+          (el) =>
+            new Promise(async (resolve, reject) => {
+              try {
+                const prevAvoidBreed = await this.avoidBreedsRepository.findOne(
+                  {
+                    where: { avoidBreed: el },
+                  },
+                );
+                if (prevAvoidBreed) {
+                  resolve(prevAvoidBreed);
+                } else {
+                  const newAvoidBreed = await this.avoidBreedsRepository.save({
+                    avoidBreed: el,
+                  });
+                  resolve(newAvoidBreed);
+                }
+              } catch (err) {
+                reject(err);
+              }
+            }),
+        ),
+      );
+    }
+
+    if (dogRegNum) {
+      await this.dogsRepository.delete({ userId: updatedogInput.userId });
+      const dogInfo = await this.getDogInfo({ dogRegNum, ownerBirth });
+      const createBreeds = [];
+      const prevBreed = await this.breedsRepository.findOne({
+        where: { name: dogInfo.kindNm },
+      });
+      if (prevBreed) createBreeds.push(prevBreed);
+      else {
+        const newBreed = await this.breedsRepository.save({
+          name: dogInfo.kindNm,
+        });
+        createBreeds.push(newBreed);
+      }
+
+      const neut = dogInfo.neuterYn === '미중성' ? false : true;
+      const result = await this.dogsRepository.save({
+        ...dog,
+        name: dogInfo.dogNm,
+        registerNumber: dogInfo.dogRegNo,
+        gender: dogInfo.sexNm,
+        isNeut: neut,
+        interests: createInterests,
+        characters: createCharacters,
+        breeds: createBreeds,
+        avoidBreeds: createAvoidBreeds,
+      });
+      if (img) {
+        await this.dogsImagesRepository.delete({ dog: { id: result.id } });
+        await Promise.all(
+          img.map(
+            (el, idx) =>
+              new Promise(async (resolve) => {
+                const image = el;
+                const ismain = idx === 0 ? true : false;
+                const newimage = await this.dogsImagesRepository.save({
+                  img: image,
+                  isMain: ismain,
+                  dog: { id: result.id },
+                });
+                resolve(newimage);
+              }),
+          ),
+        );
+      }
+      return result;
+    } else {
+      const onedog = await this.dogsRepository.findOne({
+        where: { id: dogId },
+        relations: {
+          locations: true,
+          interests: true,
+          characters: true,
+          avoidBreeds: true,
+          img: true,
+          userId: true,
+          sendId: true,
+        },
+      });
+
+      const result = await this.dogsRepository.save({
+        ...onedog,
+        ...updatedogInput,
+        id: dogId,
+        interests: createInterests,
+        characters: createCharacters,
+        avoidBreeds: createAvoidBreeds,
+      });
+      if (img) {
+        await this.dogsImagesRepository.delete({ dog: { id: result.id } });
+        await Promise.all(
+          img.map(
+            (el, idx) =>
+              new Promise(async (resolve) => {
+                const image = el;
+                const ismain = idx === 0 ? true : false;
+                const newimage = await this.dogsImagesRepository.save({
+                  img: image,
+                  isMain: ismain,
+                  dog: { id: result.id },
+                });
+                resolve(newimage);
+              }),
+          ),
+        );
+      }
+      return result;
+    }
   }
 
   async delete({ id }) {
