@@ -18,12 +18,34 @@ export class OrdersService {
   }
 
   // id로 주문 정보 조회
-  OrderId({ id }) {
+  findOrderId({ id }) {
     return this.ordersRepository.findOne({ where: { id } });
   }
 
   // phone으로 주문 정보 조회
-  OrderPhone({ phone }) {
+  findOrderPhone({ phone }) {
     return this.ordersRepository.findOne({ where: { phone } });
+  }
+
+  // id로 업데이트
+
+  async update({ id, updateOrderInput }) {
+    const orderId = await this.ordersRepository.findOne({
+      where: { id },
+    });
+
+    const result = await this.ordersRepository.save({
+      ...orderId,
+      id: id,
+      ...updateOrderInput,
+    });
+    return result;
+  }
+
+  // 삭제
+
+  async delete({ id }) {
+    const result = await this.ordersRepository.softDelete({ id });
+    return result.affected ? true : false;
   }
 }

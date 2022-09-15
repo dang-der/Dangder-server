@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import * as bcrypt from 'bcrypt';
+import { Dog } from '../dogs/entities/dog.entity';
 
 @Injectable()
 export class UsersService {
@@ -16,7 +17,10 @@ export class UsersService {
   }
 
   findOne({ email }) {
-    return this.usersRepository.findOne({ where: { email } });
+    return this.usersRepository.findOne({
+      where: { email },
+      relations: { dog: true },
+    });
   }
 
   async create({ createUserInput }) {
