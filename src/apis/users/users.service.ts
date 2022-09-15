@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import * as bcrypt from 'bcrypt';
-import { Dog } from '../dogs/entities/dog.entity';
 
 @Injectable()
 export class UsersService {
@@ -36,20 +35,31 @@ export class UsersService {
       createUserInput.password,
       Number(salt),
     );
-    return this.usersRepository.save({
+    const result = await this.usersRepository.save({
       ...createUserInput,
       password: hashedPassword,
     });
+
+    return result;
   }
 
+  // 유저 업데이트
   async update({ email, updateUserInput }) {
     const user = await this.usersRepository.findOne({
       where: { email },
     });
-    // 수정된 입력값 저장
+
+    if (!user) throw new ConflictException('이메일이 일치하지 않습니다.');
+    const salt = process.env.BCRYPT_USER_SALT;
+    const hashedPassword = await bcrypt.hash(
+      updateUserInput.password,
+      Number(salt),
+    );
+
     const result = await this.usersRepository.save({
       ...user,
       ...updateUserInput,
+      password: hashedPassword,
     });
     return result;
   }

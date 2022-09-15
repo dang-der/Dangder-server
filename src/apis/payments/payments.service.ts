@@ -1,5 +1,6 @@
 import {
   ConflictException,
+  Inject,
   Injectable,
   UnprocessableEntityException,
 } from '@nestjs/common';
@@ -45,34 +46,6 @@ export class PaymentsService {
       throw new UnprocessableEntityException('이미 취소된 결제입니다');
     }
   }
-  // 기존에 내가 한 결제 내용
-
-  // async create({ impUid, payMoney, context }) {
-  //   // 1. Payment 테이블에 거래기록 1줄 생성
-  //   const payment = this.paymentsRepository.create({
-  //     impUid: impUid,
-  //     payMoney: payMoney,
-  //     user: context.req.user.id,
-  //     paymentType: PAYMENT_STATUS_ENUM.PAYMENT,
-  //   });
-  //   await this.paymentsRepository.save(payment);
-  //   console.log('service111');
-  //   // 2. 유저의 돈 찾아오기 // 유저의 id에서 찾아온다.
-
-  //   const user = await this.usersRepository.findOne({
-  //     where: { id: context.req.user.id },
-  //   });
-  //   console.log('service222');
-  //   // 3. 유저의 돈 업데이트
-  //   await this.usersRepository.update(
-  //     { id: context.req.user.id },
-  //     { ddMoney: user.ddMoney + payMoney },
-  //   );
-  //   console.log('service333');
-  //   // 4. 최종결과 프론트엔드에 돌려주기
-  //   console.log(payment, '11112345 payment');
-  //   return payment;
-  // }
 
   // 결제내역 (payment 생성)
   async create({ impUid, payMoney, user, paymentType }) {
@@ -105,7 +78,31 @@ export class PaymentsService {
     // 4. 생성한 정보 저장하기
     const result = await this.paymentsRepository.save(payment);
 
-    // 5. 결제/취소 내역 결과 프론트엔드에 돌려주기
+    /* 기존 isCert
+    // 5. paymentType이 PAYMENT라면 user에 있는 isCert -> true로 변경
+
+    if (paymentType === PAYMENT_STATUS_ENUM.PAYMENT) {
+      await this.usersRepository.save({
+        ...user,
+        isCert: true,
+      });
+    }
+
+    // 6. paymentType이 CANCEL이라면 user에 있는 isCert -> false로 변경
+
+    if (paymentType === PAYMENT_STATUS_ENUM.CANCEL) {
+      await this.usersRepository.save({
+        ...user,
+        isCert: false,
+      });
+    }
+
+    // isCert 바뀌는 것은 된다. 하지만 시간(한 달)이 다 되었을 때?? 는 어떻게 할 것인가?
+    // 그리고 PAYMENT(결제된 건) CANCEL(취소된 건)이 여러 개 있을 때는 어떻게 할 것인가?
+
+*/
+
+    // 7. 결제/취소 내역 결과 프론트엔드에 돌려주기
     return result;
   }
 
