@@ -2,7 +2,7 @@ const app = new Vue({
   el: '#app',
   data: {
     title: 'Nestjs Websockets 채팅 무한삽질',
-    room: '',
+    roomId: '',
     name: '',
     text: '',
     welcomes: [],
@@ -10,25 +10,26 @@ const app = new Vue({
     socket: null,
   },
   methods: {
-    changeChatRoom() {
-      const room = prompt('입장할 채팅방의 코드를 입력하세요');
-      this.room = room;
+    enterChatRoom() {
+      const roomId = prompt('입장할 채팅방의 코드를 입력하세요');
+      this.roomId = roomId;
       this.welcomes = [];
       this.messages = [];
       this.text = '';
       const message = {
-        room: this.room,
+        roomId: this.roomId,
         name: this.name,
       };
       this.initChatRoom(message);
     },
     initChatRoom(message) {
-      this.socket.emit('init', message);
+      const { roomId, name } = message;
+      this.socket.emit('createRoom', { roomId, user: { name } });
     },
     sendMessage() {
       if (this.validateInput()) {
         const message = {
-          room: this.room,
+          roomId: this.roomId,
           name: this.name,
           text: this.text,
         };
@@ -47,15 +48,19 @@ const app = new Vue({
     },
   },
   created() {
-    this.socket = io('http://localhost:3000/chats');
-    this.socket.on('init', (welcome) => {
-      this.initChatRoom(welcome);
-    });
-    this.socket.on('join', (welcome) => {
+    this.socket = io('https://recipemaker.shop/chats');
+    this.socket.on('join', (message) => {
+      const { data } = message;
+      const welcome = `${data.roomId}방에 ${data.name}님이 입장하셨습니다.`;
       this.receivedJoin(welcome);
     });
-    this.socket.on('sendToWindow', (message) => {
-      this.receivedMessage(message);
+    this.socket.on('message', (message) => {
+      const { type, data } = message;
+      const msg = {
+        name: data.user,
+        text: data.msg,
+      };
+      this.receivedMessage(msg);
     });
   },
 });

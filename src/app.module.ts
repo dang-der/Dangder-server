@@ -1,12 +1,14 @@
 import { PugAdapter } from '@nestjs-modules/mailer/dist/adapters/pug.adapter';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { CacheModule, Module } from '@nestjs/common';
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { GraphQLModule } from '@nestjs/graphql';
-import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { RedisClientOptions } from 'redis';
 import * as redisStore from 'cache-manager-redis-store';
 
+// APIs
+import { AdminUsersModule } from './apis/adminUsers/adminUsers.module';
 import { AuthsModule } from './apis/auths/auths.module';
 import { AvoidBreedsModule } from './apis/avoidBreeds/avoidBreeds.module';
 import { BlockUsersModule } from './apis/blockUsers/blockUsers.module';
@@ -23,15 +25,14 @@ import { IamportsModule } from './apis/imports/imports.module';
 import { InterestsModule } from './apis/interests/interests.module';
 import { LikesModule } from './apis/likes/likes.module';
 import { LocationsModule } from './apis/locations/locations.module';
+import { OrdersModule } from './apis/orders/orders.module';
 import { PaymentsModule } from './apis/payments/payments.module';
+import { ProductsModule } from './apis/products/products.module';
 import { ReportsModule } from './apis/reports/reports.module';
 import { UsersModule } from './apis/users/users.module';
 
 import { AppController } from './app.controller';
-import { AppGateway } from './app.gateway';
-import { AdminUsersModule } from './apis/adminUsers/adminUsers.module';
-import { OrdersModule } from './apis/orders/orders.module';
-import { ProductsModule } from './apis/products/products.module';
+import { ChatModule } from './gateways/chat/chat.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { ProductsModule } from './apis/products/products.module';
     BreedsModule,
     CharactersModule,
     ChatMessagesModule,
+    ChatModule, // chat gateway module
     ChatRoomsModule,
     DogsModule,
     DogsImagesModule,
@@ -107,6 +109,6 @@ import { ProductsModule } from './apis/products/products.module';
     }),
   ],
   controllers: [AppController],
-  providers: [AppGateway],
+  providers: [],
 })
 export class AppModule {}
