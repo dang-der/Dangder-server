@@ -43,7 +43,7 @@ export class LikesService {
     let top = [...map];
 
     top.sort((a, b) => b[1] - a[1]); //2번째 인덱스 값이 좋아요 받은 갯수이므로 이를 기준으로 정렬
-    top = top.slice(0, 3); // 12마리까지만 받아오기
+    top = top.slice(0, 6); // 12마리까지만 받아오기
 
     const topDogInfo = [];
     for (let i = 0; i < top.length; i++) {
@@ -80,7 +80,7 @@ export class LikesService {
   async create(createLikeInput) {
     const today = new Date();
     const month = today.getMonth() + 1; //months from 1-12
-    const day = today.getDate() - 1;
+    const day = today.getDate();
     const year = today.getFullYear();
 
     const todayDate = year + '-' + month + '-' + day; //오늘 날짜만 조회
@@ -97,7 +97,7 @@ export class LikesService {
 
     if (prevLike === true)
       throw new ConflictException('이미 좋아요 누른 댕댕이입니다!');
-    console.log(todayDate);
+
     const result = await this.likesRepository.save({
       receiveId: createLikeInput.receiveId,
       sendId: dogFound,
