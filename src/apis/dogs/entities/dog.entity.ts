@@ -76,36 +76,40 @@ export class Dog {
 
   @JoinTable()
   @Field(() => [AvoidBreed])
-  @ManyToMany(() => AvoidBreed, (avoidBreeds) => avoidBreeds.dogs)
+  @ManyToMany(() => AvoidBreed, (avoidBreeds) => avoidBreeds.dogs, {
+    cascade: true,
+  })
   avoidBreeds: AvoidBreed[];
 
   @JoinTable()
   @Field(() => [Character])
-  @ManyToMany(() => Character, (characters) => characters.dogs)
+  @ManyToMany(() => Character, (characters) => characters.dogs, {
+    cascade: true,
+  })
   characters: Character[];
 
   @JoinTable()
   @Field(() => [Breed])
-  @ManyToMany(() => Breed, (breeds) => breeds.dogs)
+  @ManyToMany(() => Breed, (breeds) => breeds.dogs, {
+    cascade: true,
+  })
   breeds: Breed[];
 
   @JoinColumn()
   @Field(() => Location)
-  @OneToOne(() => Location, { cascade: true, onDelete: 'CASCADE' })
+  @OneToOne(() => Location, { cascade: true })
   locations: Location;
 
   @JoinColumn()
   @Field(() => User)
-  @OneToOne(() => User)
+  @OneToOne(() => User, { cascade: true })
   userId: User;
 
-  @OneToMany(() => DogImage, (dogImage) => dogImage.dog, {
-    cascade: true,
-  })
+  @OneToMany(() => DogImage, (dogImage) => dogImage.dog, { cascade: true })
   @Field(() => [DogImage])
   img: DogImage[];
 
-  @OneToMany(() => Like, (like) => like.sendId)
+  @OneToMany(() => Like, (like) => like.sendId, { cascade: true })
   @Field(() => [Like])
   sendId: Like[];
 }

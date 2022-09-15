@@ -21,7 +21,7 @@ export class createDogInput {
   @Field(() => [String], { nullable: true })
   characters: string[];
 
-  @Field(() => [String])
+  @Field(() => [String], { nullable: true })
   img: string[];
 
   @Field(() => String)
