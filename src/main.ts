@@ -1,12 +1,14 @@
+import { AppModule } from './app.module';
 import { NestFactory } from '@nestjs/core';
-import { ValidationPipe } from '@nestjs/common';
-import { NestExpressApplication } from '@nestjs/platform-express';
-
-import { join } from 'path';
 import { graphqlUploadExpress } from 'graphql-upload';
 
-import { AppModule } from './app.module';
+// 에러메시지 로그를 위한 import
+import { ValidationPipe } from '@nestjs/common';
 import { HttpExceptionFilter } from './commons/filter/http-exception.filter';
+
+// Chat 을 위한 임시 import
+import { NestExpressApplication } from '@nestjs/platform-express';
+import { join } from 'path';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
