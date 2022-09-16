@@ -3,12 +3,16 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import * as bcrypt from 'bcrypt';
+import { Dog } from '../dogs/entities/dog.entity';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
+
+    @InjectRepository(Dog)
+    private readonly dogsRepository: Repository<Dog>,
   ) {}
 
   findAll() {
@@ -66,6 +70,8 @@ export class UsersService {
 
   async delete({ email }) {
     // 소프트 삭제 - softDelete
+    const user = await this.usersRepository.findOne({ where: { email } });
+    await this.dogsRepository.softDelete({ userId: { id: user.id } });
     const result = await this.usersRepository.softDelete({ email });
     return result.affected ? true : false;
   }

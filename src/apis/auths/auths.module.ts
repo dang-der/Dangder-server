@@ -11,12 +11,14 @@ import { JwtGoogleStrategy } from 'src/commons/auth/jwt-social-google.strategy';
 import { AuthsController } from './auths.controller';
 import { JwtNaverStrategy } from 'src/commons/auth/jwt-social-naver.strategy';
 import { JwtKakaoStrategy } from 'src/commons/auth/jwt-social-kakao.strategy';
+import { Dog } from '../dogs/entities/dog.entity';
 
 @Module({
   imports: [
     JwtModule.register({}), //
     TypeOrmModule.forFeature([
       User, //
+      Dog,
     ]),
   ],
   providers: [
