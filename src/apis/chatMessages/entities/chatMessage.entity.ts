@@ -22,22 +22,22 @@ export class ChatMessage {
   senderId: string;
 
   // 보낸 메시지
-  @Column()
+  @Column({ nullable: true })
   @Field(() => String, { nullable: true })
-  msg: string;
+  message: string;
 
-  @Column({ type: 'double' })
+  @Column({ type: 'double', nullable: true })
   @Field(() => Float, { nullable: true })
   lat: number;
 
-  @Column({ type: 'double' })
+  @Column({ type: 'double', nullable: true })
   @Field(() => Float, { nullable: true })
   lng: number;
 
   // 약속시간
-  @Column()
-  @Field(() => Date, { nullable: true })
-  meetAt: Date;
+  @Column({ nullable: true })
+  @Field(() => String, { nullable: true })
+  meetAt: string;
 
   // 메시지 Read 여부 - 향후 개발
   // @Column({ default: false })

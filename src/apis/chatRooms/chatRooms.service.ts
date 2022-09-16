@@ -17,14 +17,19 @@ export class ChatRoomsService {
 
   // 채팅방을 찾는 로직. dogId와 chatPairId로 찾는다.
   async findChatRoom({ dogId, chatPairId }) {
-    let result: boolean | ChatRoom;
-    try {
-      result = await this.chatRoomsRepository.findOne({
-        where: { dog: { id: dogId }, chatPairId },
-      });
-    } catch (e) {
-      result = false;
-    }
+    const result = await this.chatRoomsRepository.findOne({
+      where: { dog: { id: dogId }, chatPairId },
+      relations: { dog: true },
+    });
+    return result;
+  }
+
+  // 채팅방들을 찾는 로직. dogId로 참가한 채팅방들을 찾는다.
+  async findChatRooms({ dogId }) {
+    const result = await this.chatRoomsRepository.find({
+      where: { dog: { id: dogId } },
+      relations: { dog: true },
+    });
     return result;
   }
 
