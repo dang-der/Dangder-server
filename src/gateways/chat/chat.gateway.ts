@@ -25,49 +25,27 @@ export class ChatGateway
   // @SubscribeMessage('connection')
   // connectChatRoom(client: Socket, payload: any): void {}
 
-  @SubscribeMessage('createRoom')
+  @SubscribeMessage('join')
   createChatRoom(client: Socket, payload: any) {
-    const { roomId, user } = payload;
-    console.log('createRoom', roomId, user);
+    const { roomId, dog } = payload;
+    console.log(`${JSON.stringify(dog)} connected! : ${roomId}`);
 
     client.join(roomId);
-    client.emit('join', { type: 'enter', data: { roomId, name: user.name } });
-    this.server.to(roomId).emit('message', {
-      type: 'enter',
-      data: {
-        roomId: roomId,
-        msg: `${user.name}님이 입장하셨습니다.`,
-      },
-      msg: '',
-    });
-  }
-
-  @SubscribeMessage('enterRoom')
-  enterChatRoom(client: Socket, payload: any) {
-    const { roomId, user } = payload;
-    console.log('enterRoom', payload);
-
-    client.join(roomId);
-    client.emit('enter', { type: 'enter', data: { roomId } });
-    this.server.to(roomId).emit('message', {
-      type: 'enter',
-      data: {
-        roomId: roomId,
-        msg: `${user.name}님이 입장하셨습니다.`,
-      },
-      msg: '',
-    });
+    const message = `${dog.name}님이 입장하셨습니다.`;
+    client.emit('message', { type: 'enter', data: { message } });
   }
 
   @SubscribeMessage('send')
   sendMessage(client: Socket, payload: any): void {
-    const { roomId, name, text } = payload;
-    console.log('sendMessage : ', payload);
-    this.server.to(roomId).emit('message', {
-      type: 'message',
-      data: { msg: text, user: name },
-      roomId,
-    });
+    const { roomId, dog, type, data } = payload;
+    console.log(
+      `send! : [${roomId}] ${JSON.stringify(dog)} : ${JSON.stringify(data)}`,
+    );
+
+    this.server
+      .to(roomId)
+      .emit('message', { dog, type: 'text', data: { message: data.message } });
+    // client.to(roomId).emit('message', { type: 'text', data: { message: data.message } });
   }
 
   afterInit(server: Server) {
