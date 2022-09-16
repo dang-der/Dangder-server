@@ -25,4 +25,12 @@ export class ChatMessagesService {
       ...chatMessageInput,
     });
   }
+
+  // chatRoomId 로 채팅방 삭제
+  async delete({ chatRoomId }) {
+    const result = await this.chatMessagesRepository.softDelete({
+      chatRoom: { id: chatRoomId },
+    });
+    return result.affected ? true : false;
+  }
 }

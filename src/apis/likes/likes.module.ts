@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ChatMessage } from '../chatMessages/entities/chatMessage.entity';
 import { ChatRoomsService } from '../chatRooms/chatRooms.service';
 import { ChatRoom } from '../chatRooms/entities/chatRoom.entity';
 import { Dog } from '../dogs/entities/dog.entity';
@@ -13,8 +14,9 @@ import { LikesService } from './likes.service';
   imports: [
     TypeOrmModule.forFeature([
       Like, //
-      Dog, //
-      ChatRoom, //
+      Dog,
+      ChatRoom,
+      ChatMessage,
       DogImage,
     ]),
   ],

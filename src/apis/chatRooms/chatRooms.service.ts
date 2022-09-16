@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { ChatMessage } from '../chatMessages/entities/chatMessage.entity';
 import { ChatRoom } from './entities/chatRoom.entity';
 
 @Injectable()
@@ -8,6 +9,9 @@ export class ChatRoomsService {
   constructor(
     @InjectRepository(ChatRoom)
     private readonly chatRoomsRepository: Repository<ChatRoom>,
+
+    @InjectRepository(ChatMessage)
+    private readonly chatMessagesRepository: Repository<ChatMessage>,
   ) {}
 
   // 채팅방 id, 본인 id, 상대방 id로 저장
@@ -33,8 +37,11 @@ export class ChatRoomsService {
     return result;
   }
 
+  // chatRoomId 로 채팅방, 연결된 채팅메시지들 삭제
   async delete({ id }) {
-    //softDelete
+    await this.chatMessagesRepository.softDelete({
+      chatRoom: { id },
+    });
     const result = await this.chatRoomsRepository.softDelete({ id });
     return result.affected ? true : false;
   }
