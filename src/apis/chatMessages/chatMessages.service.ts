@@ -10,16 +10,19 @@ export class ChatMessagesService {
     private readonly chatMessagesRepository: Repository<ChatMessage>,
   ) {}
 
-  // senderId로 찾는다.
-
-  findAllBySenderId({ senderId }) {
+  // chatRoomId로 찾는다.
+  findAllByChatRoomId({ chatRoomId }) {
     return this.chatMessagesRepository.find({
-      where: { senderId },
+      where: { chatRoom: { id: chatRoomId } },
+      relations: { chatRoom: true },
     });
   }
 
-  // senderId, sendMessage로 채팅메시지 생성
-  create({ senderId, sendMessage }) {
-    return this.chatMessagesRepository.save({ senderId, sendMessage });
+  // senderId, message로 채팅메시지 생성
+  create({ chatRoomId, chatMessageInput }) {
+    return this.chatMessagesRepository.save({
+      chatRoom: { id: chatRoomId },
+      ...chatMessageInput,
+    });
   }
 }
