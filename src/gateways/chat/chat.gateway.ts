@@ -38,9 +38,13 @@ export class ChatGateway
   @SubscribeMessage('send')
   sendMessage(client: Socket, payload: any): void {
     const { roomId, dog, type, data } = payload;
-    console.log(`send! : [${roomId}] ${JSON.stringify(dog)} : ${JSON.stringify(data)}`);
+    console.log(
+      `send! : [${roomId}] ${JSON.stringify(dog)} : ${JSON.stringify(data)}`,
+    );
 
-    this.server.to(roomId).emit('message', { dog, type: 'text', data: { message: data.message } });
+    this.server
+      .to(roomId)
+      .emit('message', { dog, type: 'text', data: { message: data.message } });
     // client.to(roomId).emit('message', { type: 'text', data: { message: data.message } });
   }
 
