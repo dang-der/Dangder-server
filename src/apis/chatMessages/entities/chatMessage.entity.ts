@@ -3,6 +3,7 @@ import { ChatRoom } from 'src/apis/chatRooms/entities/chatRoom.entity';
 import {
   Column,
   CreateDateColumn,
+  DeleteDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
@@ -46,6 +47,9 @@ export class ChatMessage {
 
   @CreateDateColumn()
   chatCreatedAt: Date;
+
+  @DeleteDateColumn()
+  deletedAt: Date;
 
   // ChatMessage : Chatroom - N:1 연결
   @JoinColumn()
