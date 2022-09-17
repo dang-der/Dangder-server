@@ -23,7 +23,8 @@ export class ChatRoomsResolver {
 
   // dogId와 chatPairId로 채팅방 조회
   @Query(() => [ChatRoomsOutput], {
-    description: 'Return : dogId로 참가한 채팅방들의 정보',
+    description:
+      'Return : 채팅방id, 상대강아지정보, 나의강아지정보, 채팅방의 마지막메시지',
   })
   fetchChatRooms(
     @Args('dogId', { description: '내 강아지 id (dogId)' }) dogId: string,
