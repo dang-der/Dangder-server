@@ -5,6 +5,9 @@ export class ChatMessageInput {
   @Field(() => String)
   senderId: string;
 
+  @Field(() => String)
+  type: string;
+
   @Field(() => String, { nullable: true })
   message: string;
 
