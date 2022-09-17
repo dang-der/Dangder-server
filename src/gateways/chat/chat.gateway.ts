@@ -47,7 +47,7 @@ export class ChatGateway
       `send! : [${roomId}] ${JSON.stringify(dog)} : ${JSON.stringify(data)}`,
     );
     // 채팅 메시지 DB에 저장
-    await this.chatService.create({ roomId, senderId: dog.id, data });
+    await this.chatService.create({ roomId, senderId: dog.id, type, data });
 
     client.leave(client.id);
     client.join(roomId);

@@ -22,6 +22,11 @@ export class ChatMessage {
   @Field(() => String)
   senderId: string;
 
+  // 메시지 형식 (메시지, 좌표값, 약속시간)
+  @Column()
+  @Field(() => String)
+  type: string;
+
   // 보낸 메시지
   @Column({ nullable: true })
   @Field(() => String, { nullable: true })
