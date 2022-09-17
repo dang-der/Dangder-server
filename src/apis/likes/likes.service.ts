@@ -9,7 +9,6 @@ import { Cache } from 'cache-manager';
 import { Repository } from 'typeorm';
 import { Dog } from '../dogs/entities/dog.entity';
 import { DogsImagesService } from '../dogsImages/dogsImages.service';
-
 import { TodayLikeDogOutput } from './dto/todayLikeDog.output';
 import { Like } from './entities/like.entity';
 
@@ -97,7 +96,7 @@ export class LikesService {
     const day = today.getDate();
     const year = today.getFullYear();
 
-    const todayDate = year + '-' + month + '-' + day; //오늘 날짜만 조회
+    const todayDate = year + '-' + month + '-' + day; //오늘 날짜만 저장
 
     const dogFound = await this.dogsRepository.findOne({
       where: { id: createLikeInput.sendId },

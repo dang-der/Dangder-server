@@ -1,6 +1,7 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { ChatRoomsService } from '../chatRooms/chatRooms.service';
 import { createLikeInput } from './dto/createLike.input';
+import { CreateLikeOutput } from './dto/createLike.output';
 import { TodayLikeDogOutput } from './dto/todayLikeDog.output';
 import { LikesService } from './likes.service';
 
@@ -31,8 +32,8 @@ export class LikesResolver {
     return this.likesService.isLike({ sendId, receiveId });
   }
 
-  @Mutation(() => Boolean, {
-    description: 'return : 이 댕댕이에게 좋아요를 누르기',
+  @Mutation(() => CreateLikeOutput, {
+    description: 'return : 좋아요 매칭여부, sendId, DogId',
   })
   async createLike(
     @Args('createLikeInput', {
@@ -54,6 +55,11 @@ export class LikesResolver {
       });
     }
 
-    return isMatch;
+    const result = new CreateLikeOutput();
+    (result.sendId = createLikeInput.sendId),
+      (result.receiveId = createLikeInput.receiveId),
+      (result.isMatch = isMatch);
+
+    return result;
   }
 }
