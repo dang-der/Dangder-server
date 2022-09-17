@@ -1,5 +1,6 @@
 import { Args, Query, Mutation, Resolver } from '@nestjs/graphql';
 import { ChatRoomsService } from './chatRooms.service';
+import { ChatRoomsOutput } from './dto/chatRoomsOutput.output';
 import { ChatRoom } from './entities/chatRoom.entity';
 
 @Resolver()
@@ -21,7 +22,7 @@ export class ChatRoomsResolver {
   }
 
   // dogId와 chatPairId로 채팅방 조회
-  @Query(() => [ChatRoom], {
+  @Query(() => [ChatRoomsOutput], {
     description: 'Return : dogId로 참가한 채팅방들의 정보',
   })
   fetchChatRooms(

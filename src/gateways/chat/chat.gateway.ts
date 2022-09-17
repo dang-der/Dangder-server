@@ -30,7 +30,7 @@ export class ChatGateway
   @SubscribeMessage('join')
   createChatRoom(client: Socket, payload: any) {
     const { roomId, dog } = payload;
-    console.log(`${JSON.stringify(dog)} connected! : ${roomId}`);
+    // console.log(`${JSON.stringify(dog)} connected! : ${roomId}`);
 
     client.leave(client.id);
     client.join(roomId);
@@ -43,9 +43,9 @@ export class ChatGateway
   @SubscribeMessage('send')
   async sendMessage(client: Socket, payload: any) {
     const { roomId, dog, type, data } = payload;
-    console.log(
-      `send! : [${roomId}] ${JSON.stringify(dog)} : ${JSON.stringify(data)}`,
-    );
+    // console.log(
+    //   `send! : [${roomId}] ${JSON.stringify(dog)} : ${JSON.stringify(data)}`,
+    // );
     // 채팅 메시지 DB에 저장
     await this.chatService.create({ roomId, senderId: dog.id, type, data });
 
