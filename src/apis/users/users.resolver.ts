@@ -5,6 +5,7 @@ import { User } from './entities/user.entity';
 import { UsersService } from './users.service';
 import { UseGuards } from '@nestjs/common';
 import { GqlAuthAccessGuard } from 'src/commons/auth/gql-auth.guard';
+import { UserOutput } from './dto/userOutput.output';
 
 @Resolver()
 export class UsersResolver {
@@ -29,11 +30,13 @@ export class UsersResolver {
 
   // 로그인(userLogin)중인 user 한 사람 조회 API
   @UseGuards(GqlAuthAccessGuard)
-  @Query(() => User, { description: 'Return : 로그인한 유저 데이터' })
+  @Query(() => UserOutput, {
+    description: 'Return : 로그인한 유저, 유저의 강아지 데이터',
+  })
   async fetchLoginUser(
     @Context() context: any, //
   ) {
-    return this.usersService.findOne({ email: context.req.user.email });
+    return this.usersService.findUserAndDog({ email: context.req.user.email });
   }
 
   // 유저 정보 변경하기
