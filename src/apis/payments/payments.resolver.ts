@@ -72,12 +72,10 @@ export class PaymentsResolver {
     await this.cacheManager.set(`${user.email}:cert`, true, {
       ttl: 60 * 60 * 24 * 30,
     });
-    console.log(user.email);
 
     // 2. 캐시에서 조회
 
     const mycache = await this.cacheManager.get(`${user.email}:cert`);
-    console.log(mycache);
 
     return result;
   }

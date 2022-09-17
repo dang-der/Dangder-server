@@ -3,14 +3,17 @@ import { CreateUserInput } from './dto/createUser.input';
 import { UpdateUserInput } from './dto/updateUser.input';
 import { User } from './entities/user.entity';
 import { UsersService } from './users.service';
-import { UseGuards } from '@nestjs/common';
+import { CACHE_MANAGER, Inject, UseGuards } from '@nestjs/common';
 import { GqlAuthAccessGuard } from 'src/commons/auth/gql-auth.guard';
 import { UserOutput } from './dto/userOutput.output';
+import { Cache } from 'cache-manager';
 
 @Resolver()
 export class UsersResolver {
   constructor(
     private readonly usersService: UsersService, //
+    @Inject(CACHE_MANAGER)
+    private readonly cacheManager: Cache,
   ) {}
 
   // 모든 사용자 출력
@@ -39,8 +42,21 @@ export class UsersResolver {
     return this.usersService.findUserAndDog({ email: context.req.user.email });
   }
 
-  // 유저 정보 변경하기
+  // 로그인중인 user의 isCert 여부 (redis에서) 확인하기
+  @UseGuards(GqlAuthAccessGuard)
+  @Query(() => Boolean, {
+    description: '로그인중인 유저의 이용권 유효 여부 확인하기',
+  })
+  async fetchLoginUserIsCert(
+    @Context() context: any, //
+  ) {
+    const result = await this.cacheManager.get(
+      `${context.req.user.email}:cert`,
+    );
+    return result ? true : false;
+  }
 
+  // 유저 정보 변경하기
   @Mutation(() => User, { description: 'Return : 바뀐 유저 정보' })
   updateUser(
     @Args('email', { description: '회원의 계정(메일주소)' }) email: string,
