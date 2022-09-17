@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import * as bcrypt from 'bcrypt';
 import { Dog } from '../dogs/entities/dog.entity';
+import { UserOutput } from './dto/userOutput.output';
 
 @Injectable()
 export class UsersService {
@@ -24,6 +25,29 @@ export class UsersService {
       where: { email },
       relations: { dog: true },
     });
+  }
+
+  async findUserAndDog({ email }) {
+    const userResult = await this.usersRepository.findOne({
+      where: { email },
+      relations: { dog: true },
+    });
+
+    const dogResult = await this.dogsRepository.findOne({
+      where: { id: userResult.dog.id },
+      relations: {
+        characters: true,
+        img: true,
+        interests: true,
+        avoidBreeds: true,
+      },
+    });
+
+    const result = new UserOutput();
+    result.user = userResult;
+    result.dog = dogResult;
+
+    return result;
   }
 
   async create({ createUserInput }) {
