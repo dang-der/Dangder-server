@@ -75,10 +75,7 @@ export class ChatRoomsService {
       output.lastMessage = lastMessages[idx];
       result.push(output);
     });
-    console.log('------------------------');
-    console.log(result);
-    console.log('========================');
-    // return myRoomsInfo;
+
     return result;
   }
 

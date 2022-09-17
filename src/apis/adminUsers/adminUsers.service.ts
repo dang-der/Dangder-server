@@ -71,7 +71,7 @@ export class AdminUsersService {
       'Set-Cookie',
       `refreshToken=${refreshToken}; path=/; domain=.recipemaker.shop; SameSite=None; Secure; httpOnly;`,
     );
-    res.setHeader('Set-Cookie', `refreshToken=${refreshToken}; path=/;`);
+    // res.setHeader('Set-Cookie', `refreshToken=${refreshToken}; path=/;`);
   }
   /**
    * Generate Admin Access Token
