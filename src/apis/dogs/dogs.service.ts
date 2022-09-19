@@ -106,7 +106,7 @@ export class DogsService {
         { latitude: el.locations.lat, longitude: el.locations.lng },
         5000,
       );
-      if (result === true) resultDog.push(el);
+      if (result === true && el.id !== id) resultDog.push(el);
     });
 
     const resultDistance = {};
