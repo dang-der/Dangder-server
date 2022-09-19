@@ -174,8 +174,15 @@ export class DogsService {
   }
 
   async create({ dogInfo, createDogInput }) {
-    const { locations, img, interests, characters, avoidBreeds, ...dog } =
-      createDogInput;
+    const {
+      locations,
+      img,
+      interests,
+      characters,
+      avoidBreeds,
+      userId,
+      ...dog
+    } = createDogInput;
 
     const location = await this.locationsRepository.save({
       ...locations,
@@ -282,6 +289,7 @@ export class DogsService {
       breeds: createBreeds,
       avoidBreeds: createAvoidBreeds,
       locations: { ...location },
+      user: { id: userId },
     });
 
     const user = await this.usersRepository.findOne({
@@ -311,7 +319,8 @@ export class DogsService {
   }
 
   async update({ dogId, updateDogInput, dogRegNum, ownerBirth }) {
-    const { img, interests, characters, avoidBreeds, ...dog } = updateDogInput;
+    const { img, interests, characters, avoidBreeds, userId, ...dog } =
+      updateDogInput;
     const oneDog = await this.dogsRepository.findOne({
       where: { id: dogId },
       relations: {
@@ -465,6 +474,7 @@ export class DogsService {
         characters: createCharacters,
         breeds: createBreeds,
         avoidBreeds: createAvoidBreeds,
+        user: { id: userId },
       });
       if (img) {
         await this.dogsImagesRepository.delete({ dog: { id: result.id } });
