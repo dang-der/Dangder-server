@@ -3,7 +3,9 @@ import { AuthsService } from './auths.service';
 import { UsersService } from '../users/users.service';
 import {
   CACHE_MANAGER,
+  ConflictException,
   Inject,
+  NotFoundException,
   UnprocessableEntityException,
   UseGuards,
 } from '@nestjs/common';
@@ -143,7 +145,19 @@ export class AuthsResolver {
   async createMailToken(
     @Args('email', { description: '토큰발급 후 검증을 위해 전송될 메일주소' })
     email: string, //
+    @Args('type', {
+      description: '사용목적 : 회원가입(signUp), 비밀번호 변경(resetPwd)',
+    })
+    type: string, //
   ) {
+    const user = await this.usersService.findOne({ email });
+    if (type === 'signUp') {
+      if (user) throw new ConflictException('이미 등록된 계정입니다.');
+    }
+    if (type === 'resetPwd') {
+      if (!user)
+        throw new NotFoundException('해당 이메일의 가입 내역이 없습니다.');
+    }
     const sendTokenToMail = await this.authsService.sendMailToken({ email });
     return sendTokenToMail;
   }
