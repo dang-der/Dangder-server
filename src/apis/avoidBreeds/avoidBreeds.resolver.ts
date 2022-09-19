@@ -14,9 +14,9 @@ export class AvoidBreedsResolver {
   async fetchAvoidBreeds(
     @Args('search', { nullable: true }) search: string, //
   ) {
-    if (search) {
-      return this.avoidBreedsService.searchAll({ search });
-    }
+    // if (search) {
+    //   return this.avoidBreedsService.searchAll({ search });
+    // }
     return this.avoidBreedsService.findAll();
   }
 

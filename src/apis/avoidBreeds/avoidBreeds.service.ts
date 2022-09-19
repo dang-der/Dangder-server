@@ -9,26 +9,25 @@ export class AvoidBreedsService {
   constructor(
     @InjectRepository(AvoidBreed)
     private readonly avoidBreedsRepository: Repository<AvoidBreed>,
+  ) // private readonly elasticsearchService: ElasticsearchService, //
+  {}
 
-    private readonly elasticsearchService: ElasticsearchService, //
-  ) {}
+  // async searchAll({ search }) {
+  //   const searchResult = await this.elasticsearchService.search({
+  //     index: 'search-avoid-breed',
+  //     query: {
+  //       match: { avoidbreed: search },
+  //     },
+  //   });
+  //   console.log(JSON.stringify(searchResult, null, '  '));
 
-  async searchAll({ search }) {
-    const searchResult = await this.elasticsearchService.search({
-      index: 'search-avoid-breed',
-      query: {
-        match: { avoidbreed: search },
-      },
-    });
-    console.log(JSON.stringify(searchResult, null, '  '));
-
-    const result = searchResult.hits.hits.map((el: any) => ({
-      id: el._source.id,
-      avoidBreed: el._source.avoidbreed,
-    }));
-    console.log(result);
-    return result;
-  }
+  //   const result = searchResult.hits.hits.map((el: any) => ({
+  //     id: el._source.id,
+  //     avoidBreed: el._source.avoidbreed,
+  //   }));
+  //   console.log(result);
+  //   return result;
+  // }
 
   findAll() {
     return this.avoidBreedsRepository.find();

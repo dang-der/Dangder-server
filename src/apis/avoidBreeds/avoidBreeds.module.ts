@@ -10,9 +10,9 @@ import { AvoidBreed } from './entities/avoidBreed.entity';
     TypeOrmModule.forFeature([
       AvoidBreed, //
     ]),
-    ElasticsearchModule.register({
-      node: 'http://elasticsearch:9200', //
-    }),
+    // ElasticsearchModule.register({
+    //   node: 'http://elasticsearch:9200', //
+    // }),
   ],
   providers: [
     AvoidBreedsResolver, //
