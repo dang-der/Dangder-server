@@ -31,7 +31,9 @@ export class ChatRoom {
   dog: Dog;
 
   // ChatRoom : ChatMessage - 1:N 연결
-  @OneToMany(() => ChatMessage, (chatMessage) => chatMessage.chatRoom)
+  @OneToMany(() => ChatMessage, (chatMessage) => chatMessage.chatRoom, {
+    cascade: true,
+  })
   @Field(() => [ChatMessage])
   chatMessages: ChatMessage[];
 

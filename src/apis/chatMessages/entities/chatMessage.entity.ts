@@ -59,6 +59,6 @@ export class ChatMessage {
   // ChatMessage : Chatroom - N:1 연결
   @JoinColumn()
   @Field(() => ChatRoom)
-  @ManyToOne(() => ChatRoom)
+  @ManyToOne(() => ChatRoom, { onDelete: 'CASCADE' })
   chatRoom: ChatRoom;
 }

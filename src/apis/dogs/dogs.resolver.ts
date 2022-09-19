@@ -1,7 +1,7 @@
 import { Args, Mutation, Resolver, Query } from '@nestjs/graphql';
-import { DistanceType } from '../distancesType/entities/distanceType.entity';
 import { DogsService } from './dogs.service';
-import { createDogInput } from './dto/createDog.input';
+import { AroundDogOutput } from './dto/aroundDog.output';
+import { CreateDogInput } from './dto/createDog.input';
 import { UpdateDogInput } from './dto/updateDog.input';
 import { Dog } from './entities/dog.entity';
 
@@ -40,7 +40,7 @@ export class DogsResolver {
     return await this.dogsService.getAroundDogs({ id, myDog, Dogs });
   }
 
-  @Query(() => [DistanceType])
+  @Query(() => [AroundDogOutput])
   async fetchDogsDistance(
     @Args('id') id: string, //
   ) {
@@ -61,7 +61,7 @@ export class DogsResolver {
 
   @Mutation(() => Dog)
   async createDog(
-    @Args('createDogInput') createDogInput: createDogInput, //
+    @Args('createDogInput') createDogInput: CreateDogInput, //
     @Args('dogRegNum') dogRegNum: string, //
     @Args('ownerBirth') ownerBirth: string,
   ) {
@@ -86,11 +86,11 @@ export class DogsResolver {
     })
     ownerBirth: string,
     @Args('updateDogInput')
-    updatedogInput: UpdateDogInput,
+    updateDogInput: UpdateDogInput,
   ) {
     return this.dogsService.update({
       dogId,
-      updatedogInput,
+      updateDogInput,
       dogRegNum,
       ownerBirth,
     });

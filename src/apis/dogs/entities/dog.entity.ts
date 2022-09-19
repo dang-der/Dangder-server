@@ -52,8 +52,8 @@ export class Dog {
   @Field(() => String)
   registerNumber: string;
 
-  @Column()
-  @Field(() => String)
+  @Column({ nullable: true })
+  @Field(() => String, { nullable: true })
   birthday: string;
 
   @CreateDateColumn()

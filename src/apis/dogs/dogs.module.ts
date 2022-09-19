@@ -3,6 +3,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AvoidBreed } from '../avoidBreeds/entities/avoidBreed.entity';
 import { Breed } from '../breeds/entities/breed.entity';
 import { Character } from '../characters/entities/character.entity';
+import { ChatMessage } from '../chatMessages/entities/chatMessage.entity';
+import { ChatRoom } from '../chatRooms/entities/chatRoom.entity';
 import { DogImage } from '../dogsImages/entities/dogImage.entity';
 import { Interest } from '../interests/entities/interest.entity';
 import { Like } from '../likes/entities/like.entity';
@@ -24,6 +26,8 @@ import { Dog } from './entities/dog.entity';
       Breed, //
       Like, //
       User,
+      ChatRoom,
+      ChatMessage,
     ]),
   ],
   providers: [

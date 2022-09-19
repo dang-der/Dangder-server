@@ -2,14 +2,14 @@ import { Field, InputType, Int } from '@nestjs/graphql';
 import { LocationInput } from 'src/apis/locations/dto/location.input';
 
 @InputType()
-export class createDogInput {
+export class CreateDogInput {
   @Field(() => Int)
   age: number;
 
   @Field(() => String)
   description: string;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   birthday: string;
 
   @Field(() => [String], { nullable: true })

@@ -11,9 +11,11 @@ import { Breed } from '../breeds/entities/breed.entity';
 import { getDistance, isPointWithinRadius } from 'geolib';
 import { AvoidBreed } from '../avoidBreeds/entities/avoidBreed.entity';
 import { Cache } from 'cache-manager';
-import { DistanceType } from '../distancesType/entities/distanceType.entity';
 import { User } from '../users/entities/user.entity';
 import { Like } from '../likes/entities/like.entity';
+import { ChatRoom } from '../chatRooms/entities/chatRoom.entity';
+import { ChatMessage } from '../chatMessages/entities/chatMessage.entity';
+import { AroundDogOutput } from './dto/aroundDog.output';
 
 @Injectable()
 export class DogsService {
@@ -42,13 +44,22 @@ export class DogsService {
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
 
+    @InjectRepository(ChatRoom)
+    private readonly chatRoomsRepository: Repository<ChatRoom>,
+
+    @InjectRepository(ChatMessage)
+    private readonly chatMessagesRepository: Repository<ChatMessage>,
+
+    @InjectRepository(Like)
+    private readonly LikesRepository: Repository<Like>,
+
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
 
     private readonly dataSource: DataSource,
   ) {}
 
-  async findAll(page) {
+  async findAll(page: number) {
     return await this.dogsRepository.find({
       skip: page ? (page - 1) * 10 : 0, // 1페이지당 10마리씩 조회, 이미 조회한 만큼은 스킵
       take: 10,
@@ -64,7 +75,7 @@ export class DogsService {
     });
   }
 
-  async findOne(id) {
+  async findOne(id: string) {
     return this.dogsRepository.findOne({
       where: { id },
       relations: {
@@ -79,7 +90,7 @@ export class DogsService {
     });
   }
 
-  async findMyDog(userId) {
+  async findMyDog(userId: string) {
     return this.dogsRepository.findOne({
       where: { userId: { id: userId } },
       relations: {
@@ -95,14 +106,14 @@ export class DogsService {
   }
 
   async getAroundDogs({ id, myDog, Dogs }) {
-    const myDoglat = myDog.locations.lat;
-    const myDoglng = myDog.locations.lng;
+    const myDogLat = myDog.locations.lat;
+    const myDogLng = myDog.locations.lng;
 
     const resultDog = [];
 
     await Dogs.map((el) => {
       const result = isPointWithinRadius(
-        { latitude: myDoglat, longitude: myDoglng },
+        { latitude: myDogLat, longitude: myDogLng },
         { latitude: el.locations.lat, longitude: el.locations.lng },
         5000,
       );
@@ -112,7 +123,7 @@ export class DogsService {
     const resultDistance = {};
     resultDog.map((el) => {
       const distance = getDistance(
-        { latitude: myDoglat, longitude: myDoglng },
+        { latitude: myDogLat, longitude: myDogLng },
         {
           latitude: el.locations.lat,
           longitude: el.locations.lng,
@@ -133,7 +144,7 @@ export class DogsService {
     const distance = await this.cacheManager.get(id);
 
     for (let i = 0; i < Object.keys(distance).length; i++) {
-      const tmp = new DistanceType(); //객체 타입 리턴 받기 위해 새로운 타입 지정
+      const tmp = new AroundDogOutput(); //객체 타입 리턴 받기 위해 새로운 타입 지정
       (tmp.dogId = Object.keys(distance)[i]),
         (tmp.distance = Object.values(distance)[i]);
       result.push(tmp);
@@ -224,7 +235,7 @@ export class DogsService {
     if (avoidBreeds) {
       createAvoidBreeds = await Promise.all(
         avoidBreeds.map(
-          (el) =>
+          (el: any) =>
             new Promise(async (resolve, reject) => {
               try {
                 const prevAvoidBreed = await this.avoidBreedsRepository.findOne(
@@ -283,24 +294,36 @@ export class DogsService {
 
     await Promise.all(
       img.map(
-        (el, idx) =>
+        (el: any, idx: number) =>
           new Promise(async (resolve) => {
             const image = el;
-            const ismain = idx === 0 ? true : false;
-            const newimage = await this.dogsImagesRepository.save({
+            const isMain = idx === 0 ? true : false;
+            const newImage = await this.dogsImagesRepository.save({
               img: image,
-              isMain: ismain,
+              isMain: isMain,
               dog: { id: result.id },
             });
-            resolve(newimage);
+            resolve(newImage);
           }),
       ),
     );
     return result;
   }
 
-  async update({ dogId, updatedogInput, dogRegNum, ownerBirth }) {
-    const { img, interests, characters, avoidBreeds, ...dog } = updatedogInput;
+  async update({ dogId, updateDogInput, dogRegNum, ownerBirth }) {
+    const { img, interests, characters, avoidBreeds, ...dog } = updateDogInput;
+    const oneDog = await this.dogsRepository.findOne({
+      where: { id: dogId },
+      relations: {
+        locations: true,
+        interests: true,
+        characters: true,
+        avoidBreeds: true,
+        img: true,
+        userId: true,
+        sendId: true,
+      },
+    });
 
     let createInterests = null;
     if (interests) {
@@ -408,8 +431,16 @@ export class DogsService {
       );
     }
 
+    // 새로운 강아지 등록번호 입력 시 - 기존 강아지와 연결되어있는 채팅방, 메시지 삭제 후 강아지 삭제
+    // 강아지 삭제 후 새로 강아지 생성해서 등록.
     if (dogRegNum) {
-      await this.dogsRepository.delete({ userId: updatedogInput.userId });
+      await this.locationsRepository.delete({ id: oneDog.locations.id });
+      await this.LikesRepository.delete({ receiveId: dogId });
+      await this.chatMessagesRepository.delete({ senderId: dogId });
+      await this.chatRoomsRepository.delete({ dog: { id: dogId } });
+      await this.dogsRepository.delete({
+        userId: { id: updateDogInput.userId },
+      });
       const dogInfo = await this.getDogInfo({ dogRegNum, ownerBirth });
       const createBreeds = [];
       const prevBreed = await this.breedsRepository.findOne({
@@ -439,38 +470,27 @@ export class DogsService {
         await this.dogsImagesRepository.delete({ dog: { id: result.id } });
         await Promise.all(
           img.map(
-            (el, idx) =>
+            (el: any, idx: number) =>
               new Promise(async (resolve) => {
                 const image = el;
-                const ismain = idx === 0 ? true : false;
-                const newimage = await this.dogsImagesRepository.save({
+                const isMain = idx === 0 ? true : false;
+                const newImage = await this.dogsImagesRepository.save({
                   img: image,
-                  isMain: ismain,
+                  isMain: isMain,
                   dog: { id: result.id },
                 });
-                resolve(newimage);
+                resolve(newImage);
               }),
           ),
         );
       }
       return result;
     } else {
-      const onedog = await this.dogsRepository.findOne({
-        where: { id: dogId },
-        relations: {
-          locations: true,
-          interests: true,
-          characters: true,
-          avoidBreeds: true,
-          img: true,
-          userId: true,
-          sendId: true,
-        },
-      });
+      await this.locationsRepository.delete({ id: oneDog.locations.id });
 
       const result = await this.dogsRepository.save({
-        ...onedog,
-        ...updatedogInput,
+        ...oneDog,
+        ...updateDogInput,
         id: dogId,
         interests: createInterests,
         characters: createCharacters,
@@ -480,16 +500,16 @@ export class DogsService {
         await this.dogsImagesRepository.delete({ dog: { id: result.id } });
         await Promise.all(
           img.map(
-            (el, idx) =>
+            (el: any, idx: number) =>
               new Promise(async (resolve) => {
                 const image = el;
-                const ismain = idx === 0 ? true : false;
-                const newimage = await this.dogsImagesRepository.save({
+                const isMain = idx === 0 ? true : false;
+                const newImage = await this.dogsImagesRepository.save({
                   img: image,
-                  isMain: ismain,
+                  isMain: isMain,
                   dog: { id: result.id },
                 });
-                resolve(newimage);
+                resolve(newImage);
               }),
           ),
         );
