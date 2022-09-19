@@ -103,7 +103,7 @@ export class Dog {
   @JoinColumn()
   @Field(() => User)
   @OneToOne(() => User, { cascade: true })
-  userId: User;
+  user: User;
 
   @OneToMany(() => DogImage, (dogImage) => dogImage.dog, { cascade: true })
   @Field(() => [DogImage])

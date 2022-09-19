@@ -95,7 +95,7 @@ export class UsersService {
   async delete({ email }) {
     // 소프트 삭제 - softDelete
     const user = await this.usersRepository.findOne({ where: { email } });
-    await this.dogsRepository.softDelete({ userId: { id: user.id } });
+    await this.dogsRepository.softDelete({ user: { id: user.id } });
     const result = await this.usersRepository.softDelete({ email });
     return result.affected ? true : false;
   }

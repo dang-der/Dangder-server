@@ -69,7 +69,7 @@ export class DogsService {
         characters: true,
         avoidBreeds: true,
         img: true,
-        userId: true,
+        user: true,
         sendId: true,
       },
     });
@@ -84,7 +84,7 @@ export class DogsService {
         characters: true,
         avoidBreeds: true,
         img: true,
-        userId: true,
+        user: true,
         sendId: true,
       },
     });
@@ -92,14 +92,14 @@ export class DogsService {
 
   async findMyDog(userId: string) {
     return this.dogsRepository.findOne({
-      where: { userId: { id: userId } },
+      where: { user: { id: userId } },
       relations: {
         locations: true,
         interests: true,
         characters: true,
         avoidBreeds: true,
         img: true,
-        userId: true,
+        user: true,
         sendId: true,
       },
     });
@@ -320,7 +320,7 @@ export class DogsService {
         characters: true,
         avoidBreeds: true,
         img: true,
-        userId: true,
+        user: true,
         sendId: true,
       },
     });
@@ -439,7 +439,7 @@ export class DogsService {
       await this.chatMessagesRepository.delete({ senderId: dogId });
       await this.chatRoomsRepository.delete({ dog: { id: dogId } });
       await this.dogsRepository.delete({
-        userId: { id: updateDogInput.userId },
+        user: { id: updateDogInput.userId },
       });
       const dogInfo = await this.getDogInfo({ dogRegNum, ownerBirth });
       const createBreeds = [];

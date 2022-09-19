@@ -77,7 +77,7 @@ export class User {
   donateGrade: string;
 
   @Field(() => Dog)
-  @OneToOne(() => Dog, (dog) => dog.userId)
+  @OneToOne(() => Dog, (dog) => dog.user)
   dog: Dog;
 
   @OneToMany(() => Report, (report) => report.id)
