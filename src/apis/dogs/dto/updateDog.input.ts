@@ -1,5 +1,5 @@
 import { InputType, PartialType } from '@nestjs/graphql';
-import { createDogInput } from './createDog.input';
+import { CreateDogInput } from './createDog.input';
 
 @InputType()
-export class UpdateDogInput extends PartialType(createDogInput) {}
+export class UpdateDogInput extends PartialType(CreateDogInput) {}
