@@ -11,7 +11,12 @@ export class AvoidBreedsResolver {
   ) {}
 
   @Query(() => [AvoidBreed], { description: '기피 견종 목록 조회' })
-  async fetchAvoidBreeds() {
+  async fetchAvoidBreeds(
+    @Args('search', { nullable: true }) search: string, //
+  ) {
+    if (search) {
+      return this.avoidBreedsService.searchAll({ search });
+    }
     return this.avoidBreedsService.findAll();
   }
 
