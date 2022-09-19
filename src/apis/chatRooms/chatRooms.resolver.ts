@@ -51,17 +51,27 @@ export class ChatRoomsResolver {
     @Args('chatPairId', { description: '채팅 상대 강아지 id (chatPairId)' })
     chatPairId: string,
   ) {
-    const isOpened = await this.chatRoomsService.findChatRoom({
+    // 내가 Host 이고, 상대가 Guest 인 방이 있는가
+    const isOpenedByHost = await this.chatRoomsService.findChatRoom({
       dogId,
       chatPairId,
     });
-    if (!isOpened) {
+    // 내가 Guest 이고, 상대가 Host 인 방이 있는가
+    const isOpenedByGuest = await this.chatRoomsService.findChatRoom({
+      dogId: chatPairId,
+      chatPairId: dogId,
+    });
+
+    // 둘 다 없다면? 내가 Host로 새로운 채팅방 생성
+    if (!isOpenedByHost && !isOpenedByGuest) {
       const createChatroom = await this.chatRoomsService.create({
         dogId,
         chatPairId,
       });
       return createChatroom;
-    } else return isOpened;
+    }
+    // 이미 생성된 채팅방이 있다면? 채팅방 정보 리턴
+    else return isOpenedByHost ? isOpenedByHost : isOpenedByGuest;
   }
 
   // 채팅방 삭제(softDelete)

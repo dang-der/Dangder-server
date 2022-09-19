@@ -36,8 +36,10 @@ export class ChatRoom {
   chatMessages: ChatMessage[];
 
   @CreateDateColumn()
+  @Field(() => Date)
   createdAt: Date;
 
   @DeleteDateColumn()
+  @Field(() => Date)
   deletedAt: Date;
 }

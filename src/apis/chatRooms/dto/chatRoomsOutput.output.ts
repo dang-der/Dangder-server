@@ -10,9 +10,6 @@ export class ChatRoomsOutput {
   @Field(() => Dog, { nullable: true })
   chatPairDog: Dog;
 
-  @Field(() => Dog, { nullable: true })
-  dog: Dog;
-
   @Field(() => ChatMessage, { nullable: true })
   lastMessage: ChatMessage;
 }

@@ -23,8 +23,21 @@ export class ChatRoomsService {
   ) {}
 
   // 채팅방 id, 본인 id, 상대방 id로 저장
-  create({ dogId, chatPairId }) {
-    return this.chatRoomsRepository.save({ dog: { id: dogId }, chatPairId });
+  async create({ dogId, chatPairId }) {
+    const result = await this.chatRoomsRepository.save({
+      dog: { id: dogId },
+      chatPairId,
+    });
+
+    // 만드는 순간 첫 메시지 빈 값으로 생성 (init. 추후 findChatRooms의 정렬 기준이 된다.)
+    await this.chatMessagesRepository.save({
+      chatRoom: { id: result.id },
+      senderId: dogId,
+      type: 'init',
+      message: 'CREATED BY senderId',
+    });
+
+    return result;
   }
 
   // 채팅방을 찾는 로직. dogId와 chatPairId로 찾는다.
@@ -38,19 +51,38 @@ export class ChatRoomsService {
 
   // 채팅방들을 찾는 로직. dogId로 참가한 채팅방들을 찾는다.
   async findChatRooms({ dogId }) {
-    const myRoomsInfo = await this.chatRoomsRepository.find({
+    // 내가 host인 채팅방들
+    const hostRoomsInfo = await this.chatRoomsRepository.find({
       where: { dog: { id: dogId } },
       relations: { dog: true },
     });
+    // 내가 guest인 채팅방들
+    const guestRoomsInfo = await this.chatRoomsRepository.find({
+      where: { chatPairId: dogId },
+      relations: { dog: true },
+    });
+    // 방 정보들 합치기
+    const myRoomsInfo = [...hostRoomsInfo, ...guestRoomsInfo];
 
     // 채팅 상대방 강아지 정보 가져오기
-    const chatPairDogs = [];
-    for (const chatRoom of myRoomsInfo) {
-      const chatPairDog = await this.dogsRepository.findOne({
+    // 1. 내가 host일 때 - 상대방이 guest
+    const chatGuestDogs = [];
+    for (const chatRoom of hostRoomsInfo) {
+      const chatGuestDog = await this.dogsRepository.findOne({
         where: { id: chatRoom.chatPairId },
       });
-      chatPairDogs.push(chatPairDog);
+      chatGuestDogs.push(chatGuestDog);
     }
+    // 2. 내가 guest일 때 - 상대방이 host
+    const chatHostDogs = [];
+    for (const chatRoom of guestRoomsInfo) {
+      const chatHostDog = await this.dogsRepository.findOne({
+        where: { id: chatRoom.dog.id },
+      });
+      chatHostDogs.push(chatHostDog);
+    }
+    // 상대방 강아지 정보들 합치기
+    const chatPairDogs = [...chatGuestDogs, ...chatHostDogs];
 
     // 채팅방의 마지막 메시지 가져오기
     const lastMessages = [];
@@ -66,15 +98,19 @@ export class ChatRoomsService {
       lastMessages.push(findLastMessageByChatRoomId);
     }
 
-    const result = [];
+    let result = [];
     myRoomsInfo.map((chatRoom, idx) => {
       const output = new ChatRoomsOutput();
       output.id = chatRoom.id;
       output.chatPairDog = chatPairDogs[idx];
-      output.dog = chatRoom.dog;
       output.lastMessage = lastMessages[idx];
       result.push(output);
     });
+
+    // 최신 메시지 순으로 결과값 정렬
+    result = result.sort(
+      (a, b) => b.lastMessage.chatCreatedAt - a.lastMessage.chatCreatedAt,
+    );
 
     return result;
   }
