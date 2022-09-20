@@ -16,6 +16,7 @@ import { Like } from '../likes/entities/like.entity';
 import { ChatRoom } from '../chatRooms/entities/chatRoom.entity';
 import { ChatMessage } from '../chatMessages/entities/chatMessage.entity';
 import { AroundDogOutput } from './dto/aroundDog.output';
+import { LikesService } from '../likes/likes.service';
 
 @Injectable()
 export class DogsService {
@@ -57,6 +58,8 @@ export class DogsService {
     private readonly cacheManager: Cache,
 
     private readonly dataSource: DataSource,
+
+    private readonly likesService: LikesService,
   ) {}
 
   async findAll(page: number) {
@@ -108,16 +111,26 @@ export class DogsService {
   async getAroundDogs({ id, myDog, Dogs }) {
     const myDogLat = myDog.locations.lat;
     const myDogLng = myDog.locations.lng;
-
     const resultDog = [];
+    const prevLike = [];
 
-    await Dogs.map((el) => {
+    for (let i = 0; i < Dogs.length; i++) {
+      const like = await this.likesService.isLike({
+        sendId: Dogs[i].id,
+        receiveId: id,
+      });
+      prevLike.push(like);
+    }
+
+    Dogs.map((el, idx) => {
       const result = isPointWithinRadius(
         { latitude: myDogLat, longitude: myDogLng },
         { latitude: el.locations.lat, longitude: el.locations.lng },
         5000,
       );
-      if (result === true && el.id !== id) resultDog.push(el);
+      if (result === true && el.id !== id && prevLike[idx] === false) {
+        resultDog.push(el);
+      }
     });
 
     const resultDistance = {};
@@ -129,6 +142,7 @@ export class DogsService {
           longitude: el.locations.lng,
         },
       );
+
       if (distance !== 0) resultDistance[el.id] = Math.ceil(distance / 1000); //소수점 이하 절상
     });
 
