@@ -7,13 +7,18 @@ export class PassTicketsResolver {
   constructor(private readonly passTicketsService: PassTicketsService) {}
 
   @Query(() => PassTicket)
-  async fetchPassTicket({ id }) {
+  async fetchPassTicket(
+    @Args('id') id: string, //
+  ) {
     return await this.passTicketsService.findPassTicket({ id });
   }
 
+  // userId와 연결
   @Mutation(() => PassTicket)
-  async createPassTicket() {
-    return await this.passTicketsService.create({ PassTicket });
+  async createPassTicket(
+    @Args('userId') userId: string, //
+  ) {
+    return await this.passTicketsService.create({ userId });
   }
 
   @Mutation(() => Boolean)

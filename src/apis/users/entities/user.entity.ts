@@ -1,5 +1,6 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql';
 import { Dog } from 'src/apis/dogs/entities/dog.entity';
+import { PassTicket } from 'src/apis/passTickets/entities/passTicket.entity';
 import { Payment } from 'src/apis/payments/entities/payment.entity';
 import { Report } from 'src/apis/reports/entities/report.entity';
 import {
@@ -87,4 +88,8 @@ export class User {
   @OneToMany(() => Payment, (payment) => payment.id)
   @Field(() => Payment)
   payment: Payment;
+
+  @OneToMany(() => PassTicket, (passTicket) => passTicket.id)
+  @Field(() => PassTicket)
+  passTicket: PassTicket;
 }

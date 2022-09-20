@@ -69,13 +69,24 @@ export class PaymentsResolver {
 
     // 1. 캐시에 등록
 
+    // 수정 필요(윤달 고려해서)
+
     await this.cacheManager.set(`${user.email}:cert`, true, {
       ttl: 60 * 60 * 24 * 30,
     });
+    const date = new Date();
+    // 캐시에서 가져와서 숫자를 변환한다. set 되는 순간 getToday + 30
+    console.log(date, '111111');
+
+    const tmp = Number(date) + 60 * 60 * 24 * 30 * 1000;
+    console.log(tmp, '222222');
+
+    const expiredAt = new Date(tmp);
+    console.log(expiredAt, '333333');
 
     // 2. 캐시에서 조회
 
-    const mycache = await this.cacheManager.get(`${user.email}:cert`);
+    // const myCache = await this.cacheManager.get(`${user.email}:cert`);
 
     return result;
   }
