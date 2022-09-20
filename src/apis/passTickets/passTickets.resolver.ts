@@ -17,8 +17,9 @@ export class PassTicketsResolver {
   @Mutation(() => PassTicket)
   async createPassTicket(
     @Args('userId') userId: string, //
+    @Args('expiredAt') expiredAt: string,
   ) {
-    return await this.passTicketsService.create({ userId });
+    return await this.passTicketsService.create({ userId, expiredAt });
   }
 
   @Mutation(() => Boolean)

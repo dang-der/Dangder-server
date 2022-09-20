@@ -25,8 +25,7 @@ export class PassTicket {
   @Field(() => Date)
   deletedAt: Date;
 
-  // 캐시에서 가져와서 숫자를 변환한다. set 되는 순간 getToday + 30
-  @Column({ default: '0' })
+  @Column({ default: 0 })
   @Field(() => String)
   expiredAt: string;
 

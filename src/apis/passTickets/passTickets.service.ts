@@ -11,10 +11,12 @@ export class PassTicketsService {
   ) {}
 
   // userId로 passTicket 생성
+  // expiredAt도 생성
 
-  async create({ userId }) {
+  async create({ userId, expiredAt }) {
     return this.passTicketsRepository.save({
       user: { id: userId },
+      expiredAt,
     });
   }
 

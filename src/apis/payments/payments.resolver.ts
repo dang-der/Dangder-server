@@ -11,12 +11,15 @@ import { Cache } from 'cache-manager';
 import { GqlAuthAccessGuard } from 'src/commons/auth/gql-auth.guard';
 import { IContext } from 'src/commons/type/context';
 import { IamportsService } from '../imports/imports.services';
+import * as dayjs from 'dayjs';
+import { PassTicketsService } from '../passTickets/passTickets.service';
 
 @Resolver()
 export class PaymentsResolver {
   constructor(
     private readonly paymentsService: PaymentsService,
     private readonly iamportsService: IamportsService,
+    private readonly passTicketsService: PassTicketsService,
 
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
@@ -69,20 +72,24 @@ export class PaymentsResolver {
 
     // 1. 캐시에 등록
 
-    // 수정 필요(윤달 고려해서)
+    // 현재 시각 date
+
+    const date = dayjs();
+
+    // date에 30일을 더하는 expireCalculate
+
+    const expireCalculate = date.add(30, 'day').format('YYYY-MM-DD HH:mm:ss');
 
     await this.cacheManager.set(`${user.email}:cert`, true, {
       ttl: 60 * 60 * 24 * 30,
     });
-    const date = new Date();
-    // 캐시에서 가져와서 숫자를 변환한다. set 되는 순간 getToday + 30
-    console.log(date, '111111');
 
-    const tmp = Number(date) + 60 * 60 * 24 * 30 * 1000;
-    console.log(tmp, '222222');
+    // passTicketsService의 expiredAt에 expireCalculate를 넣는다.
 
-    const expiredAt = new Date(tmp);
-    console.log(expiredAt, '333333');
+    await this.passTicketsService.create({
+      userId: user.id,
+      expiredAt: expireCalculate,
+    });
 
     // 2. 캐시에서 조회
 
