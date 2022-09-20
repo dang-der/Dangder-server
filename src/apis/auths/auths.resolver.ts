@@ -47,7 +47,7 @@ export class AuthsResolver {
     const user = await this.usersService.findOne({ email });
     if (!user)
       throw new UnprocessableEntityException(
-        '입력하신 계졍(이메일)의 가입내역이 없습니다.',
+        '입력하신 계정(이메일)의 가입내역이 없습니다.',
       );
     const isAuth = await bcrypt.compare(password, user.password);
     if (!isAuth)
