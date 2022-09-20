@@ -32,8 +32,8 @@ export class DogsResolver {
 
   @Query(() => [Dog])
   async fetchAroundDogs(
-    @Args('id') id: string, //
-    @Args('page') page: number,
+    @Args('id', { description: '강아지 id' }) id: string, //
+    @Args('page', { description: '페이지값' }) page: number,
   ) {
     const myDog = await this.fetchOneDog(id);
     const Dogs = await this.fetchDogs(page);
