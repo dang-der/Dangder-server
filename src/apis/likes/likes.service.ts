@@ -53,7 +53,8 @@ export class LikesService {
       let top = [...map];
 
       top.sort((a, b) => b[1] - a[1]); //2번째 인덱스 값이 좋아요 받은 갯수이므로 이를 기준으로 정렬
-      top = top.slice(0, 6); // 12마리까지만 받아오기
+      top = top.slice(0, 12); // 12마리까지만 받아오기
+      top = top.filter((e) => e);
 
       const topDogInfo = [];
       for (let i = 0; i < top.length; i++) {
