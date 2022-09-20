@@ -1,5 +1,6 @@
 import { Field, Float, ObjectType } from '@nestjs/graphql';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Dog } from 'src/apis/dogs/entities/dog.entity';
+import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 @ObjectType()
@@ -17,4 +18,8 @@ export class Location {
   @Column({ type: 'double' })
   @Field(() => Float)
   lng: number;
+
+  @Field(() => Dog)
+  @OneToOne(() => Dog, (dog) => dog.locations, { cascade: true })
+  dog: Dog;
 }

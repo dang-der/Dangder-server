@@ -97,7 +97,7 @@ export class Dog {
 
   @JoinColumn()
   @Field(() => Location)
-  @OneToOne(() => Location, { cascade: true })
+  @OneToOne(() => Location, { onDelete: 'CASCADE' })
   locations: Location;
 
   @JoinColumn()

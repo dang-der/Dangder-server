@@ -319,8 +319,15 @@ export class DogsService {
   }
 
   async update({ dogId, updateDogInput, dogRegNum, ownerBirth }) {
-    const { img, interests, characters, avoidBreeds, userId, ...dog } =
-      updateDogInput;
+    const {
+      img,
+      interests,
+      characters,
+      avoidBreeds,
+      userId,
+      locations,
+      ...dog
+    } = updateDogInput;
     const oneDog = await this.dogsRepository.findOne({
       where: { id: dogId },
       relations: {
@@ -443,13 +450,17 @@ export class DogsService {
     // 새로운 강아지 등록번호 입력 시 - 기존 강아지와 연결되어있는 채팅방, 메시지 삭제 후 강아지 삭제
     // 강아지 삭제 후 새로 강아지 생성해서 등록.
     if (dogRegNum) {
-      await this.locationsRepository.delete({ id: oneDog.locations.id });
+      const getLocation = await this.locationsRepository.findOne({
+        where: { id: oneDog.locations.id },
+      });
+      await this.locationsRepository.delete({ id: getLocation.id });
       await this.LikesRepository.delete({ receiveId: dogId });
       await this.chatMessagesRepository.delete({ senderId: dogId });
       await this.chatRoomsRepository.delete({ dog: { id: dogId } });
       await this.dogsRepository.delete({
-        user: { id: updateDogInput.userId },
+        user: userId,
       });
+
       const dogInfo = await this.getDogInfo({ dogRegNum, ownerBirth });
       const createBreeds = [];
       const prevBreed = await this.breedsRepository.findOne({
@@ -462,6 +473,9 @@ export class DogsService {
         });
         createBreeds.push(newBreed);
       }
+      const location = await this.locationsRepository.save({
+        ...locations,
+      });
 
       const neut = dogInfo.neuterYn === '미중성' ? false : true;
       const result = await this.dogsRepository.save({
@@ -474,7 +488,8 @@ export class DogsService {
         characters: createCharacters,
         breeds: createBreeds,
         avoidBreeds: createAvoidBreeds,
-        user: { id: userId },
+        locations: { ...location },
+        user: userId,
       });
       if (img) {
         await this.dogsImagesRepository.delete({ dog: { id: result.id } });
