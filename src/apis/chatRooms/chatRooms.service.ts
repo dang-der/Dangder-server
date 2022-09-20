@@ -70,6 +70,7 @@ export class ChatRoomsService {
     for (const chatRoom of hostRoomsInfo) {
       const chatGuestDog = await this.dogsRepository.findOne({
         where: { id: chatRoom.chatPairId },
+        relations: { img: true },
       });
       chatGuestDogs.push(chatGuestDog);
     }
@@ -78,6 +79,7 @@ export class ChatRoomsService {
     for (const chatRoom of guestRoomsInfo) {
       const chatHostDog = await this.dogsRepository.findOne({
         where: { id: chatRoom.dog.id },
+        relations: { img: true },
       });
       chatHostDogs.push(chatHostDog);
     }

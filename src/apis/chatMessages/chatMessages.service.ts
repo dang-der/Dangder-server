@@ -15,6 +15,7 @@ export class ChatMessagesService {
     return this.chatMessagesRepository.find({
       where: { chatRoom: { id: chatRoomId } },
       relations: { chatRoom: true },
+      order: { chatCreatedAt: 'ASC' },
     });
   }
 
