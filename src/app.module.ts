@@ -80,6 +80,7 @@ import { ChatModule } from './gateways/chat/chat.module';
       entities: [__dirname + '/apis/**/*.entity.*'],
       synchronize: true,
       logging: true,
+      charset: 'utf8mb4', // emoji 저장을 위한 charset
     }),
     // redis 연결을 위한 CacheModule 추가
     CacheModule.register<RedisClientOptions>({
