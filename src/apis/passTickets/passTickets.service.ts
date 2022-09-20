@@ -10,10 +10,12 @@ export class PassTicketsService {
     private readonly passTicketsRepository: Repository<PassTicket>,
   ) {}
 
-  // passTicket 생성
+  // userId로 passTicket 생성
 
-  async create({ PassTicket }) {
-    return this.passTicketsRepository.save({ ...PassTicket });
+  async create({ userId }) {
+    return this.passTicketsRepository.save({
+      user: { id: userId },
+    });
   }
 
   // passTicket Id로 조회
