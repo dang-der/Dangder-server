@@ -13,8 +13,11 @@ export class ChatRoomsResolver {
   @Query(() => ChatRoom, {
     description: 'Return : 조회된 채팅방 정보',
   })
-  fetchChatRoom(@Args('roomId', { description: '채팅방 id' }) roomId: string) {
-    return this.chatRoomsService.findChatRoom({ roomId });
+  fetchChatRoom(
+    @Args('roomId', { description: '채팅방 id (roomId)' }) dogId: string,
+    chatPairId: string,
+  ) {
+    return this.chatRoomsService.findChatRoom({ dogId, chatPairId });
   }
 
   // dogId와 chatPairId로 채팅방 조회
