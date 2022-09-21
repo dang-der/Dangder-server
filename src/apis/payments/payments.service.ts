@@ -1,5 +1,8 @@
 import {
+  CACHE_MANAGER,
   ConflictException,
+  HttpException,
+  Inject,
   Injectable,
   UnprocessableEntityException,
 } from '@nestjs/common';
@@ -7,6 +10,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { User } from '../users/entities/user.entity';
 import { Payment, PAYMENT_STATUS_ENUM } from './entities/payment.entity';
+import { Cache } from 'cache-manager';
+import * as dayjs from 'dayjs';
+import { UpdateUserInput } from '../users/dto/updateUser.input';
+import { PassTicket } from '../passTickets/entities/passTicket.entity';
 
 @Injectable()
 export class PaymentsService {
@@ -17,8 +24,14 @@ export class PaymentsService {
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
 
+    @InjectRepository(PassTicket)
+    private readonly passTicketsRepository: Repository<PassTicket>,
+
     // 트랜잭션 적용을 위한 connection 선언
     private readonly dataSource: DataSource,
+
+    @Inject(CACHE_MANAGER)
+    private readonly cacheManager: Cache,
   ) {}
 
   async checkIsAbleToCancel({ impUid, user }) {
@@ -155,16 +168,108 @@ export class PaymentsService {
       });
 
       // 4.생성한 정보 저장하기
-      // const result = await this.paymentsRepository.save(payment);
       const result = await queryRunner.manager.save(payment); // queryRunner 를 통한 로직을 이용한 부분을 rollback 가능하다.
 
       // ================= commit - 성공 확정 선언 =========================== //
       await queryRunner.commitTransaction();
       // ================================================================== //
+
+      // 5. 결제/취소 내역 결과 프론트엔드에 돌려주기
+      return result;
+    } catch (error) {
+      // ======================== rollback - 에러발생 시 ============================ //
+      await queryRunner.rollbackTransaction();
+      throw new HttpException(
+        error.response.message,
+        error.response.statusCode,
+      );
+      // ========================================================================= //
     } finally {
       // ================== 무조건 실행되는 구간 : 연결 해제 ======================= //
       await queryRunner.release();
       // ==================================================================== //
+    }
+  }
+
+  // 티켓 생성
+  async createForPassTickets({ user }) {
+    // === 데이터의 오염을 방지하기 위한 트랜잭션 적용 ==== //
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+
+    // ===================== transaction 시작 - SERIALIZABLE ===================== //
+    await queryRunner.startTransaction('SERIALIZABLE');
+    // ========================================================================= //
+
+    try {
+      // 0. dayjs 로 오늘날짜 date 선언
+      const date = dayjs();
+
+      // 0-1. date에 30일을 더하는 expireCalculate
+      const expireCalculate = date.add(30, 'day').format('YYYY-MM-DD');
+
+      // 3. 결제/취소 한 유저의 정보 찾아오기
+      const passBuyer = await queryRunner.manager.findOne(User, {
+        where: { id: user.id },
+        lock: { mode: 'pessimistic_write' }, // 이 트랜잭션에서 접근하는 동안, 다른 로직 접근 잠금
+      });
+
+      // passBuyer 의 isCert 여부 확인
+      if (passBuyer.isCert) {
+        throw new ConflictException(
+          '기존에 구매한 댕더패스가 유효합니다. 새로운 이용권을 구매하실 수 없습니다.',
+        );
+      }
+
+      // 1. passTicket 테이블에서, 기존 내역 확인
+      const checkPassTicket = await queryRunner.manager.findOne(PassTicket, {
+        where: { expiredAt: expireCalculate },
+        lock: { mode: 'pessimistic_write' }, // 이 트랜잭션에서 접근하는 동안, 다른 로직 접근 잠금.
+      });
+
+      if (checkPassTicket) {
+        throw new ConflictException(
+          '같은 만료일자의 티켓 구매내역이 존재합니다.',
+        );
+      }
+
+      // 2. passTicket 테이블에 유저의 정보 연계하여 생성
+      const passTicket = this.passTicketsRepository.create({
+        expiredAt: expireCalculate,
+        user: { id: user.id },
+      });
+
+      // 2-1. 생성한 정보 저장하기
+      const result = await queryRunner.manager.save(passTicket);
+
+      // 4. 유저의 isCert 업데이트
+      const buyer = this.usersRepository.create({
+        ...passBuyer,
+        isCert: true,
+      });
+      await queryRunner.manager.save(buyer);
+
+      // ================= commit - 성공 확정 선언 =============================================================
+      await queryRunner.commitTransaction();
+      // ====================================================================================================
+
+      await this.cacheManager.set(`${user.email}:cert`, true, {
+        ttl: 60 * 60 * 24 * 30,
+      });
+
+      return result;
+    } catch (error) {
+      // ======================== rollback - 에러발생 시 ============================ //
+      await queryRunner.rollbackTransaction();
+      throw new HttpException(
+        error.response.message,
+        error.response.statusCode,
+      );
+      // ========================================================================= //
+    } finally {
+      // ========================== 무조건 실행되는 구간 : 연결 해제 ===============================================
+      await queryRunner.release();
+      // ====================================================================================================
     }
   }
 }
