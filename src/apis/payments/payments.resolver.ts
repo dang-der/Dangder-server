@@ -13,6 +13,7 @@ import { IContext } from 'src/commons/type/context';
 import { IamportsService } from '../imports/imports.services';
 import * as dayjs from 'dayjs';
 import { PassTicketsService } from '../passTickets/passTickets.service';
+import { PassTicket } from '../passTickets/entities/passTicket.entity';
 
 @Resolver()
 export class PaymentsResolver {
@@ -74,22 +75,22 @@ export class PaymentsResolver {
 
     // 현재 시각 date
 
-    const date = dayjs();
+    // const date = dayjs();
 
     // date에 30일을 더하는 expireCalculate
 
-    const expireCalculate = date.add(30, 'day').format('YYYY-MM-DD HH:mm:ss');
+    // const expireCalculate = date.add(30, 'day').format('YYYY-MM-DD HH:mm:ss');
 
-    await this.cacheManager.set(`${user.email}:cert`, true, {
-      ttl: 60 * 60 * 24 * 30,
-    });
+    // await this.cacheManager.set(`${user.email}:cert`, true, {
+    //   ttl: 60 * 60 * 24 * 30,
+    // });
 
     // passTicketsService의 expiredAt에 expireCalculate를 넣는다.
 
-    await this.passTicketsService.create({
-      userId: user.id,
-      expiredAt: expireCalculate,
-    });
+    // await this.passTicketsService.create({
+    //   userId: user.id,
+    //   expiredAt: expireCalculate,
+    // });
 
     // 2. 캐시에서 조회
 
@@ -254,4 +255,12 @@ export class PaymentsResolver {
       paymentType: PAYMENT_STATUS_ENUM.CANCEL,
     });
   }
+
+  // 미완성입니다.
+
+  @UseGuards(GqlAuthAccessGuard)
+  @Mutation(() => PassTicket)
+  async createPaymentForPassTicket(
+    @Context() context: IContext, //
+  ) {}
 }
