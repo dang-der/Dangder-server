@@ -75,6 +75,7 @@ export class DogsService {
         user: true,
         sendId: true,
       },
+      order: { img: { isMain: 'DESC' } },
     });
   }
 
@@ -106,6 +107,7 @@ export class DogsService {
         user: true,
         sendId: true,
       },
+      order: { img: { isMain: 'DESC' } },
     });
   }
 
@@ -354,6 +356,7 @@ export class DogsService {
         user: true,
         sendId: true,
       },
+      order: { img: { isMain: 'DESC' } },
     });
 
     let createInterests = null;
