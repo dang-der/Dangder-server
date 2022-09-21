@@ -9,16 +9,12 @@ export class ChatRoomsResolver {
     private readonly chatRoomsService: ChatRoomsService, //
   ) {}
 
-  // dogId와 chatPairId로 채팅방 조회
+  // roomId로 채팅방 조회
   @Query(() => ChatRoom, {
     description: 'Return : 조회된 채팅방 정보',
   })
-  fetchChatRoom(
-    @Args('dogId', { description: '내 강아지 id (dogId)' }) dogId: string,
-    @Args('chatPairId', { description: '채팅 상대 강아지 id (chatPairId)' })
-    chatPairId: string,
-  ) {
-    return this.chatRoomsService.findChatRoom({ dogId, chatPairId });
+  fetchChatRoom(@Args('roomId', { description: '채팅방 id' }) roomId: string) {
+    return this.chatRoomsService.findChatRoom({ roomId });
   }
 
   // dogId와 chatPairId로 채팅방 조회

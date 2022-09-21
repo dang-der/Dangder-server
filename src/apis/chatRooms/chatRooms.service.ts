@@ -40,10 +40,10 @@ export class ChatRoomsService {
     return result;
   }
 
-  // 채팅방을 찾는 로직. dogId와 chatPairId로 찾는다.
-  async findChatRoom({ dogId, chatPairId }) {
+  // 채팅방을 찾는 로직. roomId로 찾는다.
+  async findChatRoom({ roomId }) {
     const result = await this.chatRoomsRepository.findOne({
-      where: { dog: { id: dogId }, chatPairId },
+      where: { id: roomId },
       relations: { dog: true },
     });
     return result;
