@@ -14,10 +14,9 @@ export class ChatRoomsResolver {
     description: 'Return : 조회된 채팅방 정보',
   })
   fetchChatRoom(
-    @Args('roomId', { description: '채팅방 id (roomId)' }) dogId: string,
-    chatPairId: string,
+    @Args('roomId', { description: '채팅방 id (roomId)' }) roomId: string,
   ) {
-    return this.chatRoomsService.findChatRoom({ dogId, chatPairId });
+    return this.chatRoomsService.findOne({ roomId });
   }
 
   // dogId와 chatPairId로 채팅방 조회
