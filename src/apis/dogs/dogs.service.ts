@@ -90,6 +90,7 @@ export class DogsService {
         user: true,
         sendId: true,
       },
+      order: { img: { isMain: 'DESC' } },
     });
   }
 
