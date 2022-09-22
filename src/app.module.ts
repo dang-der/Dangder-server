@@ -69,6 +69,9 @@ import { ChatModule } from './gateways/chat/chat.module';
         origin: ['https://dangder.shop', 'http://localhost:3000'],
         credential: true,
       },
+      // 배포 시 설정하는 옵션
+      debug: false,
+      playground: false,
     }),
     TypeOrmModule.forRoot({
       type: process.env.DATABASE_TYPE as 'mysql',
