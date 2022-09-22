@@ -11,7 +11,6 @@ import { Cache } from 'cache-manager';
 import { GqlAuthAccessGuard } from 'src/commons/auth/gql-auth.guard';
 import { IContext } from 'src/commons/type/context';
 import { IamportsService } from '../imports/imports.services';
-import * as dayjs from 'dayjs';
 import { PassTicketsService } from '../passTickets/passTickets.service';
 import { PassTicket } from '../passTickets/entities/passTicket.entity';
 
@@ -180,7 +179,7 @@ export class PaymentsResolver {
     // 조회한 결제 정보
     const paymentData = getPaymentData.data.response;
     // 3. 결제정보의 결제금액과 요청받은 결제금액 검증하기
-    if (payMoney !== paymentData.payMoney) {
+    if (payMoney !== paymentData.amount) {
       throw new UnprocessableEntityException(
         '결제정보의 위조/변조 시도가 발견되었습니다. 요청하신 정보를 저장할 수 없습니다.',
       );
@@ -261,6 +260,35 @@ export class PaymentsResolver {
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => PassTicket)
   async createPaymentForPassTicket(
+    @Args('impUid') impUid: string,
+    @Args('payMoney') payMoney: number,
     @Context() context: IContext, //
-  ) {}
+  ) {
+    // *** 결제 검증 시작 *** //
+    // 1. 아임포트 액세스 토큰 발급받기
+    const impToken = await this.iamportsService.getImpAccessToken();
+    // 2. imp_uid로 아임포트 서버에서 결제 정보 조회
+    const getPaymentData = await this.iamportsService.getImpPaymentData({
+      access_token: impToken,
+      imp_uid: impUid,
+    });
+    // 조회한 결제 정보
+    const paymentData = getPaymentData.data.response;
+    // 3. 결제정보의 결제금액과 요청받은 결제금액 검증하기
+    console.log(paymentData, '11111111');
+    if (payMoney !== paymentData.amount) {
+      throw new UnprocessableEntityException(
+        '결제정보의 위조/변조 시도가 발견되었습니다. 요청하신 정보를 저장할 수 없습니다.',
+      );
+    }
+
+    // *** 결제 검증 종료 *** //
+
+    //
+
+    const user = context.req.user;
+    return this.paymentsService.createForPassTickets({
+      user,
+    });
+  }
 }
