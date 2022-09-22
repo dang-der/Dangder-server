@@ -71,9 +71,14 @@ export class LikesService {
           (tmp.mainImg = topMainImg[0].img);
         topDogInfo.push(tmp);
       }
-      await this.cacheManager.set('todayDog', topDogInfo, {
-        ttl: 60 * 60,
-      });
+
+      // 빈 배열 반환시, 레디스에 세팅하지 않도록
+      if (topDogInfo.length !== 0) {
+        await this.cacheManager.set('todayDog', topDogInfo, {
+          ttl: 60 * 60,
+        });
+      }
+
       return topDogInfo;
     }
   }
