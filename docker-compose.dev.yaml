@@ -14,15 +14,15 @@ services:
     environment:
       - TZ=Asia/Seoul
 
-  # my-database:
-  #   platform: linux/x86_64
-  #   image: mysql:latest
-  #   environment:
-  #     MYSQL_DATABASE: 'dangder'
-  #     MYSQL_ROOT_PASSWORD: 'root'
-  #     TZ: Asia/Seoul
-  #   ports:
-  #     - 3306:3306
+  my-database:
+    platform: linux/x86_64
+    image: mysql:latest
+    environment:
+      MYSQL_DATABASE: 'dangder'
+      MYSQL_ROOT_PASSWORD: 'root'
+      TZ: Asia/Seoul
+    ports:
+      - 3306:3306
 
   # Redis
   my-redis:

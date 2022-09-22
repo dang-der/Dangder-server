@@ -12,7 +12,6 @@ import { User } from '../users/entities/user.entity';
 import { Payment, PAYMENT_STATUS_ENUM } from './entities/payment.entity';
 import { Cache } from 'cache-manager';
 import * as dayjs from 'dayjs';
-import { UpdateUserInput } from '../users/dto/updateUser.input';
 import { PassTicket } from '../passTickets/entities/passTicket.entity';
 
 @Injectable()
