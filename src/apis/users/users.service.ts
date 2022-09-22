@@ -41,6 +41,7 @@ export class UsersService {
         interests: true,
         avoidBreeds: true,
       },
+      order: { img: { isMain: 'DESC' } },
     });
 
     const result = new UserOutput();
