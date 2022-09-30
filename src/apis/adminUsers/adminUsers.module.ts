@@ -17,8 +17,8 @@ import { AdminUser } from './entities/adminUser.entity';
   providers: [
     AdminUsersResolver, //
     AdminUsersService,
-    JwtAdminAccessStrategy, // Admin AT Strategy
-    JwtAdminRefreshStrategy, // Admin RT Strategy
+    JwtAdminAccessStrategy, // Admin AccessToken Strategy
+    JwtAdminRefreshStrategy, // Admin RefreshToken Strategy
   ],
 })
 export class AdminUsersModule {}

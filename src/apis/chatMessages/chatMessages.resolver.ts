@@ -3,13 +3,22 @@ import { ChatMessagesService } from './chatMessages.service';
 import { ChatMessageInput } from './dto/chatMessageInput.input';
 import { ChatMessage } from './entities/chatMessage.entity';
 
+/**
+ * ChatMessage GraphQL API Resolver
+ * @APIs `fetchChatMessagesByChatRoomId`, `createChatMessage`
+ */
 @Resolver()
 export class ChatMessagesResolver {
   constructor(
     private readonly chatMessagesService: ChatMessagesService, //
   ) {}
 
-  // chatRoomId로 채팅방 내의 모든 메시지 찾기
+  /**
+   * Fetch ChatMessages API
+   * @type [`Query`]
+   * @param chatRoomId 채팅방 id
+   * @returns 채팅방에 속한 모든 채팅 메시지들
+   */
   @Query(() => [ChatMessage], {
     description: 'Return : chatRoomId로 찾은 메시지들의 정보',
   })
@@ -19,7 +28,12 @@ export class ChatMessagesResolver {
     return this.chatMessagesService.findAllByChatRoomId({ chatRoomId });
   }
 
-  // 채팅메시지 생성
+  /**
+   * Create ChatMessage API
+   * @param chatRoomId 채팅방 아이디
+   * @param chatMessageInput 보낼 메시지 Data
+   * @returns 생성된 메시지 정보
+   */
   @Mutation(() => ChatMessage, {
     description: 'Return : 생성된 채팅 메시지 정보',
   })

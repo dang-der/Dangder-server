@@ -10,7 +10,11 @@ export class ChatMessagesService {
     private readonly chatMessagesRepository: Repository<ChatMessage>,
   ) {}
 
-  // chatRoomId로 찾는다.
+  /**
+   * Find All ChatMessages of ChatRoom
+   * @param chatRoomId 채팅방 id
+   * @returns 채팅방에 속한 모든 메시지들
+   */
   findAllByChatRoomId({ chatRoomId }) {
     return this.chatMessagesRepository.find({
       where: { chatRoom: { id: chatRoomId } },
@@ -19,7 +23,12 @@ export class ChatMessagesService {
     });
   }
 
-  // senderId, message로 채팅메시지 생성
+  /**
+   * Create ChatMessage
+   * @param chatRoomId 채팅방 id
+   * @param chatMessageInput 메시지 Data
+   * @returns 생성된 message 정보
+   */
   create({ chatRoomId, chatMessageInput }) {
     return this.chatMessagesRepository.save({
       chatRoom: { id: chatRoomId },
@@ -27,7 +36,11 @@ export class ChatMessagesService {
     });
   }
 
-  // chatRoomId 로 채팅방 삭제
+  /**
+   * Delete ChatMessage (SoftDelete)
+   * @param chatRoomId 채팅방 id
+   * @returns 메시지 삭제 여부
+   */
   async delete({ chatRoomId }) {
     const result = await this.chatMessagesRepository.softDelete({
       chatRoom: { id: chatRoomId },
