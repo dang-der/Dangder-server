@@ -42,14 +42,3 @@
 # Flow Chart
 
 ![user-flow chart](https://user-images.githubusercontent.com/107927849/193515816-da9e294c-b227-4c7f-b3c9-463fc7c1cc21.png)
-
-<br><br>
-
-# ERD
-
-![Dangder 2 0](https://user-images.githubusercontent.com/107927849/193516288-abebf469-8698-4548-b86c-83743b45b082.png)
-
-<br><br>
-
-# API
-
