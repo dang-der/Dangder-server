@@ -38,3 +38,7 @@
 <img width="1512" alt="스크린샷 2022-10-03 오후 3 37 20" src="https://user-images.githubusercontent.com/107927849/193515151-8791aa1c-e6a3-43d0-8dec-5450a82a4bfd.png">
 
 <br><br>
+
+# Flow Chart
+
+![user-flow chart](https://user-images.githubusercontent.com/107927849/193515816-da9e294c-b227-4c7f-b3c9-463fc7c1cc21.png)
