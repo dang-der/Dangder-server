@@ -2,9 +2,6 @@
 
 # Dangder
 
-![Dangder_Logo_2x1](https://user-images.githubusercontent.com/107927849/193513415-c07e95f0-04fb-42fb-a65b-366fc02db5b8.jpg)
-
-
 860만 반려동물 시대를 맞이한 대한민국! ([기사](https://www.korea.kr/news/pressReleaseView.do?newsId=156448339))  🐶 애견인들은 이미 다양한 커뮤니티 안에서 여러 활동을 하고 있습니다.
 
 반려동물의 다양한 경험과 활동을 위해 열심을 다하는 애견인들을 위한 프로젝트 🐾 **‘Dangder’** (댕더) 는
