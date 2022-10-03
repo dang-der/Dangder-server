@@ -29,7 +29,3 @@
 # 팀원 소개
 
 <img width="1512" alt="스크린샷 2022-10-03 오후 3 34 37" src="https://user-images.githubusercontent.com/107927849/193514820-1b343fd7-2eec-4fa3-b69c-5720ceeb7a1a.png">
-
-# 기술 스택
-
-<img width="1512" alt="스크린샷 2022-10-03 오후 3 37 20" src="https://user-images.githubusercontent.com/107927849/193515151-8791aa1c-e6a3-43d0-8dec-5450a82a4bfd.png">
