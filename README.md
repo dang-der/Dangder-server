@@ -59,7 +59,6 @@
 
 # 서버 폴더구조
 
-```bash
 dangder-server
  ┣ .vscode
  ┃ ┗ settings.json
@@ -287,4 +286,3 @@ dangder-server
  ┣ tsconfig.build.json
  ┣ tsconfig.json
  ┗ yarn.lock
- ```
