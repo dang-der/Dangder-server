@@ -59,6 +59,7 @@
 
 # 서버 폴더구조
 
+📦dangder-server
  ┣ 📂.vscode
  ┃ ┗ 📜settings.json
  ┣ 📂elk
