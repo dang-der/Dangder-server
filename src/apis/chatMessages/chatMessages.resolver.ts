@@ -30,6 +30,7 @@ export class ChatMessagesResolver {
 
   /**
    * Create ChatMessage API
+   * @type [`Mutation`]
    * @param chatRoomId 채팅방 아이디
    * @param chatMessageInput 보낼 메시지 Data
    * @returns 생성된 메시지 정보

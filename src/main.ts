@@ -13,7 +13,7 @@ async function bootstrap() {
   app.use(graphqlUploadExpress()); // graphql upload 이용하기위한 추가
   // Cors 추가
   app.enableCors({
-    origin: ['https://dangder.shop', 'http://localhost:3000'],
+    origin: process.env.CORS_URLS.split(', '),
     credentials: true,
   });
   await app.listen(3000);

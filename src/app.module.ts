@@ -66,7 +66,7 @@ import { ChatModule } from './gateways/chat/chat.module';
       context: ({ req, res }) => ({ req, res }),
       // Cors 추가
       cors: {
-        origin: ['https://dangder.shop', 'http://localhost:3000'],
+        origin: process.env.CORS_URLS.split(', '),
         credential: true,
       },
       // 배포 시 설정하는 옵션
