@@ -3,6 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Report } from './entities/report.entity';
 
+/**
+ * Report Service
+ */
 @Injectable()
 export class ReportsService {
   constructor(
@@ -10,18 +13,30 @@ export class ReportsService {
     private readonly reportsRepository: Repository<Report>,
   ) {}
 
-  // 신고한 userId로 찾기
+  /**
+   * Find By User Id
+   * @param userId
+   * @returns  유저아이디로 찾은 신고 정보
+   */
   findByUserId({ userId }) {
     return this.reportsRepository.findOne({ where: { user: { id: userId } } });
   }
 
-  // 신고당한 Id로찾기
+  /**
+   * Find By Target Id
+   * @param targetId
+   * @returns 신고당한 유저아이디로 찾은 신고 정보
+   */
   findByTargetId({ targetId }) {
     return this.reportsRepository.findOne({ where: { targetId } });
   }
 
-  // 신고 게시물 만들기
-
+  /**
+   * Create Report
+   * @param userId
+   * @param CreateReportInput
+   * @returns 생성된 신고 정보
+   */
   async create({ userId, CreateReportInput }) {
     return this.reportsRepository.save({
       user: { id: userId },

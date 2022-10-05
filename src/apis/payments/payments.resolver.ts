@@ -14,6 +14,10 @@ import { IamportsService } from '../imports/imports.services';
 import { PassTicketsService } from '../passTickets/passTickets.service';
 import { PassTicket } from '../passTickets/entities/passTicket.entity';
 
+/**
+ * Payment GraphQL API Resolver
+ * @APIs `createPayment`, `cancelPayment`, `createPaymentForPoints`, `cancelPaymentForPoints`, `createPaymentForPassTicket`
+ */
 @Resolver()
 export class PaymentsResolver {
   constructor(
@@ -24,6 +28,14 @@ export class PaymentsResolver {
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
   ) {}
+
+  /**
+   * Create Payment API
+   * @param impUid 아임포트 결제번호
+   * @param payMoney 결제 금액
+   * @param context 유저 정보
+   * @returns 생성된 결제 정보
+   */
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Payment, { description: 'Return : 생성된 결제 정보' })
   async createPayment(
@@ -98,6 +110,13 @@ export class PaymentsResolver {
     return result;
   }
 
+  /**
+   * Payment Cancel API
+   * @type [`Mutation`]
+   * @param impUid 아임포트 결제 번호
+   * @param context 유저 정보
+   * @returns 삭제된 결제 정보
+   */
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Payment, { description: 'Return : 삭제된 결제 정보' })
   async cancelPayment(
@@ -161,6 +180,14 @@ export class PaymentsResolver {
     });
   }
 
+  /**
+   * Payment For Point Create API
+   * @param impUid 아임포트 결제 번호
+   * @param payMoney 결제 금액
+   * @param context 유저 정보
+   * @returns 포인트 결제 내역
+   */
+
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Payment, { description: 'Return : 포인트 결제내역' })
   async createPaymentForPoints(
@@ -197,6 +224,12 @@ export class PaymentsResolver {
     });
   }
 
+  /**
+   * Payment For Point Cancel API
+   * @param impUid 아임포트 결제 번호
+   * @param context 유저 정보
+   * @returns 포인트 취소내역
+   */
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Payment, { description: 'Return : 포인트 취소내역' })
   async cancelPaymentForPoints(
@@ -255,13 +288,19 @@ export class PaymentsResolver {
     });
   }
 
-  // 미완성입니다.
+  /**
+   * Payment For PassTicket Create API
+   * @param impUid 아임포트 결제 정보
+   * @param payMoney 결제 금액
+   * @param context 유저 정보
+   * @returns 유저 정보
+   */
 
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => PassTicket)
   async createPaymentForPassTicket(
-    @Args('impUid') impUid: string,
-    @Args('payMoney') payMoney: number,
+    @Args('impUid', { description: '아임포트 결제번호' }) impUid: string,
+    @Args('payMoney', { description: '결제 금액' }) payMoney: number,
     @Context() context: IContext, //
   ) {
     // *** 결제 검증 시작 *** //

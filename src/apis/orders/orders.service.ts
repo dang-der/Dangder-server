@@ -3,6 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Order } from './entities/order.entity';
 
+/**
+ * Order Service
+ */
 @Injectable()
 export class OrdersService {
   constructor(
@@ -10,24 +13,41 @@ export class OrdersService {
     private readonly ordersRepository: Repository<Order>,
   ) {}
 
-  // 주문 정보 생성
+  /**
+   * Create Order
+   * @param createOrderInput 생성할 주문 정보
+   * @returns 생성된 주문 정보
+   */
   async create({ createOrderInput }) {
     return this.ordersRepository.save({
       ...createOrderInput,
     });
   }
 
-  // id로 주문 정보 조회
+  /**
+   * Fetch Order By Id
+   * @param id 주문 Id
+   * @returns 조회한 주문 정보
+   */
   findOrderId({ id }) {
     return this.ordersRepository.findOne({ where: { id } });
   }
 
-  // phone으로 주문 정보 조회
+  /**
+   * Fetch Order By Phone
+   * @param phone 휴대폰 번호
+   * @returns 조회한 주문 번호
+   */
   findOrderPhone({ phone }) {
     return this.ordersRepository.findOne({ where: { phone } });
   }
 
-  // id로 업데이트
+  /**
+   * Update Order
+   * @param id 주문 Id
+   * @param updateOrderInput 업데이트 할 주문 정보
+   * @returns 업데이트 된 주문 정보
+   */
 
   async update({ id, updateOrderInput }) {
     const orderId = await this.ordersRepository.findOne({
@@ -42,8 +62,11 @@ export class OrdersService {
     return result;
   }
 
-  // 삭제
-
+  /**
+   * Delete Order
+   * @param id 주문 Id
+   * @returns true/false
+   */
   async delete({ id }) {
     const result = await this.ordersRepository.softDelete({ id });
     return result.affected ? true : false;

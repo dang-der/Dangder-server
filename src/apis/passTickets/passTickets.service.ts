@@ -3,6 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { PassTicket } from './entities/passTicket.entity';
 
+/**
+ * PassTicket Service
+ */
 @Injectable()
 export class PassTicketsService {
   constructor(
@@ -10,8 +13,12 @@ export class PassTicketsService {
     private readonly passTicketsRepository: Repository<PassTicket>,
   ) {}
 
-  // userId로 passTicket 생성
-  // expiredAt도 생성
+  /**
+   * Create PassTicket
+   * @param userId 유저 아이디
+   * @param expiredAt 만료 시간
+   * @returns 생성된 패스 티켓 정보
+   */
 
   async create({ userId, expiredAt }) {
     return this.passTicketsRepository.save({
@@ -20,13 +27,21 @@ export class PassTicketsService {
     });
   }
 
-  // passTicket Id로 조회
+  /**
+   * Fetch PassTicket
+   * @param id 패스 티켓 아이디
+   * @returns 패스 티켓 정보
+   */
 
   async findPassTicket({ id }) {
     return this.passTicketsRepository.findOne({ where: { id } });
   }
 
-  // passTicket softdelete
+  /**
+   * Delete PassTicket
+   * @param id 패스 티켓 아이디
+   * @returns true/false
+   */
 
   async deletePassTicket({ id }) {
     const result = await this.passTicketsRepository.softDelete({ id });
