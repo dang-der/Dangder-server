@@ -6,6 +6,9 @@ import { Dog } from '../dogs/entities/dog.entity';
 import { ChatRoomsOutput } from './dto/chatRoomsOutput.output';
 import { ChatRoom } from './entities/chatRoom.entity';
 
+/**
+ * ChatRoom Service
+ */
 @Injectable()
 export class ChatRoomsService {
   constructor(
@@ -22,7 +25,13 @@ export class ChatRoomsService {
     private readonly dataSource: DataSource,
   ) {}
 
-  // 채팅방 id, 본인 id, 상대방 id로 저장
+  /**
+   * Create ChatRoom by User & Pair dogId
+   * 채팅방 생성과 동시에 내부에 init 메시지 생성
+   * @param dogId 내 강아지 아이디
+   * @param chatPairId 채팅 상대방 강아지 아이디
+   * @returns 생성된 채팅방 정보
+   */
   async create({ dogId, chatPairId }) {
     const result = await this.chatRoomsRepository.save({
       dog: { id: dogId },
@@ -40,7 +49,11 @@ export class ChatRoomsService {
     return result;
   }
 
-  // 채팅방을 찾는 로직. roomId로 찾는다.
+  /**
+   * Find ChatRoom by ChatRoom Id
+   * @param roomId 찾고자하는 채팅방 id
+   * @returns 찾은 채팅방 정보
+   */
   async findOne({ roomId }) {
     const result = await this.chatRoomsRepository.findOne({
       where: { id: roomId },
@@ -49,7 +62,12 @@ export class ChatRoomsService {
     return result;
   }
 
-  // 채팅방을 찾는 로직. dogId와 chatPairId로 찾는다.
+  /**
+   * Find ChatRoom by dogId & chatPairId
+   * @param dogId 내 강아지 아이디
+   * @param chatPairId 채팅 상대방 강아지 아이디
+   * @returns 찾은 채팅방 정보
+   */
   async findChatRoom({ dogId, chatPairId }) {
     const result = await this.chatRoomsRepository.findOne({
       where: { dog: { id: dogId }, chatPairId },
@@ -58,7 +76,15 @@ export class ChatRoomsService {
     return result;
   }
 
-  // 채팅방들을 찾는 로직. dogId로 참가한 채팅방들을 찾는다.
+  /**
+   * Find ChatRooms (Joined)
+   * 내가(dogId) 참가한 모든 채팅방들 찾아오기.
+   * Host, Guest 인 모든 채팅방을 찾아서
+   * 채팅방 id, 대화상대 정보, 마지막 채팅메시지를 찾아
+   * 가장 최신 대화 순으로 정렬해 반환한다.
+   * @param dogId 내 강아지 id
+   * @returns 찾은 채팅방들의 정보들.
+   */
   async findChatRooms({ dogId }) {
     // 내가 host인 채팅방들
     const hostRoomsInfo = await this.chatRoomsRepository.find({
@@ -126,8 +152,13 @@ export class ChatRoomsService {
     return result;
   }
 
-  // chatRoomId 로 채팅방, 연결된 채팅메시지들 삭제
+  /**
+   * Delete ChatRoom (softDelete)
+   * @param id 채팅방 id
+   * @returns 채팅방 삭제 여부
+   */
   async delete({ id }) {
+    // 채팅방에 속한 메시지들도 모두 삭제.
     await this.chatMessagesRepository.softDelete({
       chatRoom: { id },
     });

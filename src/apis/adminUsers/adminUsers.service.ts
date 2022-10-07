@@ -52,11 +52,7 @@ export class AdminUsersService {
       { secret: JWT_ADMIN_REFRESH_SECRET, expiresIn: '2w' },
     );
 
-    const allowedOrigins = [
-      'https://recipemaker.shop',
-      'http://localhost:3000',
-      'https://dangder.shop',
-    ];
+    const allowedOrigins = process.env.CORS_URLS.split(', ');
     const origin = req.headers.origin;
     if (allowedOrigins.includes(origin)) {
       res.setHeader('Access-Control-Allow-Origin', origin);

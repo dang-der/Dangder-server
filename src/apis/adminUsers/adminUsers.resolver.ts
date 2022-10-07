@@ -130,6 +130,7 @@ export class AdminUsersResolver {
 
   /**
    * Create Admin User
+   * @type [`Mutation`]
    * @param account 관리자 계정
    * @param password 계정 비밀번호
    * @returns 생성된 계정 정보
@@ -147,6 +148,7 @@ export class AdminUsersResolver {
 
   /**
    * Delete Admin User
+   * @type [`Mutation`]
    * @param account 관리자 계정
    * @returns 계정 삭제 여부
    */
