@@ -6,6 +6,9 @@ import * as bcrypt from 'bcrypt';
 import { Dog } from '../dogs/entities/dog.entity';
 import { UserOutput } from './dto/userOutput.output';
 
+/**
+ * Auth Service
+ */
 @Injectable()
 export class UsersService {
   constructor(
@@ -16,16 +19,32 @@ export class UsersService {
     private readonly dogsRepository: Repository<Dog>,
   ) {}
 
+  /**
+   * Find All User
+   * @returns 유저 전체 정보
+   */
+
   findAll() {
     return this.usersRepository.find();
   }
 
+  /**
+   * Find User
+   * @param email 유저 이메일
+   * @returns 유저 정보
+   */
   findOne({ email }) {
     return this.usersRepository.findOne({
       where: { email },
       relations: { dog: true },
     });
   }
+
+  /**
+   * Find User and Dog
+   * @param email
+   * @returns 유저와 강아지 정보
+   */
 
   async findUserAndDog({ email }) {
     const userResult = await this.usersRepository.findOne({
@@ -51,6 +70,11 @@ export class UsersService {
     return result;
   }
 
+  /**
+   * Create User
+   * @param createUserInput 생성하고 싶은 유저 정보
+   * @returns 저장될 유저의 정보
+   */
   async create({ createUserInput }) {
     const user = await this.usersRepository.findOne({
       where: { email: createUserInput.email },
@@ -72,7 +96,12 @@ export class UsersService {
     return result;
   }
 
-  // 유저 업데이트
+  /**
+   * Update User
+   * @param email 유저 이메일
+   * @param updateUserInput 업데이트할 유저 정보
+   * @returns 업데이트 된 유저 정보
+   */
   async update({ email, updateUserInput }) {
     const user = await this.usersRepository.findOne({
       where: { email },
@@ -93,6 +122,11 @@ export class UsersService {
     return result;
   }
 
+  /**
+   * Delete User
+   * @param email 유저 이메일
+   * @returns true/false
+   */
   async delete({ email }) {
     // 소프트 삭제 - softDelete
     const user = await this.usersRepository.findOne({ where: { email } });

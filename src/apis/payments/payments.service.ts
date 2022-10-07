@@ -14,6 +14,9 @@ import { Cache } from 'cache-manager';
 import * as dayjs from 'dayjs';
 import { PassTicket } from '../passTickets/entities/passTicket.entity';
 
+/**
+ * Payment Service
+ */
 @Injectable()
 export class PaymentsService {
   constructor(
@@ -33,6 +36,11 @@ export class PaymentsService {
     private readonly cacheManager: Cache,
   ) {}
 
+  /**
+   * Cancel IsAble
+   * @param impUid 아임포트 결제정보
+   * @param user 유저 정보
+   */
   async checkIsAbleToCancel({ impUid, user }) {
     //payment table에 결제 내역이 저장되어 있는지 검증
     const paidPayment = await this.paymentsRepository.findOne({
@@ -58,7 +66,14 @@ export class PaymentsService {
     }
   }
 
-  // 결제내역 (payment 생성)
+  /**
+   * Create Payment
+   * @param impUid 아임포트 결제정보
+   * @param payMoney 결제 금액
+   * @param user 유저 정보
+   * @param paymentType 결제 타입
+   * @returns 생성된 결제 정보
+   */
   async create({ impUid, payMoney, user, paymentType }) {
     // 1. 결제내역 테이블(Payment)에서, 기존 내역 확인
     const checkPayment = await this.paymentsRepository.findOne({
@@ -117,7 +132,14 @@ export class PaymentsService {
     return result;
   }
 
-  // 포인트 결제내역 (payment 생성)
+  /**
+   * Create Point
+   * @param impUid 아임포트 결제정보
+   * @param payMoney 결제 금액
+   * @param user 유저 정보
+   * @param paymentType 결제 타입
+   * @returns 생성된 결제 정보
+   */
   async createForPoints({ impUid, payMoney, user, paymentType }) {
     // === 데이터의 오염을 방지하기 위한 트랜잭션 적용 ==== //
     const queryRunner = this.dataSource.createQueryRunner();
@@ -190,6 +212,11 @@ export class PaymentsService {
     }
   }
 
+  /**
+   * Create PassTicket
+   * @param user 유저 정보
+   * @returns 생성된 패스 티켓 정보
+   */
   // 티켓 생성
   async createForPassTickets({ user }) {
     // === 데이터의 오염을 방지하기 위한 트랜잭션 적용 ==== //

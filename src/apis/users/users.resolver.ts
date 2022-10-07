@@ -8,6 +8,10 @@ import { GqlAuthAccessGuard } from 'src/commons/auth/gql-auth.guard';
 import { UserOutput } from './dto/userOutput.output';
 import { Cache } from 'cache-manager';
 
+/**
+ * User GraphQL API Resolver
+ * @APIs `fetchUsers`, `fetchUser`, `fetchLoginUser`, `fetchLoginUserIsCert`, `updateUser`, `createUser`, `deleteUser`
+ */
 @Resolver()
 export class UsersResolver {
   constructor(
@@ -16,13 +20,22 @@ export class UsersResolver {
     private readonly cacheManager: Cache,
   ) {}
 
-  // 모든 사용자 출력
+  /**
+   * AllUser Fetch API
+   * @type [`Query`]
+   * @returns 전체 유저 정보
+   */
   @Query(() => [User], { description: 'Return : 전체 유저 정보' })
   fetchUsers() {
     return this.usersService.findAll();
   }
 
-  // Email 값이 일치하는 사용자 출력
+  /**
+   * User Fetch API
+   * @type [`Query`]
+   * @param email
+   * @returns 유저 정보
+   */
   @Query(() => User, { description: 'Return : 유저 정보' })
   async fetchUser(
     @Args('email', { description: '회원의 계정(메일주소)' }) email: string, //
@@ -31,7 +44,12 @@ export class UsersResolver {
     return this.usersService.findOne({ email });
   }
 
-  // 로그인(userLogin)중인 user 한 사람 조회 API
+  /**
+   * LoginUser Fetch API
+   * @type [`Query`]
+   * @param context 로그인한 유저의 정보
+   * @returns 로그인한 유저, 유저의 강아지 데이터
+   */
   @UseGuards(GqlAuthAccessGuard)
   @Query(() => UserOutput, {
     description: 'Return : 로그인한 유저, 유저의 강아지 데이터',
@@ -42,10 +60,15 @@ export class UsersResolver {
     return this.usersService.findUserAndDog({ email: context.req.user.email });
   }
 
-  // 로그인중인 user의 isCert 여부 (redis에서) 확인하기
+  /**
+   * LoginUser IsCert Fetch API
+   * @type [`Query`]
+   * @param context 로그인한 유저의 정보
+   * @returns 로그인 중인 유저의 이용권 유효 여부 확인하기
+   */
   @UseGuards(GqlAuthAccessGuard)
   @Query(() => Boolean, {
-    description: '로그인중인 유저의 이용권 유효 여부 확인하기',
+    description: '로그인 중인 유저의 이용권 유효 여부 확인하기',
   })
   async fetchLoginUserIsCert(
     @Context() context: any, //
@@ -56,7 +79,13 @@ export class UsersResolver {
     return result ? true : false;
   }
 
-  // 유저 정보 변경하기
+  /**
+   * User Update API
+   * @type [`Mutation`]
+   * @param email 회원의 계정(메일 주소)
+   * @param updateUserInput 바꾸고 싶은 유저 정보
+   * @returns 바뀐 유저 정보
+   */
   @Mutation(() => User, { description: 'Return : 바뀐 유저 정보' })
   updateUser(
     @Args('email', { description: '회원의 계정(메일주소)' }) email: string,
@@ -69,6 +98,12 @@ export class UsersResolver {
     });
   }
 
+  /**
+   * User Create API
+   * @type [`Mutation`]
+   * @param createUserInput 회원 정보
+   * @returns 가입된 유저 정보
+   */
   @Mutation(() => User, { description: 'Return : 가입된 유저 정보' })
   async createUser(
     @Args('createUserInput', { description: '회원의 정보 입력' })
@@ -78,7 +113,12 @@ export class UsersResolver {
     return this.usersService.create({ createUserInput });
   }
 
-  // 유저 삭제(탈퇴)
+  /**
+   * User Delete API
+   * @type [`Mutation`]
+   * @param email 회원의 계정(메일주소)
+   * @returns 유저 정보가 삭제된 시간
+   */
   @Mutation(() => Boolean, {
     description: 'Return : deletedAt(유저 정보 삭제된 시간)',
   })

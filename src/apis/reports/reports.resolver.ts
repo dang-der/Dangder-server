@@ -3,11 +3,20 @@ import { CreateReportInput } from './dto/createReport.input';
 import { Report } from './entities/report.entity';
 import { ReportsService } from './reports.service';
 
+/**
+ * Report GraphQL API Resolver
+ * @APIs `fetchWhoReport`, `fetchTarget`, `createReport`
+ */
 @Resolver()
 export class ReportsResolver {
   constructor(private readonly reportsService: ReportsService) {}
 
-  // 누가 신고했는가?
+  /**
+   * Fetch Who Report API
+   * @type [`Query`]
+   * @param userId
+   * @returns 신고 정보
+   */
   @Query(() => Report, { description: 'Return : 신고 정보' })
   async fetchWhoReport(
     @Args('userId', { description: '신고한 유저 Id' }) userId: string, //
@@ -15,7 +24,12 @@ export class ReportsResolver {
     return this.reportsService.findByUserId({ userId });
   }
 
-  // targetId로 신고게시판 조회
+  /**
+   * Fetch Who Reported API
+   * @type [`Query`]
+   * @param targetId 차단된 유저 Id
+   * @returns 신고 정보
+   */
   @Query(() => Report, { description: 'Return : 신고 정보' })
   async fetchTarget(
     @Args('targetId', { description: '신고 당한 유저 Id' }) targetId: string, //
@@ -23,7 +37,13 @@ export class ReportsResolver {
     return this.reportsService.findByTargetId({ targetId });
   }
 
-  // 신고 게시판 생성하기
+  /**
+   * Report Create API
+   * @type [`Mutation`]
+   * @param userId 신고한 유저 Id
+   * @param CreateReportInput 신고 정보 입력
+   * @returns 생성된 신고 게시물
+   */
 
   @Mutation(() => Report, { description: 'Return : 생성된 신고 게시물' })
   async createReport(

@@ -3,20 +3,33 @@ import { BlockUsersService } from './blockUsers.service';
 import { CreateBlockUserInput } from './dto/createBlockUser.input';
 import { BlockUser } from './entities/blockUser.entity';
 
+/**
+ * BlockUser GraphQL API Resolver
+ * @APIs `fetchBlockUsers`, `fetchBlockUser`, `createBlockUser`
+ */
 @Resolver()
 export class BlockUserResolver {
   constructor(
     private readonly blockUsersService: BlockUsersService, //
   ) {}
 
-  // 모든 차단된 유저 출력
+  /**
+   * BlockUsers Fetch API
+   * @type [`Query`]
+   * @returns 차단된 모든 유저 정보
+   */
 
   @Query(() => [BlockUser], { description: 'Return : 차단된 모든 유저 정보' })
   fetchBlockUsers() {
     return this.blockUsersService.findAll();
   }
 
-  // blockId 값이 일치하는 사용자 출력
+  /**
+   * BlockUser Fetch API
+   * @type [`Query`]
+   * @param blockId 차단된 유저 Id
+   * @returns 차단된 유저 정보
+   */
 
   @Query(() => BlockUser, { description: 'Return : 차단된 유저 정보' })
   fetchBlockUser(
@@ -26,6 +39,12 @@ export class BlockUserResolver {
     return this.blockUsersService.findOne({ blockId });
   }
 
+  /**
+   * BlockUser Create API
+   * @type [`Mutation`]
+   * @param createBlockUserInput 차단할 유저 정보
+   * @returns 차단된 유저 정보
+   */
   @Mutation(() => BlockUser, { description: 'Return : 차단된 유저 정보' })
   createBlockUser(
     @Args('createBlockUserInput', { description: '차단할 유저 정보' })
