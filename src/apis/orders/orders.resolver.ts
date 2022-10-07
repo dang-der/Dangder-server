@@ -16,6 +16,7 @@ export class OrdersResolver {
 
   /**
    * Order Create API
+   * @type [`Mutation`]
    * @param createOrderInput 생성할 주문 정보
    * @returns 생성된 주문 정보
    */
@@ -29,6 +30,7 @@ export class OrdersResolver {
 
   /**
    * Fetch Order By Id API
+   * @type [`Query`]
    * @param id 주문 Id
    * @returns 주문 정보
    */
@@ -39,6 +41,7 @@ export class OrdersResolver {
 
   /**
    * Fetch Order By Phone API
+   * @type [`Query`]
    * @param phone 휴대폰 번호
    * @returns 주문 정보
    */
@@ -51,6 +54,7 @@ export class OrdersResolver {
 
   /**
    * Order Update API
+   * @type [`Mutation`]
    * @param id 주문 Id
    * @param updateOrderInput 업데이트 할 주문 정보
    * @returns 업데이트 된 주문 정보
@@ -66,6 +70,7 @@ export class OrdersResolver {
 
   /**
    * Order Delete API
+   * @type [`Mutation`]
    * @param id 주문 Id
    * @returns true/false
    */

@@ -30,7 +30,8 @@ export class PaymentsResolver {
   ) {}
 
   /**
-   * Create Payment API
+   * Payment Create API
+   * @type [`Mutation`]
    * @param impUid 아임포트 결제번호
    * @param payMoney 결제 금액
    * @param context 유저 정보
@@ -182,6 +183,7 @@ export class PaymentsResolver {
 
   /**
    * Payment For Point Create API
+   * @type [`Mutation`]
    * @param impUid 아임포트 결제 번호
    * @param payMoney 결제 금액
    * @param context 유저 정보
@@ -226,6 +228,7 @@ export class PaymentsResolver {
 
   /**
    * Payment For Point Cancel API
+   * @type [`Mutation`]
    * @param impUid 아임포트 결제 번호
    * @param context 유저 정보
    * @returns 포인트 취소내역
@@ -290,6 +293,7 @@ export class PaymentsResolver {
 
   /**
    * Payment For PassTicket Create API
+   * @type [`Mutation`]
    * @param impUid 아임포트 결제 정보
    * @param payMoney 결제 금액
    * @param context 유저 정보

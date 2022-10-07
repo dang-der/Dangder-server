@@ -39,6 +39,7 @@ export class ReportsResolver {
 
   /**
    * Report Create API
+   * @type [`Mutation`]
    * @param userId 신고한 유저 Id
    * @param CreateReportInput 신고 정보 입력
    * @returns 생성된 신고 게시물

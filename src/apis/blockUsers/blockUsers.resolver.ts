@@ -15,6 +15,7 @@ export class BlockUserResolver {
 
   /**
    * BlockUsers Fetch API
+   * @type [`Query`]
    * @returns 차단된 모든 유저 정보
    */
 
@@ -25,6 +26,7 @@ export class BlockUserResolver {
 
   /**
    * BlockUser Fetch API
+   * @type [`Query`]
    * @param blockId 차단된 유저 Id
    * @returns 차단된 유저 정보
    */
@@ -39,6 +41,7 @@ export class BlockUserResolver {
 
   /**
    * BlockUser Create API
+   * @type [`Mutation`]
    * @param createBlockUserInput 차단할 유저 정보
    * @returns 차단된 유저 정보
    */

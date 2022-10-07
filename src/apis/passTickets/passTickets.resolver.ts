@@ -13,6 +13,7 @@ export class PassTicketsResolver {
 
   /**
    * PassTicket Fetch API
+   * @type [`Query`]
    * @param id 패스 티켓 아이디
    * @returns 조회한 패스 티켓 정보
    */
@@ -25,6 +26,7 @@ export class PassTicketsResolver {
 
   /**
    * PassTicket Create API
+   * @type [`Mutation`]
    * @param userId 유저 아이디
    * @param expiredAt 만료 시간
    * @returns 생성된 티켓 정보
@@ -38,6 +40,7 @@ export class PassTicketsResolver {
   }
   /**
    * PassTicket Delete API
+   * @type [`Mutation`]
    * @param id 패스 티켓 아이디
    * @returns true/false
    */

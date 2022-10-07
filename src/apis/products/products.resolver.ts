@@ -24,6 +24,7 @@ export class ProductsResolver {
 
   /**
    * Product Fetch API
+   * @type [`Query`]
    * @param id 상품 아이디
    * @returns 찾은 상품 정보
    */
@@ -53,6 +54,7 @@ export class ProductsResolver {
 
   /**
    * Product Delete API
+   * @type [`Mutatioin`]
    * @param id 상품 아이디
    * @returns true/false
    */
