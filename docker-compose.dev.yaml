@@ -11,12 +11,37 @@ services:
       - 3000:3000
     env_file:
       - ./.env.dev
-
-  my-database:
-    platform: linux/x86_64
-    image: mysql:latest
     environment:
-      MYSQL_DATABASE: 'dangder'
-      MYSQL_ROOT_PASSWORD: 'root'
+      - TZ=Asia/Seoul
+
+  # my-database:
+  #   platform: linux/x86_64
+  #   image: mysql:latest
+  #   environment:
+  #     MYSQL_DATABASE: 'dangder'
+  #     MYSQL_ROOT_PASSWORD: 'root'
+  #     TZ: Asia/Seoul
+  #   ports:
+  #     - 3306:3306
+
+  # Redis
+  my-redis:
+    image: redis:latest
     ports:
-      - 3306:3306
+      - 6379:6379
+
+  # # Elastic Search
+  # elasticsearch:
+  #   image: elasticsearch:7.17.0
+  #   environment:
+  #     discovery.type: single-node
+  #   ports:
+  #     - 9200:9200
+
+  # # Logstash
+  # logstash:
+  #   image: logstash:7.17.0
+  #   volumes:
+  #     - ./elk/logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+  #     - ./elk/logstash/mysql-connector-java-8.0.28.jar:/usr/share/logstash/mysql-connector-java-8.0.28.jar
+  #     - ./elk/logstash/search-avoid-breed-template.json:/usr/share/logstash/search-avoid-breed-template.json

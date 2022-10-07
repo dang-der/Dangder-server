@@ -1,5 +1,19 @@
 {
-  "cSpell.words": ["nestjs", "typeorm"],
+  "cSpell.words": [
+    "Auths",
+    "dangder",
+    "dangderchats",
+    "Iamports",
+    "Kakao",
+    "Naver",
+    "nestjs",
+    "OPENAPI",
+    "recipemaker",
+    "SERVICEKEY",
+    "typeorm",
+    "uuidv",
+    "websockets"
+  ],
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode"
 }
