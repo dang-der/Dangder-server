@@ -18,6 +18,9 @@ import { ChatMessage } from '../chatMessages/entities/chatMessage.entity';
 import { AroundDogOutput } from './dto/aroundDog.output';
 import { LikesService } from '../likes/likes.service';
 
+/**
+ * Dog Service
+ */
 @Injectable()
 export class DogsService {
   constructor(
@@ -62,6 +65,11 @@ export class DogsService {
     private readonly likesService: LikesService,
   ) {}
 
+  /**
+   * 모든 강아지 정보조회
+   * @param page 조회할 페이지 수
+   * @returns 모든 강아지 정보
+   */
   async findAll(page: number) {
     return await this.dogsRepository.find({
       skip: page ? (page - 1) * 40 : 0, // 1페이지당 10마리씩 조회, 이미 조회한 만큼은 스킵
@@ -79,6 +87,11 @@ export class DogsService {
     });
   }
 
+  /**
+   * 강아지 한마리 정보조회
+   * @param id 강아지의 uuid
+   * @returns 강아지 한마리 정보
+   */
   async findOne(id: string) {
     return this.dogsRepository.findOne({
       where: { id },
@@ -95,6 +108,11 @@ export class DogsService {
     });
   }
 
+  /**
+   * 유저정보를 통해 강아지 정보 조회
+   * @param userId 유저의 uuid
+   * @returns 강아지 한마리 정보
+   */
   async findMyDog(userId: string) {
     return this.dogsRepository.findOne({
       where: { user: { id: userId } },
@@ -111,6 +129,13 @@ export class DogsService {
     });
   }
 
+  /**
+   * 내 위치를 기반으로 반경 5km이내에 있는 강아지들 조회
+   * @param id 강아지의 uuid
+   * @param myDog 내 강아지 정보
+   * @param Dogs 상대 강아지 정보
+   * @returns 5km 이내에 있는 강아지 정보
+   */
   async getAroundDogs({ id, myDog, Dogs }) {
     const myDogLat = myDog.locations.lat;
     const myDogLng = myDog.locations.lng;
@@ -156,6 +181,11 @@ export class DogsService {
     return resultDog;
   }
 
+  /**
+   * 상대가 강아지가 얼마나 떨어져 있는지 거리 계산
+   * @param id 강아지 uuid
+   * @returns 거리
+   */
   async getDogsDistance({ id }) {
     const result = [];
     const distance = await this.cacheManager.get(id);
@@ -170,6 +200,12 @@ export class DogsService {
     return result;
   }
 
+  /**
+   * OpenAPI를 통해 강아지 등록번호를 검증하고 해당 강아지의 정보 조회
+   * @param dogRegNum 강아지 등록번호
+   * @param ownerBirth 견주의 생년월일
+   * @returns OpenAPI를 통해 얻은 강아지 정보
+   */
   async getDogInfo({ dogRegNum, ownerBirth }) {
     const getDogInfo = await axios({
       url: 'http://apis.data.go.kr/1543061/animalInfoSrvc/animalInfo',
@@ -190,6 +226,12 @@ export class DogsService {
     return getDogInfo['data'].response.body.item;
   }
 
+  /**
+   * 새로운 강아지 정보 생성
+   * @param dogInfo 강아지 등록번호를 통해 얻은 강아지등록정보
+   * @param createDogInput 강아지 생성 정보
+   * @returns 생성된 강아지 정보
+   */
   async create({ dogInfo, createDogInput }) {
     const {
       locations,
@@ -335,6 +377,14 @@ export class DogsService {
     return result;
   }
 
+  /**
+   * 강아지 정보 업데이트
+   * @param dogId 강아지의 uuid
+   * @param updateDogInput 업데이트할 강아지 정보
+   * @param dogRegNum 강아지 등록번호
+   * @param ownerBirth 견주의 생년월일
+   * @returns 업데이트된 강아지 정보
+   */
   async update({ dogId, updateDogInput, dogRegNum, ownerBirth }) {
     const {
       img,
@@ -561,6 +611,11 @@ export class DogsService {
     }
   }
 
+  /**
+   * 강아지 정보 소프트삭제
+   * @param id 강아지의 uuid
+   * @returns 강아지 정보 삭제 여부
+   */
   async delete({ id }) {
     const result = await this.dogsRepository.softDelete({ id });
     return result.affected ? true : false;
