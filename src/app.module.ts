@@ -10,7 +10,6 @@ import * as redisStore from 'cache-manager-redis-store';
 // APIs
 import { AdminUsersModule } from './apis/adminUsers/adminUsers.module';
 import { AuthsModule } from './apis/auths/auths.module';
-import { AvoidBreedsModule } from './apis/avoidBreeds/avoidBreeds.module';
 import { BlockUsersModule } from './apis/blockUsers/blockUsers.module';
 import { BreedsModule } from './apis/breeds/breeds.module';
 import { CharactersModule } from './apis/characters/characters.module';
@@ -38,7 +37,6 @@ import { ChatModule } from './gateways/chat/chat.module';
   imports: [
     AdminUsersModule,
     AuthsModule,
-    AvoidBreedsModule,
     BlockUsersModule,
     BreedsModule,
     CharactersModule,

@@ -16,9 +16,6 @@ export class CreateDogInput {
   interests: string[];
 
   @Field(() => [String], { nullable: true })
-  avoidBreeds: string[];
-
-  @Field(() => [String], { nullable: true })
   characters: string[];
 
   @Field(() => [String], { nullable: true })

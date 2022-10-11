@@ -9,7 +9,6 @@ import { Character } from '../characters/entities/character.entity';
 import { Location } from '../locations/entities/location.entity';
 import { Breed } from '../breeds/entities/breed.entity';
 import { getDistance, isPointWithinRadius } from 'geolib';
-import { AvoidBreed } from '../avoidBreeds/entities/avoidBreed.entity';
 import { Cache } from 'cache-manager';
 import { User } from '../users/entities/user.entity';
 import { Like } from '../likes/entities/like.entity';
@@ -35,9 +34,6 @@ export class DogsService {
 
     @InjectRepository(Breed)
     private readonly breedsRepository: Repository<Breed>,
-
-    @InjectRepository(AvoidBreed)
-    private readonly avoidBreedsRepository: Repository<AvoidBreed>,
 
     @InjectRepository(DogImage)
     private readonly dogsImagesRepository: Repository<DogImage>,
@@ -78,7 +74,6 @@ export class DogsService {
         locations: true,
         interests: true,
         characters: true,
-        avoidBreeds: true,
         img: true,
         user: true,
         sendId: true,
@@ -99,7 +94,6 @@ export class DogsService {
         locations: true,
         interests: true,
         characters: true,
-        avoidBreeds: true,
         img: true,
         user: true,
         sendId: true,
@@ -120,7 +114,6 @@ export class DogsService {
         locations: true,
         interests: true,
         characters: true,
-        avoidBreeds: true,
         img: true,
         user: true,
         sendId: true,
@@ -233,15 +226,8 @@ export class DogsService {
    * @returns 생성된 강아지 정보
    */
   async create({ dogInfo, createDogInput }) {
-    const {
-      locations,
-      img,
-      interests,
-      characters,
-      avoidBreeds,
-      userId,
-      ...dog
-    } = createDogInput;
+    const { locations, img, interests, characters, userId, ...dog } =
+      createDogInput;
 
     const location = await this.locationsRepository.save({
       ...locations,
@@ -297,33 +283,7 @@ export class DogsService {
         ),
       );
     }
-    let createAvoidBreeds = null;
-    if (avoidBreeds) {
-      createAvoidBreeds = await Promise.all(
-        avoidBreeds.map(
-          (el: any) =>
-            new Promise(async (resolve, reject) => {
-              try {
-                const prevAvoidBreed = await this.avoidBreedsRepository.findOne(
-                  {
-                    where: { avoidBreed: el },
-                  },
-                );
-                if (prevAvoidBreed) {
-                  resolve(prevAvoidBreed);
-                } else {
-                  const newAvoidBreed = await this.avoidBreedsRepository.save({
-                    avoidBreed: el,
-                  });
-                  resolve(newAvoidBreed);
-                }
-              } catch (err) {
-                reject(err);
-              }
-            }),
-        ),
-      );
-    }
+
     const createBreeds = [];
     const prevBreed = await this.breedsRepository.findOne({
       where: { name: dogInfo.kindNm },
@@ -346,7 +306,6 @@ export class DogsService {
       interests: createInterests,
       characters: createCharacters,
       breeds: createBreeds,
-      avoidBreeds: createAvoidBreeds,
       locations: { ...location },
       user: { id: userId },
     });
@@ -386,22 +345,14 @@ export class DogsService {
    * @returns 업데이트된 강아지 정보
    */
   async update({ dogId, updateDogInput, dogRegNum, ownerBirth }) {
-    const {
-      img,
-      interests,
-      characters,
-      avoidBreeds,
-      userId,
-      locations,
-      ...dog
-    } = updateDogInput;
+    const { img, interests, characters, userId, locations, ...dog } =
+      updateDogInput;
     const oneDog = await this.dogsRepository.findOne({
       where: { id: dogId },
       relations: {
         locations: true,
         interests: true,
         characters: true,
-        avoidBreeds: true,
         img: true,
         user: true,
         sendId: true,
@@ -478,43 +429,6 @@ export class DogsService {
       );
     }
 
-    let createAvoidBreeds = null;
-    if (avoidBreeds) {
-      await this.dataSource.manager
-        .createQueryBuilder()
-        .delete()
-        .from('dangder.dog_avoid_breeds_avoid_breed')
-        .where('dogId = :dogId', {
-          dogId: dogId,
-        })
-        .execute();
-
-      createAvoidBreeds = await Promise.all(
-        avoidBreeds.map(
-          (el) =>
-            new Promise(async (resolve, reject) => {
-              try {
-                const prevAvoidBreed = await this.avoidBreedsRepository.findOne(
-                  {
-                    where: { avoidBreed: el },
-                  },
-                );
-                if (prevAvoidBreed) {
-                  resolve(prevAvoidBreed);
-                } else {
-                  const newAvoidBreed = await this.avoidBreedsRepository.save({
-                    avoidBreed: el,
-                  });
-                  resolve(newAvoidBreed);
-                }
-              } catch (err) {
-                reject(err);
-              }
-            }),
-        ),
-      );
-    }
-
     // 새로운 강아지 등록번호 입력 시 - 기존 강아지와 연결되어있는 채팅방, 메시지 삭제 후 강아지 삭제
     // 강아지 삭제 후 새로 강아지 생성해서 등록.
     if (dogRegNum) {
@@ -555,7 +469,6 @@ export class DogsService {
         interests: createInterests,
         characters: createCharacters,
         breeds: createBreeds,
-        avoidBreeds: createAvoidBreeds,
         locations: { ...location },
         user: userId,
       });
@@ -587,7 +500,6 @@ export class DogsService {
         id: dogId,
         interests: createInterests,
         characters: createCharacters,
-        avoidBreeds: createAvoidBreeds,
       });
       if (img) {
         await this.dogsImagesRepository.delete({ dog: { id: result.id } });

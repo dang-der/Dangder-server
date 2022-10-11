@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AvoidBreed } from '../avoidBreeds/entities/avoidBreed.entity';
 import { Breed } from '../breeds/entities/breed.entity';
 import { Character } from '../characters/entities/character.entity';
 import { ChatMessage } from '../chatMessages/entities/chatMessage.entity';
@@ -22,7 +21,6 @@ import { Dog } from './entities/dog.entity';
       Dog, //
       Interest, //
       Character, //
-      AvoidBreed, //
       DogImage, //
       Location, //
       Breed, //
