@@ -58,7 +58,6 @@ export class UsersService {
         characters: true,
         img: true,
         interests: true,
-        avoidBreeds: true,
       },
       order: { img: { isMain: 'DESC' } },
     });

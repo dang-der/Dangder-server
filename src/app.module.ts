@@ -10,7 +10,6 @@ import * as redisStore from 'cache-manager-redis-store';
 // APIs
 import { AdminUsersModule } from './apis/adminUsers/adminUsers.module';
 import { AuthsModule } from './apis/auths/auths.module';
-import { AvoidBreedsModule } from './apis/avoidBreeds/avoidBreeds.module';
 import { BlockUsersModule } from './apis/blockUsers/blockUsers.module';
 import { BreedsModule } from './apis/breeds/breeds.module';
 import { CharactersModule } from './apis/characters/characters.module';
@@ -38,7 +37,6 @@ import { ChatModule } from './gateways/chat/chat.module';
   imports: [
     AdminUsersModule,
     AuthsModule,
-    AvoidBreedsModule,
     BlockUsersModule,
     BreedsModule,
     CharactersModule,
@@ -69,9 +67,9 @@ import { ChatModule } from './gateways/chat/chat.module';
         origin: process.env.CORS_URLS.split(', '),
         credential: true,
       },
-      // 배포 시 설정하는 옵션
-      debug: false,
-      playground: false,
+      // 배포 시 설정
+      // debug: false,
+      // playground: false,
     }),
     TypeOrmModule.forRoot({
       type: process.env.DATABASE_TYPE as 'mysql',

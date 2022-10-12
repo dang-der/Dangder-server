@@ -1,5 +1,4 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql';
-import { AvoidBreed } from 'src/apis/avoidBreeds/entities/avoidBreed.entity';
 import { Character } from 'src/apis/characters/entities/character.entity';
 import { Breed } from 'src/apis/breeds/entities/breed.entity';
 import { Interest } from 'src/apis/interests/entities/interest.entity';
@@ -73,13 +72,6 @@ export class Dog {
     cascade: true,
   })
   interests: Interest[];
-
-  @JoinTable()
-  @Field(() => [AvoidBreed])
-  @ManyToMany(() => AvoidBreed, (avoidBreeds) => avoidBreeds.dogs, {
-    cascade: true,
-  })
-  avoidBreeds: AvoidBreed[];
 
   @JoinTable()
   @Field(() => [Character])
