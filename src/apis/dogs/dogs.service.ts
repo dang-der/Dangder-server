@@ -147,10 +147,12 @@ export class DogsService {
       const result = isPointWithinRadius(
         { latitude: myDogLat, longitude: myDogLng },
         { latitude: el.locations.lat, longitude: el.locations.lng },
-        5000,
+        myDog.targetDistance,
       );
       if (result === true && el.id !== id && prevLike[idx] === false) {
-        resultDog.push(el);
+        if (myDog.targetAgeMin <= el.age && el.age <= myDog.targetAgeMax) {
+          resultDog.push(el);
+        }
       }
     });
 
@@ -523,6 +525,50 @@ export class DogsService {
     }
   }
 
+  async updateTargetDistance({ dogId, targetDistance }) {
+    const oneDog = await this.dogsRepository.findOne({
+      where: { id: dogId },
+      relations: {
+        locations: true,
+        interests: true,
+        characters: true,
+        img: true,
+        user: true,
+        sendId: true,
+      },
+      order: { img: { isMain: 'DESC' } },
+    });
+
+    const result = await this.dogsRepository.save({
+      ...oneDog,
+      targetDistance,
+    });
+
+    return result;
+  }
+
+  async updateTargetAge({ dogId, targetAgeMin, targetAgeMax }) {
+    const oneDog = await this.dogsRepository.findOne({
+      where: { id: dogId },
+      relations: {
+        locations: true,
+        interests: true,
+        characters: true,
+        img: true,
+        user: true,
+        sendId: true,
+      },
+      order: { img: { isMain: 'DESC' } },
+    });
+
+    const result = await this.dogsRepository.save({
+      ...oneDog,
+      targetAgeMin,
+      targetAgeMax,
+    });
+
+    return result;
+  }
   /**
    * 강아지 정보 소프트삭제
    * @param id 강아지의 uuid

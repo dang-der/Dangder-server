@@ -157,6 +157,29 @@ export class DogsResolver {
     });
   }
 
+  @Mutation(() => Dog)
+  async updateTargetDistance(
+    @Args('dogId', { description: '강아지의 uuid' }) dogId: string, //
+    @Args('targetDistance', { description: '조회할 상대강아지와의 거리' })
+    targetDistance: number, //
+  ) {
+    return this.dogsService.updateTargetDistance({ dogId, targetDistance });
+  }
+
+  @Mutation(() => Dog)
+  async updateTargetAge(
+    @Args('dogId', { description: '강아지의 uuid' }) dogId: string, //
+    @Args('targetAgeMin', { description: '조회할 상대강아지의 최소나이' })
+    targetAgeMin: number, //
+    @Args('targetAgeMax', { description: '조회할 상대강아지의 최대나이' })
+    targetAgeMax: number, //
+  ) {
+    return this.dogsService.updateTargetAge({
+      dogId,
+      targetAgeMin,
+      targetAgeMax,
+    });
+  }
   /**
    * deleteDog API
    * [`Mutation`]
