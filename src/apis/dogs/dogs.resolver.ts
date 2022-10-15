@@ -136,24 +136,12 @@ export class DogsResolver {
   @Mutation(() => Dog)
   async updateDog(
     @Args('dogId', { description: '강아지의 uuid' }) dogId: string,
-    @Args('dogRegNum', {
-      description: '강아지 등록번호, 강아지 등록번호 자체를 업데이트할 때 사용',
-      nullable: true,
-    })
-    dogRegNum: string,
-    @Args('ownerBirth', {
-      description: '견주의 생년월일, 강아지 등록번호 자체를 업데이트할 때 사용',
-      nullable: true,
-    })
-    ownerBirth: string,
     @Args('updateDogInput')
     updateDogInput: UpdateDogInput,
   ) {
     return this.dogsService.update({
       dogId,
       updateDogInput,
-      dogRegNum,
-      ownerBirth,
     });
   }
 

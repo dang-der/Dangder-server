@@ -346,9 +346,8 @@ export class DogsService {
    * @param ownerBirth 견주의 생년월일
    * @returns 업데이트된 강아지 정보
    */
-  async update({ dogId, updateDogInput, dogRegNum, ownerBirth }) {
-    const { img, interests, characters, userId, locations, ...dog } =
-      updateDogInput;
+  async update({ dogId, updateDogInput }) {
+    const { img, interests, characters } = updateDogInput;
     const oneDog = await this.dogsRepository.findOne({
       where: { id: dogId },
       relations: {
@@ -430,99 +429,32 @@ export class DogsService {
         ),
       );
     }
-
-    // 새로운 강아지 등록번호 입력 시 - 기존 강아지와 연결되어있는 채팅방, 메시지 삭제 후 강아지 삭제
-    // 강아지 삭제 후 새로 강아지 생성해서 등록.
-    if (dogRegNum) {
-      const getLocation = await this.locationsRepository.findOne({
-        where: { id: oneDog.locations.id },
-      });
-      await this.locationsRepository.delete({ id: getLocation.id });
-      await this.LikesRepository.delete({ receiveId: dogId });
-      await this.chatMessagesRepository.delete({ senderId: dogId });
-      await this.chatRoomsRepository.delete({ dog: { id: dogId } });
-      await this.dogsRepository.delete({
-        user: userId,
-      });
-
-      const dogInfo = await this.getDogInfo({ dogRegNum, ownerBirth });
-      const createBreeds = [];
-      const prevBreed = await this.breedsRepository.findOne({
-        where: { name: dogInfo.kindNm },
-      });
-      if (prevBreed) createBreeds.push(prevBreed);
-      else {
-        const newBreed = await this.breedsRepository.save({
-          name: dogInfo.kindNm,
-        });
-        createBreeds.push(newBreed);
-      }
-      const location = await this.locationsRepository.save({
-        ...locations,
-      });
-
-      const neut = dogInfo.neuterYn === '미중성' ? false : true;
-      const result = await this.dogsRepository.save({
-        ...dog,
-        name: dogInfo.dogNm,
-        registerNumber: dogInfo.dogRegNo,
-        gender: dogInfo.sexNm,
-        isNeut: neut,
-        interests: createInterests,
-        characters: createCharacters,
-        breeds: createBreeds,
-        locations: { ...location },
-        user: userId,
-      });
-      if (img) {
-        await this.dogsImagesRepository.delete({ dog: { id: result.id } });
-        await Promise.all(
-          img.map(
-            (el: any, idx: number) =>
-              new Promise(async (resolve) => {
-                const image = el;
-                const isMain = idx === 0 ? true : false;
-                const newImage = await this.dogsImagesRepository.save({
-                  img: image,
-                  isMain: isMain,
-                  dog: { id: result.id },
-                });
-                resolve(newImage);
-              }),
-          ),
-        );
-      }
-      return result;
-    } else {
-      await this.locationsRepository.delete({ id: oneDog.locations.id });
-
-      const result = await this.dogsRepository.save({
-        ...oneDog,
-        ...updateDogInput,
-        id: dogId,
-        interests: createInterests,
-        characters: createCharacters,
-      });
-      if (img) {
-        await this.dogsImagesRepository.delete({ dog: { id: result.id } });
-        await Promise.all(
-          img.map(
-            (el: any, idx: number) =>
-              new Promise(async (resolve) => {
-                const image = el;
-                const isMain = idx === 0 ? true : false;
-                const newImage = await this.dogsImagesRepository.save({
-                  img: image,
-                  isMain: isMain,
-                  dog: { id: result.id },
-                });
-                resolve(newImage);
-              }),
-          ),
-        );
-      }
-      return result;
+    const result = await this.dogsRepository.save({
+      ...oneDog,
+      ...updateDogInput,
+      id: dogId,
+      interests: createInterests,
+      characters: createCharacters,
+    });
+    if (img) {
+      await this.dogsImagesRepository.delete({ dog: { id: result.id } });
+      await Promise.all(
+        img.map(
+          (el: any, idx: number) =>
+            new Promise(async (resolve) => {
+              const image = el;
+              const isMain = idx === 0 ? true : false;
+              const newImage = await this.dogsImagesRepository.save({
+                img: image,
+                isMain: isMain,
+                dog: { id: result.id },
+              });
+              resolve(newImage);
+            }),
+        ),
+      );
     }
+    return result;
   }
 
   async updateTargetDistance({ dogId, targetDistance }) {
