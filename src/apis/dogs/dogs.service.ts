@@ -347,7 +347,7 @@ export class DogsService {
    * @returns 업데이트된 강아지 정보
    */
   async update({ dogId, updateDogInput }) {
-    const { img, interests, characters } = updateDogInput;
+    const { img, interests, characters, locations } = updateDogInput;
     const oneDog = await this.dogsRepository.findOne({
       where: { id: dogId },
       relations: {
@@ -428,6 +428,16 @@ export class DogsService {
             }),
         ),
       );
+    }
+    if (locations) {
+      const location = await this.locationsRepository.findOne({
+        where: { id: oneDog.locations.id },
+      });
+      location.lat = updateDogInput.locations.lat;
+      location.lng = updateDogInput.locations.lng;
+      await this.locationsRepository.save({
+        ...location,
+      });
     }
     const result = await this.dogsRepository.save({
       ...oneDog,
