@@ -40,6 +40,23 @@ export class BlockUserResolver {
   }
 
   /**
+   * BlockUser check API
+   * @type [`Mutation`]
+   * @param userId 피해자 Id
+   * @param blockId 차단된 유저 Id
+   * @returns
+   */
+
+  @Mutation(() => Boolean, {
+    description: 'return : 이미 차단되었는지 확인',
+  })
+  async alreadyBlocked(
+    @Args('userId', { description: '피해자 Id' }) userId: string,
+    @Args('blockId', { description: '차단된 유저 Id' }) blockId: string,
+  ) {
+    return this.blockUsersService.alreadyBlock({ userId, blockId });
+  }
+  /**
    * BlockUser Create API
    * @type [`Mutation`]
    * @param createBlockUserInput 차단할 유저 정보

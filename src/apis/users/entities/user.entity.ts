@@ -1,4 +1,5 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql';
+import { BlockUser } from 'src/apis/blockUsers/entities/blockUser.entity';
 import { Dog } from 'src/apis/dogs/entities/dog.entity';
 import { PassTicket } from 'src/apis/passTickets/entities/passTicket.entity';
 import { Payment } from 'src/apis/payments/entities/payment.entity';
@@ -92,4 +93,10 @@ export class User {
   @OneToMany(() => PassTicket, (passTicket) => passTicket.id)
   @Field(() => PassTicket)
   passTicket: PassTicket;
+
+  @OneToMany(() => BlockUser, (blockUser) => blockUser.blockId, {
+    cascade: true,
+  })
+  @Field(() => [BlockUser])
+  userId: BlockUser[];
 }
