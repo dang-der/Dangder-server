@@ -55,6 +55,18 @@ export class Dog {
   @Field(() => String, { nullable: true })
   birthday: string;
 
+  @Column({ default: 5000 })
+  @Field(() => Int, { nullable: true })
+  targetDistance: number;
+
+  @Column({ default: 0 })
+  @Field(() => Int, { nullable: true })
+  targetAgeMin: number;
+
+  @Column({ default: 30 })
+  @Field(() => Int, { nullable: true })
+  targetAgeMax: number;
+
   @CreateDateColumn()
   @Field(() => Date)
   createdAt: Date;

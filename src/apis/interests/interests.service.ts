@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { InterestCategoryOutput } from './dto/interestCategory.output';
 import { Interest } from './entities/interest.entity';
 
 /**
@@ -17,8 +18,19 @@ export class InterestsService {
    * 등록된 모든 관심사 정보 조회
    * @returns 등록된 모든 관심사 종류
    */
-  findAll() {
-    return this.interestsRepository.find();
+  async findAll() {
+    const result = await this.interestsRepository.find();
+    const category = [];
+    for (let i = 0; i < result.length; i++) {
+      const tmp = new InterestCategoryOutput();
+      tmp.interest = result[i].interest;
+      tmp.interestImg = result[i].interestImg;
+      tmp.title = result[i].title;
+      tmp.subTitle = result[i].subTitle;
+      category.push(tmp);
+    }
+
+    return category;
   }
 
   /**
@@ -26,9 +38,9 @@ export class InterestsService {
    * @param character 관심사 정보
    * @returns 생성된 관심사 정보
    */
-  create(interest) {
+  create(createInterestInput) {
     return this.interestsRepository.save({
-      interest: interest,
+      ...createInterestInput,
     });
   }
 

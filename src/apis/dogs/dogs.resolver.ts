@@ -136,27 +136,38 @@ export class DogsResolver {
   @Mutation(() => Dog)
   async updateDog(
     @Args('dogId', { description: '강아지의 uuid' }) dogId: string,
-    @Args('dogRegNum', {
-      description: '강아지 등록번호, 강아지 등록번호 자체를 업데이트할 때 사용',
-      nullable: true,
-    })
-    dogRegNum: string,
-    @Args('ownerBirth', {
-      description: '견주의 생년월일, 강아지 등록번호 자체를 업데이트할 때 사용',
-      nullable: true,
-    })
-    ownerBirth: string,
     @Args('updateDogInput')
     updateDogInput: UpdateDogInput,
   ) {
     return this.dogsService.update({
       dogId,
       updateDogInput,
-      dogRegNum,
-      ownerBirth,
     });
   }
 
+  @Mutation(() => Dog)
+  async updateTargetDistance(
+    @Args('dogId', { description: '강아지의 uuid' }) dogId: string, //
+    @Args('targetDistance', { description: '조회할 상대강아지와의 거리' })
+    targetDistance: number, //
+  ) {
+    return this.dogsService.updateTargetDistance({ dogId, targetDistance });
+  }
+
+  @Mutation(() => Dog)
+  async updateTargetAge(
+    @Args('dogId', { description: '강아지의 uuid' }) dogId: string, //
+    @Args('targetAgeMin', { description: '조회할 상대강아지의 최소나이' })
+    targetAgeMin: number, //
+    @Args('targetAgeMax', { description: '조회할 상대강아지의 최대나이' })
+    targetAgeMax: number, //
+  ) {
+    return this.dogsService.updateTargetAge({
+      dogId,
+      targetAgeMin,
+      targetAgeMax,
+    });
+  }
   /**
    * deleteDog API
    * [`Mutation`]

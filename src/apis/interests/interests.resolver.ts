@@ -1,4 +1,6 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { CreateInterestInput } from './dto/createInterest.input';
+import { InterestCategoryOutput } from './dto/interestCategory.output';
 import { Interest } from './entities/interest.entity';
 import { InterestsService } from './interests.service';
 
@@ -17,8 +19,8 @@ export class InterestsResolver {
    * [`Query`]
    * @returns 등록된 모든 관심사 정보
    */
-  @Query(() => [Interest])
-  async fetchInterests() {
+  @Query(() => [InterestCategoryOutput])
+  async fetchInterestCategory() {
     return this.interestsService.findAll();
   }
 
@@ -30,9 +32,9 @@ export class InterestsResolver {
    */
   @Mutation(() => Interest, { description: '관심사 항목 생성' })
   async createInterest(
-    @Args('interest', { description: '관심사 내용' }) interest: string, //
+    @Args('createInterestInput') createInterestInput: CreateInterestInput,
   ) {
-    return this.interestsService.create(interest); //
+    return this.interestsService.create(createInterestInput); //
   }
 
   /**
