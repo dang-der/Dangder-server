@@ -1,10 +1,12 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 import { Dog } from 'src/apis/dogs/entities/dog.entity';
+import { InterestChatRoom } from 'src/apis/interestChatRooms/entities/interestChatRoom.entity';
 import {
   Column,
   DeleteDateColumn,
   Entity,
   ManyToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -34,8 +36,13 @@ export class Interest {
   @DeleteDateColumn()
   deletedAt: Date;
 
+  // Interest N : Dog M 연결
   @Field(() => [Dog])
   @ManyToMany(() => Dog, (dogs) => dogs.interests, { onUpdate: 'CASCADE' })
   dogs: Dog[];
-  // Interest N : Dog M 연결
+
+  // Interest : InterestChatRoom - 1:1 연결
+  @OneToOne(() => InterestChatRoom)
+  @Field(() => InterestChatRoom)
+  iChatRoom: InterestChatRoom;
 }
