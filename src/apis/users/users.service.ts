@@ -1,4 +1,8 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
@@ -61,6 +65,8 @@ export class UsersService {
       },
       order: { img: { isMain: 'DESC' } },
     });
+
+    if (!dogResult) throw new NotFoundException('등록된 강아지가 없습니다.');
 
     const result = new UserOutput();
     result.user = userResult;
