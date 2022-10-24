@@ -1,7 +1,6 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { User } from '../users/entities/user.entity';
 import { BlockUser } from './entities/blockUser.entity';
 
 /**
@@ -12,9 +11,6 @@ export class BlockUsersService {
   constructor(
     @InjectRepository(BlockUser)
     private readonly blockUsersRepository: Repository<BlockUser>,
-
-    @InjectRepository(User)
-    private readonly usersRepository: Repository<User>,
   ) {}
 
   /**
@@ -30,41 +26,35 @@ export class BlockUsersService {
    * @param blockId 차단할 유저 Id
    * @returns 조회한 차단 유저 정보
    */
-  findOne({ blockId }) {
-    return this.blockUsersRepository.findOne({ where: { blockId } });
+  async findOne({ blockId }) {
+    const findBlockId = await this.blockUsersRepository.findOne({
+      where: { blockId },
+      relations: {
+        user: true,
+      },
+    });
+    return findBlockId;
   }
 
   /**
    * Create BlockUser
    * @param createBlockUserInput 차단할 유저 정보
+   * @param userId 신고한 유저 Id
    * @returns 차단한 유저 정보
    */
-  async create({ createBlockUserInput }) {
-    const user = await this.blockUsersRepository.findOne({
+
+  async create({ createBlockUserInput, userId }) {
+    const alreadyBlocked = await this.blockUsersRepository.findOne({
       where: { blockId: createBlockUserInput.blockId },
     });
-    if (user) throw new ConflictException('이미 차단된 유저입니다.');
+    if (alreadyBlocked) throw new ConflictException('이미 차단된 유저입니다.');
 
-    return this.blockUsersRepository.save({ ...createBlockUserInput });
-  }
-
-  /**
-   * Check BlockUser
-   * @param userId 피해자 Id
-   * @param blockId 차단된 유저 Id
-   * @returns true/false
-   */
-  async alreadyBlock({ userId, blockId }) {
-    const userFound = await this.usersRepository.findOne({
-      where: { id: blockId },
+    return this.blockUsersRepository.save({
+      user: { id: userId },
+      ...createBlockUserInput,
       relations: {
-        userId: true,
+        user: true,
       },
     });
-    let result = false;
-    userFound.userId.map((el) => {
-      if (el.blockId === userId) return (result = true);
-    });
-    return result;
   }
 }

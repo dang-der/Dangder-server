@@ -133,4 +133,22 @@ export class UsersService {
     const result = await this.usersRepository.softDelete({ email });
     return result.affected ? true : false;
   }
+
+  /**
+   * Stop User
+   * @param id 유저 id
+   * @returns 업데이트 된 유저 정보
+   */
+  async stopUser({ id }) {
+    // 수동으로 유저 정지
+
+    const manualStop = await this.usersRepository.findOne({ where: { id } });
+
+    const result = await this.usersRepository.save({
+      ...manualStop,
+      isStop: true,
+    });
+
+    return result;
+  }
 }

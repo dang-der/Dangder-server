@@ -78,6 +78,11 @@ export class User {
   @Field(() => String)
   donateGrade: string;
 
+  //정지 여부
+  @Column({ default: false })
+  @Field(() => Boolean)
+  isStop: boolean;
+
   @Field(() => Dog)
   @OneToOne(() => Dog, (dog) => dog.user)
   dog: Dog;
@@ -98,5 +103,5 @@ export class User {
     cascade: true,
   })
   @Field(() => [BlockUser])
-  userId: BlockUser[];
+  blockUser: BlockUser[];
 }

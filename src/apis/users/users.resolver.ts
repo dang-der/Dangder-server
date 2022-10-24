@@ -127,4 +127,18 @@ export class UsersResolver {
   ) {
     return this.usersService.delete({ email });
   }
+
+  /**
+   * @type [`Mutation`]
+   * @param id 유저 id
+   * @returns 유저 정보
+   */
+  @Mutation(() => User, {
+    description: 'Return : 유저 정보',
+  })
+  stopUser(
+    @Args('id', { description: '유저 id' }) id: string, //
+  ) {
+    return this.usersService.stopUser({ id });
+  }
 }

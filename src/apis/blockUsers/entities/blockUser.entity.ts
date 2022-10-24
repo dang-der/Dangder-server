@@ -25,5 +25,5 @@ export class BlockUser {
   @JoinColumn()
   @ManyToOne(() => User)
   @Field(() => User)
-  userId: User;
+  user: User;
 }
