@@ -122,6 +122,34 @@ export class DogsService {
     });
   }
 
+  async findCategoryDogs({ interest }) {
+    const category = await this.interestsRepository.findOne({
+      where: { interest: interest },
+      relations: {
+        dogs: true,
+      },
+    });
+    const interestDogs = category.dogs.map((el) => el.id);
+    const categoryDogs = [];
+    interestDogs.map((el) => {
+      const dogs = this.dogsRepository.find({
+        where: { id: el },
+        relations: {
+          locations: true,
+          interests: true,
+          characters: true,
+          img: true,
+          user: true,
+          sendId: true,
+        },
+        order: { img: { isMain: 'DESC' } },
+      });
+      categoryDogs.push(dogs);
+    });
+
+    return categoryDogs[0];
+  }
+
   /**
    * 내 위치를 기반으로 반경 5km이내에 있는 강아지들 조회
    * @param id 강아지의 uuid

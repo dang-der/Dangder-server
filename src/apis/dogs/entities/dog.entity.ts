@@ -19,6 +19,7 @@ import {
 import { Location } from 'src/apis/locations/entities/location.entity';
 import { DogImage } from 'src/apis/dogsImages/entities/dogImage.entity';
 import { Like } from 'src/apis/likes/entities/like.entity';
+import { Review } from 'src/apis/reviews/entities/review.entity';
 
 @Entity()
 @ObjectType()
@@ -116,4 +117,8 @@ export class Dog {
   @OneToMany(() => Like, (like) => like.sendId, { cascade: true })
   @Field(() => [Like])
   sendId: Like[];
+
+  @OneToMany(() => Review, (review) => review.dog, { cascade: true })
+  @Field(() => [Review])
+  review: Review[];
 }

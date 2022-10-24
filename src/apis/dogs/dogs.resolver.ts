@@ -54,6 +54,13 @@ export class DogsResolver {
     return await this.dogsService.findMyDog(userId);
   }
 
+  @Query(() => [Dog])
+  async fetchCategoryDogs(
+    @Args('interest', { description: '관심사명' }) interest: string, //
+  ) {
+    return await this.dogsService.findCategoryDogs({ interest });
+  }
+
   /**
    * fetchAroundDogs API
    * [`Query`]
