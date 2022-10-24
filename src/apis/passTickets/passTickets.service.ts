@@ -24,6 +24,9 @@ export class PassTicketsService {
     return this.passTicketsRepository.save({
       user: { id: userId },
       expiredAt,
+      relations: {
+        user: true,
+      },
     });
   }
 
@@ -34,7 +37,16 @@ export class PassTicketsService {
    */
 
   async findPassTicket({ id }) {
-    return this.passTicketsRepository.findOne({ where: { id } });
+    const findPassTicket = await this.passTicketsRepository.findOne({
+      where: { id },
+      relations: {
+        user: {
+          dog: true,
+        },
+      },
+    });
+
+    return findPassTicket;
   }
 
   /**

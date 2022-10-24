@@ -49,8 +49,9 @@ export class BlockUserResolver {
   createBlockUser(
     @Args('createBlockUserInput', { description: '차단할 유저 정보' })
     createBlockUserInput: CreateBlockUserInput, //
+    @Args('userId', { description: '신고한 유저 Id' }) userId: string,
   ) {
     // 차단될 유저 정보 생성하기
-    return this.blockUsersService.create({ createBlockUserInput });
+    return this.blockUsersService.create({ createBlockUserInput, userId });
   }
 }

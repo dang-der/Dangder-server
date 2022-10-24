@@ -10,7 +10,7 @@ import { BlockUser } from './entities/blockUser.entity';
 export class BlockUsersService {
   constructor(
     @InjectRepository(BlockUser)
-    private readonly blockusersRepository: Repository<BlockUser>,
+    private readonly blockUsersRepository: Repository<BlockUser>,
   ) {}
 
   /**
@@ -18,7 +18,7 @@ export class BlockUsersService {
    * @returns 조회한 모든 차단 유저 정보
    */
   findAll() {
-    return this.blockusersRepository.find();
+    return this.blockUsersRepository.find();
   }
 
   /**
@@ -26,21 +26,35 @@ export class BlockUsersService {
    * @param blockId 차단할 유저 Id
    * @returns 조회한 차단 유저 정보
    */
-  findOne({ blockId }) {
-    return this.blockusersRepository.findOne({ where: { blockId } });
+  async findOne({ blockId }) {
+    const findBlockId = await this.blockUsersRepository.findOne({
+      where: { blockId },
+      relations: {
+        user: true,
+      },
+    });
+    return findBlockId;
   }
 
   /**
    * Create BlockUser
    * @param createBlockUserInput 차단할 유저 정보
+   * @param userId 신고한 유저 Id
    * @returns 차단한 유저 정보
    */
-  async create({ createBlockUserInput }) {
-    const user = await this.blockusersRepository.findOne({
+
+  async create({ createBlockUserInput, userId }) {
+    const alreadyBlocked = await this.blockUsersRepository.findOne({
       where: { blockId: createBlockUserInput.blockId },
     });
-    if (user) throw new ConflictException('이미 차단된 유저입니다.');
+    if (alreadyBlocked) throw new ConflictException('이미 차단된 유저입니다.');
 
-    return this.blockusersRepository.save({ ...createBlockUserInput });
+    return this.blockUsersRepository.save({
+      user: { id: userId },
+      ...createBlockUserInput,
+      relations: {
+        user: true,
+      },
+    });
   }
 }
