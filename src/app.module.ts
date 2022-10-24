@@ -29,6 +29,7 @@ import { PassTicketsModule } from './apis/passTickets/passTickets.module';
 import { PaymentsModule } from './apis/payments/payments.module';
 import { ProductsModule } from './apis/products/products.module';
 import { ReportsModule } from './apis/reports/reports.module';
+import { ReviewsModule } from './apis/reviews/reviews.module';
 import { UsersModule } from './apis/users/users.module';
 import { AppController } from './app.controller';
 import { ChatModule } from './gateways/chat/chat.module';
@@ -57,6 +58,7 @@ import { ChatModule } from './gateways/chat/chat.module';
     PaymentsModule,
     ProductsModule,
     ReportsModule,
+    ReviewsModule,
     UsersModule,
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
