@@ -26,8 +26,7 @@ export class Report {
   reportContent: string;
 
   @JoinColumn()
-  @ManyToOne(() => User)
   @Field(() => User)
+  @ManyToOne(() => User, (user) => user.reports)
   user: User;
-  // ReportBoard N : User 1 연결
 }

@@ -7,6 +7,11 @@ export class CreateReportInput {
   @Field(() => String)
   reportId: string;
 
+  // 신고당한 아이디
+
+  @Field(() => String)
+  targetId: string;
+
   // 신고 내용
 
   @Field(() => String)

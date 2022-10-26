@@ -30,7 +30,7 @@ export class PassTicket {
   expiredAt: string;
 
   @JoinColumn()
+  @ManyToOne(() => User, (user) => user.passTickets)
   @Field(() => User)
-  @ManyToOne(() => User)
   user: User;
 }

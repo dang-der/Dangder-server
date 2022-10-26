@@ -29,9 +29,6 @@ export class BlockUsersService {
   async findOne({ blockId }) {
     const findBlockId = await this.blockUsersRepository.findOne({
       where: { blockId },
-      relations: {
-        user: true,
-      },
     });
     return findBlockId;
   }
@@ -43,15 +40,15 @@ export class BlockUsersService {
    * @returns 차단한 유저 정보
    */
 
-  async create({ createBlockUserInput, userId }) {
+  async create({ userId, blockId }) {
     const alreadyBlocked = await this.blockUsersRepository.findOne({
-      where: { blockId: createBlockUserInput.blockId },
+      where: { blockId },
     });
     if (alreadyBlocked) throw new ConflictException('이미 차단된 유저입니다.');
 
     return this.blockUsersRepository.save({
       user: { id: userId },
-      ...createBlockUserInput,
+      blockId,
       relations: {
         user: true,
       },

@@ -1,4 +1,5 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { BlockUsersService } from '../blockUsers/blockUsers.service';
 import { CreateReportInput } from './dto/createReport.input';
 import { Report } from './entities/report.entity';
 import { ReportsService } from './reports.service';
@@ -9,19 +10,22 @@ import { ReportsService } from './reports.service';
  */
 @Resolver()
 export class ReportsResolver {
-  constructor(private readonly reportsService: ReportsService) {}
+  constructor(
+    private readonly reportsService: ReportsService, //
+    private readonly blockUsersService: BlockUsersService, //
+  ) {}
 
   /**
    * Fetch Who Report API
    * @type [`Query`]
-   * @param userId
+   * @param reportId
    * @returns 신고 정보
    */
   @Query(() => Report, { description: 'Return : 신고 정보' })
   async fetchWhoReport(
-    @Args('userId', { description: '신고한 유저 Id' }) userId: string, //
+    @Args('reportId', { description: '신고한 유저 Id' }) reportId: string, //
   ) {
-    return this.reportsService.findByUserId({ userId });
+    return this.reportsService.findByReportId({ reportId });
   }
 
   /**
@@ -40,17 +44,24 @@ export class ReportsResolver {
   /**
    * Report Create API
    * @type [`Mutation`]
-   * @param userId 신고한 유저 Id
-   * @param CreateReportInput 신고 정보 입력
+   * @param createReportInput 신고 정보 입력
    * @returns 생성된 신고 게시물
    */
 
   @Mutation(() => Report, { description: 'Return : 생성된 신고 게시물' })
   async createReport(
-    @Args('userId', { description: '신고한 유저 Id' }) userId: string,
     @Args('createReportInput', { description: '신고 정보 입력' })
-    CreateReportInput: CreateReportInput, //
+    createReportInput: CreateReportInput, //
   ) {
-    return this.reportsService.create({ userId, CreateReportInput });
+    const reportCreate = await this.reportsService.create({
+      createReportInput,
+    });
+
+    await this.blockUsersService.create({
+      userId: createReportInput.reportId,
+      blockId: createReportInput.targetId,
+    });
+
+    return reportCreate;
   }
 }
