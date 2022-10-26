@@ -36,6 +36,7 @@ import { UsersModule } from './apis/users/users.module';
 
 import { AppController } from './app.controller';
 import { ChatModule } from './gateways/chat/chat.module';
+import { ReivewDetailsModule } from './apis/reviewDetails/reviewDetails.module';
 
 @Module({
   imports: [
@@ -63,6 +64,7 @@ import { ChatModule } from './gateways/chat/chat.module';
     PaymentsModule,
     ProductsModule,
     ReportsModule,
+    ReivewDetailsModule,
     ReviewsModule,
     UsersModule,
     GraphQLModule.forRoot<ApolloDriverConfig>({

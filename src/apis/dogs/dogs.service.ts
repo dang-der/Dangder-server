@@ -44,15 +44,6 @@ export class DogsService {
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
 
-    @InjectRepository(ChatRoom)
-    private readonly chatRoomsRepository: Repository<ChatRoom>,
-
-    @InjectRepository(ChatMessage)
-    private readonly chatMessagesRepository: Repository<ChatMessage>,
-
-    @InjectRepository(Like)
-    private readonly LikesRepository: Repository<Like>,
-
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
 
