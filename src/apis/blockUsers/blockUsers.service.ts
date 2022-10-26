@@ -42,7 +42,7 @@ export class BlockUsersService {
 
   async create({ userId, blockId }) {
     const alreadyBlocked = await this.blockUsersRepository.findOne({
-      where: { blockId },
+      where: { blockId, user: { id: userId } },
     });
     if (alreadyBlocked) throw new ConflictException('이미 차단된 유저입니다.');
 

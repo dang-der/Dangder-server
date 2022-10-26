@@ -1,6 +1,6 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { BlockUsersService } from '../blockUsers/blockUsers.service';
-import { CreateReportInput } from './dto/createReport.input';
+import { UsersService } from '../users/users.service';
 import { Report } from './entities/report.entity';
 import { ReportsService } from './reports.service';
 
@@ -13,6 +13,7 @@ export class ReportsResolver {
   constructor(
     private readonly reportsService: ReportsService, //
     private readonly blockUsersService: BlockUsersService, //
+    private readonly usersService: UsersService, //
   ) {}
 
   /**
@@ -44,24 +45,26 @@ export class ReportsResolver {
   /**
    * Report Create API
    * @type [`Mutation`]
-   * @param createReportInput 신고 정보 입력
+   * @param userId 신고한 유저 Id
+   * @param targetId 신고당한 유저 Id
    * @returns 생성된 신고 게시물
    */
 
   @Mutation(() => Report, { description: 'Return : 생성된 신고 게시물' })
   async createReport(
-    @Args('createReportInput', { description: '신고 정보 입력' })
-    createReportInput: CreateReportInput, //
+    @Args('userId', { description: '신고 한 Id' }) userId: string,
+    @Args('targetId', { description: '신고 당한 Id' }) targetId: string,
+    @Args('reportContent', { description: '신고 내용' }) reportContent: string,
   ) {
-    const reportCreate = await this.reportsService.create({
-      createReportInput,
-    });
-
     await this.blockUsersService.create({
-      userId: createReportInput.reportId,
-      blockId: createReportInput.targetId,
+      userId,
+      blockId: targetId,
     });
 
-    return reportCreate;
+    await this.usersService.changeReportCnt({
+      id: targetId,
+    });
+
+    return this.reportsService.create({ userId, targetId, reportContent });
   }
 }

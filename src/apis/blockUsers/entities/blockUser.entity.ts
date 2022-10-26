@@ -18,7 +18,7 @@ export class BlockUser {
   // 차단 대상 유저 id
   @Column()
   @Field(() => String)
-  blockId: String;
+  blockId: string;
 
   // BlockUser N : User 1 연결
 

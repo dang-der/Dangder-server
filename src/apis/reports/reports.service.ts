@@ -24,7 +24,7 @@ export class ReportsService {
 
   /**
    * Find By Target Id
-   * @param targetId
+   * @param targetId 신고당한 Id
    * @returns 신고당한 유저아이디로 찾은 신고 정보
    */
   findByTargetId({ targetId }) {
@@ -33,12 +33,20 @@ export class ReportsService {
 
   /**
    * Create Report
-   * @param createReportInput
+   * @param userId 신고한 유저 Id
+   * @param targetId 신고당한 유저 Id
+   * @param reportContent 신고 내용
    * @returns 생성된 신고 정보
    */
-  async create({ createReportInput }) {
+  async create({ userId, targetId, reportContent }) {
     return this.reportsRepository.save({
-      ...createReportInput,
+      user: { id: userId },
+      targetId,
+      reportContent,
+      relations: {
+        user: true,
+      },
     });
   }
 }
+//
