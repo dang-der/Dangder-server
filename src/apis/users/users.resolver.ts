@@ -67,7 +67,7 @@ export class UsersResolver {
    * @returns 로그인한 유저 데이터
    */
   @UseGuards(GqlAuthAccessGuard)
-  @Query(() => UserOutput, {
+  @Query(() => User, {
     description: 'Return : 로그인한 유저 데이터',
   })
   async fetchSocialLoginUser(
