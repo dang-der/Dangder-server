@@ -157,4 +157,25 @@ export class UsersService {
 
     return result;
   }
+
+  async changeReportCnt({ id }) {
+    const findUser = await this.usersRepository.findOne({ where: { id } });
+
+    const cnt = findUser.reportCnt;
+
+    const result = await this.usersRepository.save({
+      ...findUser,
+      reportCnt: cnt + 1,
+    });
+
+    if (result.reportCnt >= 3) {
+      return this.usersRepository.save({
+        ...findUser,
+        reportCnt: cnt + 1,
+        isStop: true,
+      });
+    }
+
+    return result;
+  }
 }
