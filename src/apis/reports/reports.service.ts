@@ -14,12 +14,12 @@ export class ReportsService {
   ) {}
 
   /**
-   * Find By User Id
-   * @param userId
-   * @returns  유저아이디로 찾은 신고 정보
+   *  Find By Report Id
+   *  @param reportId
+   *  @returns 신고한 유저아이디로 찾은 신고 정보
    */
-  findByUserId({ userId }) {
-    return this.reportsRepository.findOne({ where: { user: { id: userId } } });
+  findByReportId({ reportId }) {
+    return this.reportsRepository.findOne({ where: { reportId } });
   }
 
   /**
@@ -33,14 +33,12 @@ export class ReportsService {
 
   /**
    * Create Report
-   * @param userId
-   * @param CreateReportInput
+   * @param createReportInput
    * @returns 생성된 신고 정보
    */
-  async create({ userId, CreateReportInput }) {
+  async create({ createReportInput }) {
     return this.reportsRepository.save({
-      user: { id: userId },
-      ...CreateReportInput,
+      ...createReportInput,
     });
   }
 }

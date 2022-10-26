@@ -1,6 +1,5 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { BlockUsersService } from './blockUsers.service';
-import { CreateBlockUserInput } from './dto/createBlockUser.input';
 import { BlockUser } from './entities/blockUser.entity';
 
 /**
@@ -40,18 +39,33 @@ export class BlockUserResolver {
   }
 
   /**
-   * BlockUser Create API
+   * BlockUser Create API   기존의 BlockUser API
    * @type [`Mutation`]
    * @param createBlockUserInput 차단할 유저 정보
    * @returns 차단된 유저 정보
    */
-  @Mutation(() => BlockUser, { description: 'Return : 차단된 유저 정보' })
+  // @Mutation(() => BlockUser, { description: 'Return : 차단된 유저 정보' })
+  // createBlockUser(
+  //   @Args('createBlockUserInput', { description: '차단할 유저 정보' })
+  //   createBlockUserInput: CreateBlockUserInput, //
+  //   @Args('userId', { description: '신고한 유저 Id' }) userId: string,
+  // ) {
+  //   // 차단될 유저 정보 생성하기
+  //   return this.blockUsersService.create({ createBlockUserInput, userId });
+  // }
+
+  /** BlockUser Create API
+   * @type [`Mutation`]
+   * @param userId 차단을 요청한 유저 Id
+   * @param blockId 차단하고 싶은 유저 Id
+   * @returns 차단된 유저 정보
+   */
+
+  @Mutation(() => BlockUser, { description: 'Return: 차단된 유저 정보' })
   createBlockUser(
-    @Args('createBlockUserInput', { description: '차단할 유저 정보' })
-    createBlockUserInput: CreateBlockUserInput, //
-    @Args('userId', { description: '신고한 유저 Id' }) userId: string,
+    @Args('userId', { description: '차단을 요청한 유저 Id' }) userId: string,
+    @Args('blockId', { description: '차단하고 싶은 유저 Id' }) blockId: string,
   ) {
-    // 차단될 유저 정보 생성하기
-    return this.blockUsersService.create({ createBlockUserInput, userId });
+    return this.blockUsersService.create({ userId, blockId });
   }
 }

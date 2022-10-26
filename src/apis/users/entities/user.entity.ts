@@ -87,10 +87,6 @@ export class User {
   @OneToOne(() => Dog, (dog) => dog.user)
   dog: Dog;
 
-  @OneToMany(() => Report, (report) => report.id)
-  @Field(() => Report)
-  report: Report;
-
   @OneToMany(() => Payment, (payment) => payment.id)
   @Field(() => Payment)
   payment: Payment;
@@ -103,5 +99,9 @@ export class User {
     cascade: true,
   })
   @Field(() => [BlockUser])
-  blockUser: BlockUser[];
+  userId: BlockUser[];
+
+  @OneToMany(() => Report, (report) => report.id)
+  @Field(() => Report)
+  reportId: Report;
 }
