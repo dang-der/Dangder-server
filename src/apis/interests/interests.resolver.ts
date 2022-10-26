@@ -39,7 +39,7 @@ export class InterestsResolver {
   ) {
     const result = await this.interestsService.create(createInterestInput); //
     // 관심사 생성 시, 관심사와 1:1로 연결된 관심사 채팅방 생성
-    await this.interestChatRoomsService.create({ interest: result });
+    await this.interestChatRoomsService.create({ interest: { id: result.id } });
     return result;
   }
 

@@ -1,4 +1,5 @@
 import { Field, ObjectType } from '@nestjs/graphql';
+import { InterestChatRoom } from 'src/apis/interestChatRooms/entities/interestChatRoom.entity';
 
 @ObjectType()
 export class InterestCategoryOutput {
@@ -13,4 +14,7 @@ export class InterestCategoryOutput {
 
   @Field(() => String)
   subTitle: string;
+
+  @Field(() => String)
+  iChatRoomId: string;
 }
