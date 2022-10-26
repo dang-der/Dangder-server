@@ -38,5 +38,5 @@ export class Review {
     onUpdate: 'CASCADE',
   })
   @Field(() => Dog)
-  sendReviewId: Dog;
+  sendReview: Dog;
 }

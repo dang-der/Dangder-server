@@ -24,20 +24,20 @@ export class ReviewsService {
     const myDog = await this.dogsRepository.findOne({
       where: { id },
       relations: {
-        sendReviewId: true,
+        sendReview: true,
       },
     });
 
-    return myDog.sendReviewId;
+    return myDog.sendReview;
   }
 
   async create(createReviewInput: CreateReviewInput) {
     const myDog = await this.dogsRepository.findOne({
-      where: { id: createReviewInput.sendReviewId },
-      relations: { sendReviewId: true },
+      where: { id: createReviewInput.sendReview },
+      relations: { sendReview: true },
     });
     const result = await this.reviewsRepository.save({
-      sendReviewId: myDog,
+      sendReview: myDog,
       receiveReviewId: createReviewInput.receiveReviewId,
       reviewDetail: createReviewInput.reviewDetail,
       reviewMessage: createReviewInput.reviewMessage,

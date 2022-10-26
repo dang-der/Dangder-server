@@ -118,7 +118,7 @@ export class Dog {
   @Field(() => [Like])
   sendId: Like[];
 
-  @OneToMany(() => Review, (review) => review.sendReviewId, { cascade: true })
+  @OneToMany(() => Review, (review) => review.sendReview, { cascade: true })
   @Field(() => [Review])
-  sendReviewId: Review[];
+  sendReview: Review[];
 }
