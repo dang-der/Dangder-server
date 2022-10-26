@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ChatMessage } from 'src/apis/chatMessages/entities/chatMessage.entity';
+import { InterestChatMessage } from 'src/apis/interestChatMessages/entities/interestChatMessage.entity';
 import { Repository } from 'typeorm';
 
 /**
@@ -11,6 +12,9 @@ export class ChatService {
   constructor(
     @InjectRepository(ChatMessage)
     private readonly chatMessagesRepository: Repository<ChatMessage>,
+
+    @InjectRepository(InterestChatMessage)
+    private readonly interestChatMessagesRepository: Repository<InterestChatMessage>,
   ) {}
 
   /**
@@ -30,5 +34,14 @@ export class ChatService {
       ...data,
     });
     return result;
+  }
+
+  async createInterest({ iRoomId, senderId, type, data }) {
+    const result = await this.interestChatMessagesRepository.save({
+      interestChatRoom: {id: iRoomId},
+      senderId,
+      type,
+      ...data,
+    })
   }
 }

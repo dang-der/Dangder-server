@@ -26,7 +26,7 @@ export class ChatGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
   constructor(
-    private readonly chatService: ChatService, //
+    private readonly chatService: ChatService,
   ) {}
 
   @WebSocketServer() server: Server;
@@ -66,6 +66,18 @@ export class ChatGateway
     client.leave(client.id);
     client.join(roomId);
     this.server.to(roomId).emit('message', { dog, type, data });
+  }
+
+  @SubscribeMessage('sendInterest')
+  async sendInterestMessage(client: Socket, payload: any) {
+    const { iRoomId, dog, type, data } = payload;
+
+    // 채팅 메시지 DB에 저장
+    await this.chatService.createInterest({ iRoomId, senderId: dog.id, type, data });
+
+    client.leave(client.id);
+    client.join(iRoomId);
+    this.server.to(iRoomId).emit('message', { dog, type, data });
   }
 
   // afterInit(server: Server) {
