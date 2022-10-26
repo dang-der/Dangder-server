@@ -18,14 +18,14 @@ export class ReportsResolver {
   /**
    * Fetch Who Report API
    * @type [`Query`]
-   * @param reportId
+   * @param userId
    * @returns 신고 정보
    */
   @Query(() => Report, { description: 'Return : 신고 정보' })
   async fetchWhoReport(
-    @Args('reportId', { description: '신고한 유저 Id' }) reportId: string, //
+    @Args('userId', { description: '신고한 유저 Id' }) userId: string, //
   ) {
-    return this.reportsService.findByReportId({ reportId });
+    return this.reportsService.findByUserId({ userId });
   }
 
   /**

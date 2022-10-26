@@ -33,7 +33,7 @@ export class Review {
   createdAt: Date;
 
   @JoinColumn()
-  @ManyToOne(() => Dog, (dog) => dog.sendReviewId, {
+  @ManyToOne(() => Dog, (dog) => dog.sendReview, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   })

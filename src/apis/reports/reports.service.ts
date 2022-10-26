@@ -14,12 +14,12 @@ export class ReportsService {
   ) {}
 
   /**
-   *  Find By Report Id
-   *  @param reportId
+   *  Find By User Id
+   *  @param userId
    *  @returns 신고한 유저아이디로 찾은 신고 정보
    */
-  findByReportId({ reportId }) {
-    return this.reportsRepository.findOne({ where: { reportId } });
+  findByUserId({ userId }) {
+    return this.reportsRepository.findOne({ where: { user: { id: userId } } });
   }
 
   /**
