@@ -83,25 +83,25 @@ export class User {
   @Field(() => Boolean)
   isStop: boolean;
 
-  @Field(() => Dog)
   @OneToOne(() => Dog, (dog) => dog.user)
+  @Field(() => Dog)
   dog: Dog;
 
-  @OneToMany(() => Payment, (payment) => payment.id)
-  @Field(() => Payment)
-  payment: Payment;
+  @OneToMany(() => Payment, (payments) => payments.user)
+  @Field(() => [Payment])
+  payments: Payment[];
 
-  @OneToMany(() => PassTicket, (passTicket) => passTicket.id)
-  @Field(() => PassTicket)
-  passTicket: PassTicket;
+  @OneToMany(() => PassTicket, (passTickets) => passTickets.user)
+  @Field(() => [PassTicket])
+  passTickets: PassTicket[];
 
-  @OneToMany(() => BlockUser, (blockUser) => blockUser.blockId, {
+  @OneToMany(() => BlockUser, (blockUsers) => blockUsers.user, {
     cascade: true,
   })
   @Field(() => [BlockUser])
-  userId: BlockUser[];
+  blockUsers: BlockUser[];
 
-  @OneToMany(() => Report, (report) => report.id)
-  @Field(() => Report)
-  reportId: Report;
+  @OneToMany(() => Report, (reports) => reports.user)
+  @Field(() => [Report])
+  reports: Report[];
 }

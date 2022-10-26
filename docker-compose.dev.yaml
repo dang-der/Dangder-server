@@ -25,7 +25,7 @@ services:
       # For Deploy On VM Instance
       - 1328:3306
       # For Dev On Localhost
-      # 3306:3306
+      # - 3306:3306
 
   # Redis
   my-redis:

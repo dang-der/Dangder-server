@@ -47,7 +47,7 @@ export class BlockUsersService {
     if (alreadyBlocked) throw new ConflictException('이미 차단된 유저입니다.');
 
     return this.blockUsersRepository.save({
-      userId,
+      user: { id: userId },
       blockId,
       relations: {
         user: true,

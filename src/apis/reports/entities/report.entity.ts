@@ -27,6 +27,6 @@ export class Report {
 
   @JoinColumn()
   @Field(() => User)
-  @ManyToOne(() => User)
-  reportId: User;
+  @ManyToOne(() => User, (user) => user.reports)
+  user: User;
 }

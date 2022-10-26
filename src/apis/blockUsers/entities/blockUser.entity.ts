@@ -23,9 +23,9 @@ export class BlockUser {
   // BlockUser N : User 1 연결
 
   @JoinColumn()
-  @ManyToOne(() => User, (user) => user.userId, {
+  @ManyToOne(() => User, (user) => user.blockUsers, {
     onDelete: 'CASCADE',
   })
   @Field(() => User)
-  userId: User;
+  user: User;
 }

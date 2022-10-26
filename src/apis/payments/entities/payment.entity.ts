@@ -40,8 +40,8 @@ export class Payment {
   paymentType: string;
 
   @JoinColumn()
+  @ManyToOne(() => User, (user) => user.payments)
   @Field(() => User)
-  @ManyToOne(() => User)
   user: User;
 
   // 생성된 시간 추가
