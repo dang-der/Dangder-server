@@ -24,15 +24,19 @@ export class Review {
   @Field(() => String)
   reviewDetail: string;
 
+  @Column()
+  @Field(() => String)
+  receiveReviewId: string;
+
   @CreateDateColumn()
   @Field(() => Date)
   createdAt: Date;
 
   @JoinColumn()
-  @ManyToOne(() => Dog, (dog) => dog.review, {
+  @ManyToOne(() => Dog, (dog) => dog.sendReviewId, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   })
   @Field(() => Dog)
-  dog: Dog;
+  sendReview: Dog;
 }
