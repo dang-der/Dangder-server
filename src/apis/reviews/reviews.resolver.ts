@@ -8,6 +8,26 @@ import { UpdateReviewInput } from './dto/updateReview.input';
 export class ReviewsResolver {
   constructor(private readonly reviewsService: ReviewsService) {}
 
+  @Query(() => [Review])
+  fetchReceiveReviews(
+    @Args('id', {
+      description: '내가 받은 리뷰들을 조회하기 위한 내 강아지 uuid',
+    })
+    id: string,
+  ) {
+    return this.reviewsService.findReceive(id);
+  }
+
+  @Query(() => [Review])
+  fetchSendReviews(
+    @Args('id', {
+      description: '내가 작성한 리뷰들을 조회하기 위한 내 강아지 uuid',
+    })
+    id: string,
+  ) {
+    return this.reviewsService.findSend(id);
+  }
+
   @Mutation(() => Review)
   createReview(
     @Args('createReviewInput') createReviewInput: CreateReviewInput,
@@ -15,25 +35,17 @@ export class ReviewsResolver {
     return this.reviewsService.create(createReviewInput);
   }
 
-  @Query(() => [Review], { name: 'reviews' })
-  findAll() {
-    return this.reviewsService.findAll();
-  }
-
-  @Query(() => Review, { name: 'review' })
-  findOne(@Args('id', { type: () => Int }) id: number) {
-    return this.reviewsService.findOne(id);
-  }
-
   @Mutation(() => Review)
   updateReview(
     @Args('updateReviewInput') updateReviewInput: UpdateReviewInput,
   ) {
-    return this.reviewsService.update(updateReviewInput.id, updateReviewInput);
+    return this.reviewsService.update(updateReviewInput);
   }
 
-  @Mutation(() => Review)
-  removeReview(@Args('id', { type: () => Int }) id: number) {
-    return this.reviewsService.remove(id);
+  @Mutation(() => Boolean)
+  deleteReview(
+    @Args('id') id: string, //
+  ) {
+    return this.reviewsService.delete({ id });
   }
 }

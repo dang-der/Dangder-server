@@ -1,26 +1,56 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Dog } from '../dogs/entities/dog.entity';
 import { CreateReviewInput } from './dto/createReview.input';
 import { UpdateReviewInput } from './dto/updateReview.input';
+import { Review } from './entities/review.entity';
 
 @Injectable()
 export class ReviewsService {
-  create(createReviewInput: CreateReviewInput) {
-    return 'This action adds a new review';
+  constructor(
+    @InjectRepository(Review)
+    private readonly reviewsRepository: Repository<Review>,
+
+    @InjectRepository(Dog)
+    private readonly dogsRepository: Repository<Dog>, //
+  ) {}
+
+  async findReceive(id) {
+    return this.reviewsRepository.find({ where: { receiveReviewId: id } });
   }
 
-  findAll() {
-    return `This action returns all reviews`;
+  async findSend(id) {
+    const myDog = await this.dogsRepository.findOne({
+      where: { id },
+      relations: {
+        sendReviewId: true,
+      },
+    });
+
+    return myDog.sendReviewId;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} review`;
+  async create(createReviewInput: CreateReviewInput) {
+    const myDog = await this.dogsRepository.findOne({
+      where: { id: createReviewInput.sendReviewId },
+      relations: { sendReviewId: true },
+    });
+    const result = await this.reviewsRepository.save({
+      sendReviewId: myDog,
+      receiveReviewId: createReviewInput.receiveReviewId,
+      reviewDetail: createReviewInput.reviewDetail,
+      reviewMessage: createReviewInput.reviewMessage,
+    });
+    return result;
   }
 
-  update(id: number, updateReviewInput: UpdateReviewInput) {
-    return `This action updates a #${id} review`;
+  update(updateReviewInput: UpdateReviewInput) {
+    return '11';
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} review`;
+  async delete({ id }) {
+    const result = await this.dogsRepository.softDelete({ id });
+    return result.affected ? true : false;
   }
 }
