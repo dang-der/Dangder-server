@@ -61,6 +61,22 @@ export class UsersResolver {
   }
 
   /**
+   * LoginUser Fetch API - User Info Only
+   * @type [`Query`]
+   * @param context 로그인한 유저의 정보
+   * @returns 로그인한 유저 데이터
+   */
+  @UseGuards(GqlAuthAccessGuard)
+  @Query(() => UserOutput, {
+    description: 'Return : 로그인한 유저 데이터',
+  })
+  async fetchSocialLoginUser(
+    @Context() context: any, //
+  ) {
+    return this.usersService.findOne({ email: context.req.user.email });
+  }
+
+  /**
    * LoginUser IsCert Fetch API
    * @type [`Query`]
    * @param context 로그인한 유저의 정보

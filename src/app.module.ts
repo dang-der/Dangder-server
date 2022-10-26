@@ -21,6 +21,8 @@ import { DonateIOsModule } from './apis/donateIOs/donateIOs.module';
 import { DonatesModule } from './apis/donates/donates.module';
 import { FilesModule } from './apis/files/files.module';
 import { IamportsModule } from './apis/imports/imports.module';
+import { InterestChatMessagesModule } from './apis/interestChatMessages/interestChatMessages.module';
+import { InterestChatRoomsModule } from './apis/interestChatRooms/interestChatRooms.module';
 import { InterestsModule } from './apis/interests/interests.module';
 import { LikesModule } from './apis/likes/likes.module';
 import { LocationsModule } from './apis/locations/locations.module';
@@ -31,6 +33,7 @@ import { ProductsModule } from './apis/products/products.module';
 import { ReportsModule } from './apis/reports/reports.module';
 import { ReviewsModule } from './apis/reviews/reviews.module';
 import { UsersModule } from './apis/users/users.module';
+
 import { AppController } from './app.controller';
 import { ChatModule } from './gateways/chat/chat.module';
 
@@ -50,6 +53,8 @@ import { ChatModule } from './gateways/chat/chat.module';
     DonatesModule,
     FilesModule,
     IamportsModule,
+    InterestChatMessagesModule,
+    InterestChatRoomsModule,
     InterestsModule,
     LikesModule,
     LocationsModule,
