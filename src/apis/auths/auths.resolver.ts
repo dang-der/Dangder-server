@@ -55,6 +55,11 @@ export class AuthsResolver {
         '비밀번호가 일치하지 않습니다. 로그인 할 수 없습니다.',
       );
 
+    if (user.isStop)
+      throw new UnprocessableEntityException(
+        '신고가 누적되어 계정이 차단되었습니다. 관리자에게 문의해주세요. (설정 -> 1:1문의하기)',
+      );
+
     this.authsService.setRefreshToken({
       user,
       res: Context.res,

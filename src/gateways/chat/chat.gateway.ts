@@ -21,12 +21,14 @@ import { ChatService } from './chat.service';
     origin: '*',
     credentials: true,
   },
+  pingInterval: 10000,
+  pingTimeout: 30000,
 })
 export class ChatGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
   constructor(
-    private readonly chatService: ChatService,
+    private readonly chatService: ChatService, //
   ) {}
 
   @WebSocketServer() server: Server;
@@ -72,8 +74,13 @@ export class ChatGateway
   async sendInterestMessage(client: Socket, payload: any) {
     const { iRoomId, dog, type, data } = payload;
 
-    // 채팅 메시지 DB에 저장
-    await this.chatService.createInterest({ iRoomId, senderId: dog.id, type, data });
+    // 관심사 채팅 메시지 DB에 저장
+    await this.chatService.createInterest({
+      iRoomId,
+      senderId: dog.id,
+      type,
+      data,
+    });
 
     client.leave(client.id);
     client.join(iRoomId);

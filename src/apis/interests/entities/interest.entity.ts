@@ -42,7 +42,7 @@ export class Interest {
   dogs: Dog[];
 
   // Interest : InterestChatRoom - 1:1 연결
-  @OneToOne(() => InterestChatRoom)
+  @OneToOne(() => InterestChatRoom, (iChatRoom) => iChatRoom.interest)
   @Field(() => InterestChatRoom)
   iChatRoom: InterestChatRoom;
 }

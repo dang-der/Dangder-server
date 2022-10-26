@@ -19,7 +19,9 @@ export class InterestsService {
    * @returns 등록된 모든 관심사 종류
    */
   async findAll() {
-    const result = await this.interestsRepository.find();
+    const result = await this.interestsRepository.find({
+      relations: { iChatRoom: true },
+    });
     const category = [];
     for (let i = 0; i < result.length; i++) {
       const tmp = new InterestCategoryOutput();
@@ -27,6 +29,7 @@ export class InterestsService {
       tmp.interestImg = result[i].interestImg;
       tmp.title = result[i].title;
       tmp.subTitle = result[i].subTitle;
+      tmp.iChatRoomId = result[i].iChatRoom.id;
       category.push(tmp);
     }
 

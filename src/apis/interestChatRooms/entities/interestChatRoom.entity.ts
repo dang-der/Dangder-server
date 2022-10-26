@@ -5,6 +5,7 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  JoinColumn,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -18,7 +19,8 @@ export class InterestChatRoom {
   id: string;
 
   // InterestChatRoom : Interest - 1:1 연결
-  @OneToOne(() => Interest)
+  @JoinColumn()
+  @OneToOne(() => Interest, (interest) => interest.iChatRoom)
   @Field(() => Interest)
   interest: Interest;
 

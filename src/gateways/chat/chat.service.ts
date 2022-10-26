@@ -38,10 +38,12 @@ export class ChatService {
 
   async createInterest({ iRoomId, senderId, type, data }) {
     const result = await this.interestChatMessagesRepository.save({
-      interestChatRoom: {id: iRoomId},
+      interestChatRoom: { id: iRoomId },
       senderId,
       type,
       ...data,
-    })
+    });
+
+    return result;
   }
 }
