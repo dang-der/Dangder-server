@@ -21,7 +21,10 @@ export class ReviewsService {
   ) {}
 
   async findReceive(id) {
-    return this.reviewsRepository.find({ where: { receiveReviewId: id } });
+    return this.reviewsRepository.find({
+      where: { receiveReviewId: id },
+      relations: { reviewDetail: true },
+    });
   }
 
   async findSend(id) {
@@ -83,6 +86,7 @@ export class ReviewsService {
   async findOne({ myId, targetId }) {
     const review = await this.reviewsRepository.findOne({
       where: { sendReview: { id: myId }, receiveReviewId: targetId },
+      relations: { reviewDetail: true },
     });
 
     return review ? true : false;
