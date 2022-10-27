@@ -28,6 +28,15 @@ export class ReviewsResolver {
     return this.reviewsService.findSend(id);
   }
 
+  @Query(() => Boolean)
+  fetchReviews(
+    @Args('myId', { description: '리뷰를 쓴 강아지의 uuid' }) myId: string,
+    @Args('targetId', { description: '리뷰를 받은 강아지의 uuid' })
+    targetId: string,
+  ) {
+    return this.reviewsService.findOne({ myId, targetId });
+  }
+
   @Mutation(() => Review)
   createReview(
     @Args('createReviewInput') createReviewInput: CreateReviewInput,
