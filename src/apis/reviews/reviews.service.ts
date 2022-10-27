@@ -23,7 +23,7 @@ export class ReviewsService {
   async findReceive(id) {
     return this.reviewsRepository.find({
       where: { receiveReviewId: id },
-      relations: { reviewDetail: true },
+      relations: { reviewDetail: true, sendReview: true },
     });
   }
 
