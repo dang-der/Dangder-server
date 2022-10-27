@@ -8,9 +8,9 @@ export class CreateReviewInput {
   @Field(() => String)
   receiveReviewId: string;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   reviewMessage: string;
 
-  @Field(() => String)
-  reviewDetail: string;
+  @Field(() => [String], { nullable: true })
+  reviewDetail: string[];
 }

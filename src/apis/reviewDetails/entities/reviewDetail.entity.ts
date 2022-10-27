@@ -1,5 +1,12 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Review } from 'src/apis/reviews/entities/review.entity';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 @ObjectType()
@@ -11,4 +18,8 @@ export class ReviewDetail {
   @Column()
   @Field(() => String)
   reviewDetail: string;
+
+  @JoinColumn()
+  @ManyToOne(() => Review, (review) => review.reviewDetail)
+  review: Review;
 }
