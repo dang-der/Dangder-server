@@ -34,4 +34,15 @@ export class InterestChatMessagesService {
     });
     return result.affected ? true : false;
   }
+
+  create({ iRoomId, testMsg }) {
+    const result = this.interestChatMessagesRepository.save({
+      senderId: "testSender",
+      type: "test",
+      message: testMsg,
+      interestChatRoom: { id:iRoomId },
+    });
+
+    return result;
+  }
 }

@@ -58,7 +58,10 @@ export class InterestChatMessage {
 
   // InterestChatMessage : InterestChatroom - N:1 연결
   @JoinColumn()
+  @ManyToOne(() => InterestChatRoom,
+    (interestChatRoom) => interestChatRoom.interestChatMessages,
+    { onDelete: 'CASCADE' },
+  )
   @Field(() => InterestChatRoom)
-  @ManyToOne(() => InterestChatRoom, { onDelete: 'CASCADE' })
   interestChatRoom: InterestChatRoom;
 }

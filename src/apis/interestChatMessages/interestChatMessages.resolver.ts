@@ -1,4 +1,4 @@
-import { Query, Args, Resolver } from '@nestjs/graphql';
+import { Query, Mutation, Args, Resolver } from '@nestjs/graphql';
 import { InterestChatMessagesService } from './interestChatMessages.service';
 import { InterestChatMessage } from './entities/interestChatMessage.entity';
 
@@ -28,5 +28,13 @@ export class InterestChatMessagesResolver {
     return this.interestChatMessagesService.findAllByIChatRoomId({
       iChatRoomId,
     });
+  }
+
+  @Mutation(() => InterestChatMessage)
+  createIChatMessage(
+    @Args('iRoomId') iRoomId: string, //
+    @Args('testMsg') testMsg: string, //
+  ) {
+    return this.interestChatMessagesService.create({ iRoomId, testMsg });
   }
 }
