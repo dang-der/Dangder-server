@@ -5,6 +5,7 @@ import {
   Column,
   CreateDateColumn,
   DeleteDateColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 
 @Entity()
@@ -24,6 +25,9 @@ export class AdminUser {
   @CreateDateColumn()
   @Field(() => Date)
   createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 
   @DeleteDateColumn()
   deletedAt: Date;

@@ -4,7 +4,7 @@ import {
   UnprocessableEntityException,
   UseGuards,
 } from '@nestjs/common';
-import { Args, Context, Mutation, Resolver } from '@nestjs/graphql';
+import { Args, Query, Context, Mutation, Resolver } from '@nestjs/graphql';
 import { IContext } from 'src/commons/type/context';
 import { AdminUsersService } from './adminUsers.service';
 import * as bcrypt from 'bcrypt';
@@ -14,6 +14,7 @@ import {
 } from 'src/commons/auth/gql-auth.guard';
 import { Cache } from 'cache-manager';
 import { AdminUser } from './entities/adminUser.entity';
+import { ElasticsearchService } from '@nestjs/elasticsearch';
 
 /**
  * Admin User GraphQL API Resolver
@@ -23,6 +24,7 @@ import { AdminUser } from './entities/adminUser.entity';
 export class AdminUsersResolver {
   constructor(
     private readonly adminUsersService: AdminUsersService, //
+    private readonly elasticsearchService: ElasticsearchService, //
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
   ) {}
@@ -143,6 +145,17 @@ export class AdminUsersResolver {
     account: string, //
     @Args('password', { description: '계정 비밀번호' }) password: string, //
   ) {
+    // this.elasticsearchService.create({
+    //   id: 'myid',
+    //   index: 'myproduct',
+    //   document: {
+    //     // name: "철수",
+    //     // age: 13,
+    //     // school: "다람쥐초등학교"
+    //     account,
+    //     password,
+    //   },
+    // });
     return this.adminUsersService.create({ account, password });
   }
 
@@ -157,5 +170,30 @@ export class AdminUsersResolver {
     @Args('account', { description: '삭제할 계정' }) account: string, //
   ) {
     return this.adminUsersService.delete({ account });
+  }
+
+  /**
+   * Fetch Admin User
+   * @type [`Query`]
+   * @returns 조회한 adminUser 정보
+   */
+
+  @Query(() => [AdminUser])
+  async fetchAdminUsers() {
+    const result = await this.elasticsearchService.search({
+      index: 'myproduct',
+      query: {
+        match_all: {},
+      },
+    });
+    console.log(JSON.stringify(result, null, ' '));
+
+    // 엘라스틱서치에서 조회 해보기 위해 임시로 주석!!
+    // return this.adminUsersService.findAll();
+  }
+
+  @Query(() => AdminUser)
+  async fetchAdminUser(@Args('account') account: string) {
+    return this.adminUsersService.findOne({ account });
   }
 }
