@@ -11,11 +11,10 @@ import { Breed } from '../breeds/entities/breed.entity';
 import { getDistance, isPointWithinRadius } from 'geolib';
 import { Cache } from 'cache-manager';
 import { User } from '../users/entities/user.entity';
-import { Like } from '../likes/entities/like.entity';
-import { ChatRoom } from '../chatRooms/entities/chatRoom.entity';
-import { ChatMessage } from '../chatMessages/entities/chatMessage.entity';
 import { AroundDogOutput } from './dto/aroundDog.output';
 import { LikesService } from '../likes/likes.service';
+import { BlockUser } from '../blockUsers/entities/blockUser.entity';
+import { UsersService } from '../users/users.service';
 
 /**
  * Dog Service
@@ -43,6 +42,9 @@ export class DogsService {
 
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
+
+    @InjectRepository(BlockUser)
+    private readonly blockUsersRepository: Repository<BlockUser>,
 
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
@@ -79,14 +81,14 @@ export class DogsService {
    * @returns 강아지 한마리 정보
    */
   async findOne(id: string) {
-    return this.dogsRepository.findOne({
+    return await this.dogsRepository.findOne({
       where: { id },
       relations: {
         locations: true,
         interests: true,
         characters: true,
         img: true,
-        user: true,
+        user: { blockUsers: true },
         sendId: true,
       },
       order: { img: { isMain: 'DESC' } },
@@ -154,6 +156,8 @@ export class DogsService {
     const resultDog = [];
     const prevLike = [];
 
+    const blockUser = myDog.user.blockUsers.map((el) => el.blockId);
+
     for (let i = 0; i < Dogs.length; i++) {
       const like = await this.likesService.isLike({
         sendId: Dogs[i].id,
@@ -168,7 +172,12 @@ export class DogsService {
         { latitude: el.locations.lat, longitude: el.locations.lng },
         myDog.targetDistance,
       );
-      if (result === true && el.id !== id && prevLike[idx] === false) {
+      if (
+        result === true &&
+        el.id !== id &&
+        prevLike[idx] === false &&
+        blockUser.includes(el.user.id) === false
+      ) {
         if (myDog.targetAgeMin <= el.age && el.age <= myDog.targetAgeMax) {
           resultDog.push(el);
         }
