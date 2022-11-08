@@ -28,6 +28,22 @@ export class InterestChatRoomsResolver {
     return this.interestChatRoomsService.findOne({ iRoomId });
   }
 
+  @Mutation(() => InterestChatRoom, {
+    description: 'Return : 참가할 채팅방 정보',
+  })
+  async joinIChatRoom(
+    @Args('email', { description: '사용자의 email' }) email: string,
+    @Args('iChatRoomId', { description: '입장할 관심사 채팅방의 id' })
+    iChatRoomId: string,
+  ) {
+    const result = await this.interestChatRoomsService.findOneToValidUser({
+      email,
+      iChatRoomId,
+    });
+
+    return result;
+  }
+
   /**
    * Delete InterestChatRoom API - 채팅방 나가기 시, 채팅방 삭제
    * @param id 삭제할 채팅방의 id

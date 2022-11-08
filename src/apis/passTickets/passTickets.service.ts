@@ -36,9 +36,9 @@ export class PassTicketsService {
    * @returns 패스 티켓 정보
    */
 
-  async findPassTicket({ id }) {
+  async findPassTicket({ email }) {
     const findPassTicket = await this.passTicketsRepository.findOne({
-      where: { id },
+      where: { user: { email } },
       relations: {
         user: {
           dog: true,

@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   CACHE_MANAGER,
   ConflictException,
   Inject,
@@ -97,6 +98,10 @@ export class LikesService {
   }
 
   async create(createLikeInput) {
+    // 자기 자신을 좋아요 하는 경우 에러처리
+    if (createLikeInput.sendId === createLikeInput.receiveId)
+      throw new BadRequestException('자기 자신에게 좋아요를 보낼 수 없습니다!');
+
     const today = new Date();
     const month = today.getMonth() + 1; //months from 1-12
     const day = today.getDate();
