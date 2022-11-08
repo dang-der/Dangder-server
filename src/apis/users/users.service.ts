@@ -28,8 +28,12 @@ export class UsersService {
    * @returns 유저 전체 정보
    */
 
-  findAll() {
-    return this.usersRepository.find();
+  findAll(page: number) {
+    return this.usersRepository.find({
+      skip: page ? (page - 1) * 40 : 0, // 1페이지당 10마리씩 조회, 이미 조회한 만큼은 스킵
+      take: 40,
+      relations: { dog: true },
+    });
   }
 
   /**

@@ -19,8 +19,10 @@ export class BlockUserResolver {
    */
 
   @Query(() => [BlockUser], { description: 'Return : 차단된 모든 유저 정보' })
-  fetchBlockUsers() {
-    return this.blockUsersService.findAll();
+  fetchBlockUsers(
+    @Args('page') page: number, //
+  ) {
+    return this.blockUsersService.findAll(page);
   }
 
   /**
