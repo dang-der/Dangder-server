@@ -14,14 +14,14 @@ export class PassTicketsResolver {
   /**
    * PassTicket Fetch API
    * @type [`Query`]
-   * @param id 패스 티켓 아이디
+   * @param email 유저의 메일
    * @returns 조회한 패스 티켓 정보
    */
   @Query(() => PassTicket, { description: 'Return : 패스 티켓 정보' })
   async fetchPassTicket(
-    @Args('id', { description: '패스 티켓 id' }) id: string, //
+    @Args('email', { description: 'user의 email' }) email: string, //
   ) {
-    return await this.passTicketsService.findPassTicket({ id });
+    return await this.passTicketsService.findPassTicket({ email });
   }
 
   /**
