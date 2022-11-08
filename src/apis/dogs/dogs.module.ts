@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ElasticsearchModule } from '@nestjs/elasticsearch';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BlockUser } from '../blockUsers/entities/blockUser.entity';
 import { Breed } from '../breeds/entities/breed.entity';
@@ -31,6 +32,9 @@ import { Dog } from './entities/dog.entity';
       ChatRoom,
       ChatMessage,
     ]),
+    ElasticsearchModule.register({
+      node: 'http://elasticsearch:9200',
+    }),
   ],
   providers: [
     DogsResolver, //

@@ -15,6 +15,11 @@ export class DogsResolver {
     private readonly dogsService: DogsService, //
   ) {}
 
+  @Query(() => [Dog], { description: '강아지 검색' })
+  fetchDogsBySearch(@Args({ name: 'search' }) search: string) {
+    return this.dogsService.search({ search });
+  }
+
   /**
    * fetchDogs API
    * [`Query`]

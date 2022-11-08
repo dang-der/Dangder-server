@@ -23,9 +23,9 @@ services:
       TZ: Asia/Seoul
     ports:
       # For Deploy On VM Instance
-      - 1328:3306
+      # - 1328:3306
       # For Dev On Localhost
-      # - 3306:3306
+      - 3306:3306
 
   # Redis
   my-redis:
@@ -33,18 +33,20 @@ services:
     ports:
       - 6379:6379
 
-  # # Elastic Search
-  # elasticsearch:
-  #   image: elasticsearch:7.17.0
-  #   environment:
-  #     discovery.type: single-node
-  #   ports:
-  #     - 9200:9200
+  # Elastic Search
+  elasticsearch:
+    image: elasticsearch:7.17.0
+    environment:
+      discovery.type: single-node
+    ports:
+      - 9200:9200
 
-  # # Logstash
-  # logstash:
-  #   image: logstash:7.17.0
-  #   volumes:
-  #     - ./elk/logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
-  #     - ./elk/logstash/mysql-connector-java-8.0.28.jar:/usr/share/logstash/mysql-connector-java-8.0.28.jar
-  #     - ./elk/logstash/search-avoid-breed-template.json:/usr/share/logstash/search-avoid-breed-template.json
+  # Logstash
+  logstash:
+    image: logstash:7.17.0
+    volumes:
+      - ./elk/logstash/logstash-dog.conf:/usr/share/logstash/pipeline/logstash-dog.conf
+      - ./elk/logstash/mysql-connector-java-8.0.28.jar:/usr/share/logstash/mysql-connector-java-8.0.28.jar
+      - ./elk/logstash/template-dog.json:/usr/share/logstash/template-dog.json
+      - ./elk/logstash/logstash-user.conf:/usr/share/logstash/pipeline/logstash-user.conf
+      - ./elk/logstash/template-user.json:/usr/share/logstash/template-user.json
