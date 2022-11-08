@@ -18,8 +18,13 @@ export class ReportsService {
    *  @param userId
    *  @returns 신고한 유저아이디로 찾은 신고 정보
    */
-  findByUserId({ userId }) {
-    return this.reportsRepository.findOne({ where: { user: { id: userId } } });
+  findByUserId({ userId, page }) {
+    return this.reportsRepository.find({
+      skip: page ? (page - 1) * 40 : 0, // 1페이지당 10마리씩 조회, 이미 조회한 만큼은 스킵
+      take: 40,
+      where: { user: { id: userId } },
+      relations: { user: true },
+    });
   }
 
   /**
@@ -27,8 +32,13 @@ export class ReportsService {
    * @param targetId 신고당한 Id
    * @returns 신고당한 유저아이디로 찾은 신고 정보
    */
-  findByTargetId({ targetId }) {
-    return this.reportsRepository.findOne({ where: { targetId } });
+  findByTargetId({ targetId, page }) {
+    return this.reportsRepository.find({
+      skip: page ? (page - 1) * 40 : 0, // 1페이지당 10마리씩 조회, 이미 조회한 만큼은 스킵
+      take: 40,
+      where: { targetId },
+      relations: { user: true },
+    });
   }
 
   /**

@@ -25,8 +25,9 @@ export class ReportsResolver {
   @Query(() => Report, { description: 'Return : 신고 정보' })
   async fetchWhoReport(
     @Args('userId', { description: '신고한 유저 Id' }) userId: string, //
+    @Args('page') page: number, //
   ) {
-    return this.reportsService.findByUserId({ userId });
+    return this.reportsService.findByUserId({ userId, page });
   }
 
   /**
@@ -38,8 +39,9 @@ export class ReportsResolver {
   @Query(() => Report, { description: 'Return : 신고 정보' })
   async fetchTarget(
     @Args('targetId', { description: '신고 당한 유저 Id' }) targetId: string, //
+    @Args('page') page: number, //
   ) {
-    return this.reportsService.findByTargetId({ targetId });
+    return this.reportsService.findByTargetId({ targetId, page });
   }
 
   /**

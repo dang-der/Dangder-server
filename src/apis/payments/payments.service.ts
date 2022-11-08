@@ -67,6 +67,19 @@ export class PaymentsService {
   }
 
   /**
+   * Fetch Payment
+   * @returns 결제 정보
+   */
+  async fetchPayment(page: number) {
+    const findPayment = await this.paymentsRepository.find({
+      skip: page ? (page - 1) * 40 : 0, // 1페이지당 10마리씩 조회, 이미 조회한 만큼은 스킵
+      take: 40,
+      relations: { user: true },
+    });
+    return findPayment;
+  }
+
+  /**
    * Create Payment
    * @param impUid 아임포트 결제정보
    * @param payMoney 결제 금액
@@ -241,7 +254,8 @@ export class PaymentsService {
       });
 
       // passBuyer 의 isCert 여부 확인
-      if (passBuyer.isCert) {
+      const isCert = await this.cacheManager.get(`${passBuyer.email}:cert`);
+      if (isCert) {
         throw new ConflictException(
           '기존에 구매한 댕더패스가 유효합니다. 새로운 이용권을 구매하실 수 없습니다.',
         );

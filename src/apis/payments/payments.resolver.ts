@@ -1,4 +1,4 @@
-import { Args, Context, Mutation, Resolver } from '@nestjs/graphql';
+import { Args, Query, Context, Mutation, Resolver } from '@nestjs/graphql';
 import { Payment, PAYMENT_STATUS_ENUM } from './entities/payment.entity';
 import { PaymentsService } from './payments.service';
 import {
@@ -28,6 +28,18 @@ export class PaymentsResolver {
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
   ) {}
+
+  /**
+   * Payment Fetch API
+   * @type [`Query`]
+   * @returns 결제 정보
+   */
+  @Query(() => Payment, { description: 'Return : 결제 정보' })
+  fetchPayment(
+    @Args('page') page: number, //
+  ) {
+    return this.paymentsService.fetchPayment(page);
+  }
 
   /**
    * Payment Create API

@@ -7,6 +7,7 @@ import { CACHE_MANAGER, Inject, UseGuards } from '@nestjs/common';
 import { GqlAuthAccessGuard } from 'src/commons/auth/gql-auth.guard';
 import { UserOutput } from './dto/userOutput.output';
 import { Cache } from 'cache-manager';
+import { ElasticsearchService } from '@nestjs/elasticsearch';
 
 /**
  * User GraphQL API Resolver
@@ -15,6 +16,7 @@ import { Cache } from 'cache-manager';
 @Resolver()
 export class UsersResolver {
   constructor(
+    private readonly elasticsearchService: ElasticsearchService,
     private readonly usersService: UsersService, //
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
@@ -26,8 +28,17 @@ export class UsersResolver {
    * @returns 전체 유저 정보
    */
   @Query(() => [User], { description: 'Return : 전체 유저 정보' })
-  fetchUsers() {
-    return this.usersService.findAll();
+  async fetchUsers(
+    @Args('page') page: number, //
+  ) {
+    const result = await this.elasticsearchService.search({
+      index: 'user',
+      query: {
+        match_all: {},
+      },
+    });
+    console.log(JSON.stringify(result, null, ''));
+    return this.usersService.findAll(page);
   }
 
   /**
@@ -125,7 +136,6 @@ export class UsersResolver {
     @Args('createUserInput', { description: '회원의 정보 입력' })
     createUserInput: CreateUserInput, //
   ) {
-    // 유저 정보 생성하기
     return this.usersService.create({ createUserInput });
   }
 

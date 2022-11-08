@@ -1,10 +1,10 @@
 {
-  "template": "avoidBreed",
-  "index_patterns": ["search-avoid-breed-*"],
+  "template": "user",
+  "index_patterns": ["search-user-*"],
   "settings": {
     "analysis": {
       "analyzer": {
-        "avoid-breed_analyzer": {
+        "user_analyzer": {
           "tokenizer": "my_ngram_tokenizer"
         }
       },
@@ -20,9 +20,9 @@
   },
   "mappings": {
     "properties": {
-      "avoidbreed": {
+      "user": {
         "type": "text",
-        "analyzer": "avoid-breed_analyzer"
+        "analyzer": "my_ngram_analyzer"
       }
     }
   }
