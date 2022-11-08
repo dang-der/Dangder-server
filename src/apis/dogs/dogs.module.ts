@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
+import { ElasticsearchModule } from '@nestjs/elasticsearch';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { BlockUser } from '../blockUsers/entities/blockUser.entity';
 import { Breed } from '../breeds/entities/breed.entity';
 import { Character } from '../characters/entities/character.entity';
 import { ChatMessage } from '../chatMessages/entities/chatMessage.entity';
@@ -20,6 +22,7 @@ import { Dog } from './entities/dog.entity';
     TypeOrmModule.forFeature([
       Dog, //
       Interest, //
+      BlockUser, //
       Character, //
       DogImage, //
       Location, //
@@ -29,6 +32,9 @@ import { Dog } from './entities/dog.entity';
       ChatRoom,
       ChatMessage,
     ]),
+    ElasticsearchModule.register({
+      node: 'http://elasticsearch:9200',
+    }),
   ],
   providers: [
     DogsResolver, //

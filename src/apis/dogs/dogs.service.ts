@@ -11,11 +11,11 @@ import { Breed } from '../breeds/entities/breed.entity';
 import { getDistance, isPointWithinRadius } from 'geolib';
 import { Cache } from 'cache-manager';
 import { User } from '../users/entities/user.entity';
-import { Like } from '../likes/entities/like.entity';
-import { ChatRoom } from '../chatRooms/entities/chatRoom.entity';
-import { ChatMessage } from '../chatMessages/entities/chatMessage.entity';
 import { AroundDogOutput } from './dto/aroundDog.output';
 import { LikesService } from '../likes/likes.service';
+import { BlockUser } from '../blockUsers/entities/blockUser.entity';
+import { UsersService } from '../users/users.service';
+import { ElasticsearchService } from '@nestjs/elasticsearch';
 
 /**
  * Dog Service
@@ -44,14 +44,60 @@ export class DogsService {
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
 
+    @InjectRepository(BlockUser)
+    private readonly blockUsersRepository: Repository<BlockUser>,
+
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
 
     private readonly dataSource: DataSource,
 
     private readonly likesService: LikesService,
+
+    private readonly elasticsearchService: ElasticsearchService,
   ) {}
 
+  async search({ search }) {
+    const redisDog = await this.cacheManager.get(search);
+    if (redisDog) {
+      console.log('redis에서 찾음');
+      console.log(redisDog);
+      console.log('=========================');
+      return redisDog;
+    }
+    // 3. miss => Elasticsearch에서 검색
+    console.time('ELA에서 찾음');
+    const result = await this.elasticsearchService.search({
+      index: 'dog',
+      query: {
+        match: { name: search },
+      },
+    });
+    console.timeEnd('ELA에서 찾음');
+
+    // 4. 조회한 결과를 redis에 등록
+
+    const result2 = result.hits.hits.map((el: any) => ({
+      id: el._source.id,
+      name: el._source.name,
+      age: el._source.age,
+      gender: el._source.gender,
+      description: el._source.description,
+      deletedAt: el._source.deletedAt,
+      registerNumber: el._source.registerNumber,
+      userId: el._source.userId,
+      createdAt: el._source.createdAt,
+      updatedAt: el._source.updatedAt,
+    }));
+    // console.log(result.hits.hits[0]._source['style_number']);
+    await this.cacheManager.set(search, result2, {
+      ttl: 0,
+    });
+    console.log('===============');
+    console.log('redis에 저장');
+    // 5. 조회한 결과를 클라이언트로 반환
+    return result2;
+  }
   /**
    * 모든 강아지 정보조회
    * @param page 조회할 페이지 수
@@ -79,14 +125,14 @@ export class DogsService {
    * @returns 강아지 한마리 정보
    */
   async findOne(id: string) {
-    return this.dogsRepository.findOne({
+    return await this.dogsRepository.findOne({
       where: { id },
       relations: {
         locations: true,
         interests: true,
         characters: true,
         img: true,
-        user: true,
+        user: { blockUsers: true },
         sendId: true,
       },
       order: { img: { isMain: 'DESC' } },
@@ -154,6 +200,8 @@ export class DogsService {
     const resultDog = [];
     const prevLike = [];
 
+    const blockUser = myDog.user.blockUsers.map((el) => el.blockId);
+
     for (let i = 0; i < Dogs.length; i++) {
       const like = await this.likesService.isLike({
         sendId: Dogs[i].id,
@@ -168,7 +216,12 @@ export class DogsService {
         { latitude: el.locations.lat, longitude: el.locations.lng },
         myDog.targetDistance,
       );
-      if (result === true && el.id !== id && prevLike[idx] === false) {
+      if (
+        result === true &&
+        el.id !== id &&
+        prevLike[idx] === false &&
+        blockUser.includes(el.user.id) === false
+      ) {
         if (myDog.targetAgeMin <= el.age && el.age <= myDog.targetAgeMax) {
           resultDog.push(el);
         }
