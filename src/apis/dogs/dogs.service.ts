@@ -88,7 +88,7 @@ export class DogsService {
     }));
 
     await this.cacheManager.set(search, result2, {
-      ttl: 60,
+      ttl: 3,
     });
 
     // 5. 조회한 결과를 클라이언트로 반환
