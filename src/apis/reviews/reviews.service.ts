@@ -20,6 +20,10 @@ export class ReviewsService {
     private readonly reviewDetailsRepository: Repository<ReviewDetail>,
   ) {}
 
+  async findAll() {
+    return this.reviewsRepository.find();
+  }
+
   async findReceive(id) {
     return this.reviewsRepository.find({
       where: { receiveReviewId: id },
@@ -91,10 +95,6 @@ export class ReviewsService {
     });
 
     return review ? true : false;
-  }
-
-  update(updateReviewInput: UpdateReviewInput) {
-    return '11';
   }
 
   async delete({ id }) {
