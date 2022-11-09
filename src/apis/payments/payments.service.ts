@@ -70,7 +70,7 @@ export class PaymentsService {
    * Fetch Payment
    * @returns 결제 정보
    */
-  async fetchPayment(page: number) {
+  async fetchPayments(page: number) {
     const findPayment = await this.paymentsRepository.find({
       skip: page ? (page - 1) * 40 : 0, // 1페이지당 10마리씩 조회, 이미 조회한 만큼은 스킵
       take: 40,

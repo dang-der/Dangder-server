@@ -17,6 +17,20 @@ export class ReportsResolver {
   ) {}
 
   /**
+   * Fetch Report API
+   * @type [`Query`]
+   * @param page
+   * @returns 신고 정보
+   */
+
+  @Query(() => Report, { description: 'Return : 신고 정보' })
+  async fetchReports(
+    @Args('page') page: number, //
+  ) {
+    return this.reportsService.fetchReport(page);
+  }
+
+  /**
    * Fetch Who Report API
    * @type [`Query`]
    * @param userId

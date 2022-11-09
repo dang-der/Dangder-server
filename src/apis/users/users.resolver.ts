@@ -7,7 +7,7 @@ import { CACHE_MANAGER, Inject, UseGuards } from '@nestjs/common';
 import { GqlAuthAccessGuard } from 'src/commons/auth/gql-auth.guard';
 import { UserOutput } from './dto/userOutput.output';
 import { Cache } from 'cache-manager';
-import { ElasticsearchService } from '@nestjs/elasticsearch';
+import { UserElasticsearchOutPut } from './dto/userElasticsearch.output';
 
 /**
  * User GraphQL API Resolver
@@ -16,11 +16,21 @@ import { ElasticsearchService } from '@nestjs/elasticsearch';
 @Resolver()
 export class UsersResolver {
   constructor(
-    private readonly elasticsearchService: ElasticsearchService,
     private readonly usersService: UsersService, //
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
   ) {}
+
+  /**
+   * Fetch User By Search API
+   * @param search
+   * @returns 검색된 유저 정보
+   */
+
+  @Query(() => [UserElasticsearchOutPut], { description: '유저 검색' })
+  fetchUsersBySearch(@Args({ name: 'search', nullable: true }) search: string) {
+    return this.usersService.search({ search });
+  }
 
   /**
    * AllUser Fetch API
@@ -31,13 +41,6 @@ export class UsersResolver {
   async fetchUsers(
     @Args('page') page: number, //
   ) {
-    const result = await this.elasticsearchService.search({
-      index: 'user',
-      query: {
-        match_all: {},
-      },
-    });
-    console.log(JSON.stringify(result, null, ''));
     return this.usersService.findAll(page);
   }
 

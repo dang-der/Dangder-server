@@ -12,6 +12,7 @@ import { AuthsController } from './auths.controller';
 import { JwtNaverStrategy } from 'src/commons/auth/jwt-social-naver.strategy';
 import { JwtKakaoStrategy } from 'src/commons/auth/jwt-social-kakao.strategy';
 import { Dog } from '../dogs/entities/dog.entity';
+import { ElasticsearchModule } from '@nestjs/elasticsearch';
 
 @Module({
   imports: [
@@ -20,6 +21,9 @@ import { Dog } from '../dogs/entities/dog.entity';
       User, //
       Dog,
     ]),
+    ElasticsearchModule.register({
+      node: 'http://elasticsearch:9200',
+    }),
   ],
   providers: [
     JwtRefreshStrategy, // Refresh Token 을 위한 Strategy

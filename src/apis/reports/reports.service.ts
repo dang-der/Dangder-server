@@ -14,6 +14,20 @@ export class ReportsService {
   ) {}
 
   /**
+   * Fetch Payment
+   * @param page
+   * @returns 신고 정보
+   */
+
+  fetchReport(page: number) {
+    return this.reportsRepository.find({
+      skip: page ? (page - 1) * 40 : 0, // 1페이지당 10마리씩 조회, 이미 조회한 만큼은 스킵
+      take: 40,
+      relations: { user: true },
+    });
+  }
+
+  /**
    *  Find By User Id
    *  @param userId
    *  @returns 신고한 유저아이디로 찾은 신고 정보
