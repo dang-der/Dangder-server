@@ -26,6 +26,10 @@ export class Payment {
   @Field(() => String)
   id: string;
 
+  @Column()
+  @Field(() => String)
+  email: string;
+
   // import Uid
   @Column()
   @Field(() => String)

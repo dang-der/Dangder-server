@@ -1,6 +1,8 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { User } from '../users/entities/user.entity';
+import { BlockUserOutput } from './dto/blockUserOutput';
 import { BlockUser } from './entities/blockUser.entity';
 
 /**
@@ -11,18 +13,33 @@ export class BlockUsersService {
   constructor(
     @InjectRepository(BlockUser)
     private readonly blockUsersRepository: Repository<BlockUser>,
+
+    @InjectRepository(User)
+    private readonly usersRepository: Repository<User>,
   ) {}
 
   /**
    * Fetch BlockUsers
    * @returns 조회한 모든 차단 유저 정보
    */
-  findAll(page: number) {
-    return this.blockUsersRepository.find({
+  async fetchBlockUsers(page: number) {
+    const findBlockUser = await this.blockUsersRepository.find({
       skip: page ? (page - 1) * 40 : 0, // 1페이지당 10마리씩 조회, 이미 조회한 만큼은 스킵
       take: 40,
       relations: { user: true },
     });
+
+    const findEmail = await this.usersRepository.find();
+
+    const result = [];
+    for (let i = 0; i < findBlockUser.length; i++) {
+      const tmp = new BlockUserOutput();
+      tmp.email = findEmail[i].email;
+      tmp.blockId = findBlockUser[i].blockId;
+      result.push(tmp);
+    }
+
+    return result;
   }
 
   /**

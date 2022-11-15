@@ -35,10 +35,10 @@ export class PaymentsResolver {
    * @returns 결제 정보
    */
   @Query(() => Payment, { description: 'Return : 결제 정보' })
-  fetchPayment(
+  fetchPayments(
     @Args('page') page: number, //
   ) {
-    return this.paymentsService.fetchPayment(page);
+    return this.paymentsService.fetchPayments(page);
   }
 
   /**

@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ElasticsearchModule } from '@nestjs/elasticsearch';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BlockUsersService } from '../blockUsers/blockUsers.service';
 import { BlockUser } from '../blockUsers/entities/blockUser.entity';
@@ -17,6 +18,9 @@ import { ReportsService } from './reports.service';
       User,
       Dog,
     ]),
+    ElasticsearchModule.register({
+      node: 'http://elasticsearch:9200',
+    }),
   ],
   providers: [
     ReportsResolver, //

@@ -1,6 +1,6 @@
 {
   "template": "user",
-  "index_patterns": ["search-user-*"],
+  "index_patterns": ["*"],
   "settings": {
     "analysis": {
       "analyzer": {
@@ -20,7 +20,7 @@
   },
   "mappings": {
     "properties": {
-      "user": {
+      "email": {
         "type": "text",
         "analyzer": "my_ngram_analyzer"
       }

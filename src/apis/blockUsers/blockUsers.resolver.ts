@@ -22,7 +22,7 @@ export class BlockUserResolver {
   fetchBlockUsers(
     @Args('page') page: number, //
   ) {
-    return this.blockUsersService.findAll(page);
+    return this.blockUsersService.fetchBlockUsers(page);
   }
 
   /**

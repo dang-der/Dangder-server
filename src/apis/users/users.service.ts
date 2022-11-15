@@ -1,14 +1,19 @@
 import {
+  CACHE_MANAGER,
   ConflictException,
+  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { Cache } from 'cache-manager';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import * as bcrypt from 'bcrypt';
 import { Dog } from '../dogs/entities/dog.entity';
 import { UserOutput } from './dto/userOutput.output';
+import { ElasticsearchService } from '@nestjs/elasticsearch';
+import { UserElasticsearchOutPut } from './dto/userElasticsearch.output';
 
 /**
  * Auth Service
@@ -21,7 +26,68 @@ export class UsersService {
 
     @InjectRepository(Dog)
     private readonly dogsRepository: Repository<Dog>,
+
+    @Inject(CACHE_MANAGER)
+    private readonly cacheManager: Cache,
+
+    private readonly elasticsearchService: ElasticsearchService,
   ) {}
+
+  async search({ search }) {
+    const redisUser = await this.cacheManager.get(search);
+    if (redisUser) {
+      console.log('redis에서 찾음');
+      console.log(redisUser);
+      console.log('==========================');
+      return redisUser;
+    }
+
+    // 3. miss => Elasticsearch에서 검색
+    console.time('ELA에서 찾음');
+    const result = await this.elasticsearchService.search({
+      index: 'user',
+      query: {
+        term: { email: search },
+      },
+    });
+    console.log(result, '----------------------');
+
+    console.timeEnd('ELA에서 찾음');
+
+    // 4. 조회한 결과를 redis에 등록
+    // email, dog.name, dog.id, reportCnt, isStop, createdAt, deletedAt
+
+    const result2 = result.hits.hits.map((el: any) => ({
+      email: el._source.email,
+      createdAt: el._source.createdAt,
+      deletedAt: el._source.deletedAt,
+      reportCnt: el._source.reportCnt,
+      isStop: el._source.isStop,
+      id: el._source.id,
+      name: el._source.name,
+    }));
+
+    const searchResult = [];
+    result2.map((userSearch) => {
+      const userOutput = new UserElasticsearchOutPut();
+      userOutput.email = userSearch.email;
+      userOutput.createdAt = userSearch.createdAt;
+      userOutput.deletedAt = userSearch.deletedAt;
+      userOutput.reportCnt = userSearch.reportCnt;
+      userOutput.isStop = userSearch.isStop;
+      userOutput.dogId = userSearch.id;
+      userOutput.dogName = userSearch.name;
+      searchResult.push(userOutput);
+    });
+
+    await this.cacheManager.set(search, searchResult, {
+      ttl: 3,
+    });
+    console.log('================');
+    console.log('redis에 저장');
+    // 5. 조회한 결과를 클라이언트로 반환
+    return searchResult;
+  }
 
   /**
    * Find All User
@@ -92,6 +158,7 @@ export class UsersService {
     // bcrypt 사용하기
     // hash 알고리즘을 사용해 비밀번호를 암호화하는데 hash 메서드의 두 번째 인자는 salt이다.
     // 원본 password를 salt 시켜 준다.
+
     const salt = process.env.BCRYPT_USER_SALT;
     const hashedPassword = await bcrypt.hash(
       createUserInput.password,

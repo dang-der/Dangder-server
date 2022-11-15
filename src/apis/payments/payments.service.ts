@@ -13,6 +13,7 @@ import { Payment, PAYMENT_STATUS_ENUM } from './entities/payment.entity';
 import { Cache } from 'cache-manager';
 import * as dayjs from 'dayjs';
 import { PassTicket } from '../passTickets/entities/passTicket.entity';
+import { PaymentOutput } from './dto/paymentOutput';
 
 /**
  * Payment Service
@@ -70,13 +71,26 @@ export class PaymentsService {
    * Fetch Payment
    * @returns 결제 정보
    */
-  async fetchPayment(page: number) {
+  async fetchPayments(page: number) {
     const findPayment = await this.paymentsRepository.find({
       skip: page ? (page - 1) * 40 : 0, // 1페이지당 10마리씩 조회, 이미 조회한 만큼은 스킵
       take: 40,
       relations: { user: true },
     });
-    return findPayment;
+
+    const findEmail = await this.usersRepository.find();
+
+    const result = [];
+    for (let i = 0; i < findPayment.length; i++) {
+      const tmp = new PaymentOutput();
+      tmp.email = findEmail[i].email;
+      tmp.payMoney = findPayment[i].payMoney;
+      tmp.paymentType = findPayment[i].paymentType;
+      tmp.createdAt = findPayment[i].createdAt;
+      result.push(tmp);
+    }
+
+    return result;
   }
 
   /**
