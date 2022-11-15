@@ -2,7 +2,7 @@ import { Args, Mutation, Resolver, Query } from '@nestjs/graphql';
 import { DogsService } from './dogs.service';
 import { AroundDogOutput } from './dto/aroundDog.output';
 import { CreateDogInput } from './dto/createDog.input';
-import { DogElasticsearchOutPut } from './dto/dogElasticsearch.putput';
+import { DogElasticsearchOutPut } from './dto/dogElasticsearch.output';
 import { UpdateDogInput } from './dto/updateDog.input';
 import { Dog } from './entities/dog.entity';
 
