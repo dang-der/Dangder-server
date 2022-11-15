@@ -14,7 +14,6 @@ import { User } from '../users/entities/user.entity';
 import { AroundDogOutput } from './dto/aroundDog.output';
 import { LikesService } from '../likes/likes.service';
 import { BlockUser } from '../blockUsers/entities/blockUser.entity';
-import { UsersService } from '../users/users.service';
 import { ElasticsearchService } from '@nestjs/elasticsearch';
 
 /**
@@ -60,44 +59,42 @@ export class DogsService {
   async search({ search }) {
     const redisDog = await this.cacheManager.get(search);
     if (redisDog) {
-      console.log('redis에서 찾음');
-      console.log(redisDog);
-      console.log('=========================');
       return redisDog;
     }
     // 3. miss => Elasticsearch에서 검색
-    console.time('ELA에서 찾음');
+
     const result = await this.elasticsearchService.search({
       index: 'dog',
       query: {
-        match: { name: search },
+        bool: { should: [{ term: { name: search } }] },
       },
     });
-    console.timeEnd('ELA에서 찾음');
 
     // 4. 조회한 결과를 redis에 등록
-
     const result2 = result.hits.hits.map((el: any) => ({
       id: el._source.id,
       name: el._source.name,
       age: el._source.age,
       gender: el._source.gender,
       description: el._source.description,
-      deletedAt: el._source.deletedAt,
       registerNumber: el._source.registerNumber,
       userId: el._source.userId,
-      createdAt: el._source.createdAt,
-      updatedAt: el._source.updatedAt,
+      email: el._source.email,
+      deletedAt: new Date(el._source.deletedAt).toLocaleString(),
+      createdAt: new Date(el._source.createdAt).toLocaleString(),
+      updatedAt: new Date(
+        Math.floor(el._source.updatedAt) * 1000,
+      ).toLocaleString(),
     }));
-    // console.log(result.hits.hits[0]._source['style_number']);
+
     await this.cacheManager.set(search, result2, {
-      ttl: 0,
+      ttl: 3,
     });
-    console.log('===============');
-    console.log('redis에 저장');
+
     // 5. 조회한 결과를 클라이언트로 반환
     return result2;
   }
+
   /**
    * 모든 강아지 정보조회
    * @param page 조회할 페이지 수

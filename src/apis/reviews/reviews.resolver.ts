@@ -9,6 +9,11 @@ export class ReviewsResolver {
   constructor(private readonly reviewsService: ReviewsService) {}
 
   @Query(() => [Review])
+  fetchAllReviews() {
+    return this.reviewsService.findAll();
+  }
+
+  @Query(() => [Review])
   fetchReceiveReviews(
     @Args('id', {
       description: '내가 받은 리뷰들을 조회하기 위한 내 강아지 uuid',
@@ -44,12 +49,12 @@ export class ReviewsResolver {
     return this.reviewsService.create(createReviewInput);
   }
 
-  @Mutation(() => Review)
-  updateReview(
-    @Args('updateReviewInput') updateReviewInput: UpdateReviewInput,
-  ) {
-    return this.reviewsService.update(updateReviewInput);
-  }
+  // @Mutation(() => Review)
+  // updateReview(
+  //   @Args('updateReviewInput') updateReviewInput: UpdateReviewInput,
+  // ) {
+  //   return this.reviewsService.update(updateReviewInput);
+  // }
 
   @Mutation(() => Boolean)
   deleteReview(

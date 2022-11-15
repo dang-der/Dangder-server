@@ -2,6 +2,7 @@ import { Args, Mutation, Resolver, Query } from '@nestjs/graphql';
 import { DogsService } from './dogs.service';
 import { AroundDogOutput } from './dto/aroundDog.output';
 import { CreateDogInput } from './dto/createDog.input';
+import { DogElasticsearchOutPut } from './dto/dogElasticsearch.output';
 import { UpdateDogInput } from './dto/updateDog.input';
 import { Dog } from './entities/dog.entity';
 
@@ -15,8 +16,10 @@ export class DogsResolver {
     private readonly dogsService: DogsService, //
   ) {}
 
-  @Query(() => [Dog], { description: '강아지 검색' })
-  fetchDogsBySearch(@Args({ name: 'search' }) search: string) {
+  @Query(() => [DogElasticsearchOutPut], { description: '강아지 검색' })
+  fetchDogsBySearch(
+    @Args({ name: 'search', nullable: true }) search: string, //
+  ) {
     return this.dogsService.search({ search });
   }
 
