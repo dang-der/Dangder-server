@@ -80,7 +80,10 @@ export class DogsService {
       registerNumber: el._source.registerNumber,
       userId: el._source.userId,
       email: el._source.email,
-      deletedAt: new Date(el._source.deletedAt).toLocaleString(),
+      deletedAt:
+        el._source.deletedAt === null
+          ? null
+          : new Date(el._source.deletedAt).toLocaleString(),
       createdAt: new Date(el._source.createdAt).toLocaleString(),
       updatedAt: new Date(
         Math.floor(el._source.updatedAt) * 1000,
