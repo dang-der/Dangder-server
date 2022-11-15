@@ -1,6 +1,7 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { BlockUsersService } from '../blockUsers/blockUsers.service';
 import { UsersService } from '../users/users.service';
+import { ReportOutput } from './dto/reportOutput';
 import { Report } from './entities/report.entity';
 import { ReportsService } from './reports.service';
 
@@ -23,7 +24,7 @@ export class ReportsResolver {
    * @returns 신고 정보
    */
 
-  @Query(() => Report, { description: 'Return : 신고 정보' })
+  @Query(() => [ReportOutput], { description: 'Return : 신고 정보' })
   async fetchReports(
     @Args('page') page: number, //
   ) {

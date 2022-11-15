@@ -13,6 +13,7 @@ import { Payment, PAYMENT_STATUS_ENUM } from './entities/payment.entity';
 import { Cache } from 'cache-manager';
 import * as dayjs from 'dayjs';
 import { PassTicket } from '../passTickets/entities/passTicket.entity';
+import { PaymentOutput } from './dto/paymentOutput';
 
 /**
  * Payment Service
@@ -76,7 +77,20 @@ export class PaymentsService {
       take: 40,
       relations: { user: true },
     });
-    return findPayment;
+
+    const findEmail = await this.usersRepository.find();
+
+    const result = [];
+    for (let i = 0; i < findPayment.length; i++) {
+      const tmp = new PaymentOutput();
+      tmp.email = findEmail[i].email;
+      tmp.payMoney = findPayment[i].payMoney;
+      tmp.paymentType = findPayment[i].paymentType;
+      tmp.createdAt = findPayment[i].createdAt;
+      result.push(tmp);
+    }
+
+    return result;
   }
 
   /**

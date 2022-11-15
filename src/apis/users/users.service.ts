@@ -54,51 +54,39 @@ export class UsersService {
 
     console.timeEnd('ELA에서 찾음');
 
-    // 3.5 Output 탐구 --> user와 dog을 연결하자
-
-    // const userResult = await this.usersRepository.findOne({
-    //   where: {},
-    //   relations: { dog: true },
-    // });
-
-    // const dogName = await this.dogsRepository.findOne({
-    //   where: { name: userResult.dog.name },
-    // });
-
-    // const dogId = await this.dogsRepository.findOne({
-    //   where: { id: userResult.dog.id },
-    // });
-
-    // const elasticsearchOutput = new UserElasticsearchOutPut();
-    // elasticsearchOutput.dogName = dogName;
-    // elasticsearchOutput.dogId = dogId;
-
     // 4. 조회한 결과를 redis에 등록
+    // email, dog.name, dog.id, reportCnt, isStop, createdAt, deletedAt
 
     const result2 = result.hits.hits.map((el: any) => ({
-      id: el._source.id,
       email: el._source.email,
-      pet: el._source.pet,
-      ddMoney: el._source.ddMoney,
-      phone: el._source.phone,
       createdAt: el._source.createdAt,
-      updatedAt: el._source.updatedAt,
+      deletedAt: el._source.deletedAt,
       reportCnt: el._source.reportCnt,
-      donateTotal: el._source.donateTotal,
-      isCert: el._source.isCert,
-      donateGrade: el._source.donateGrade,
       isStop: el._source.isStop,
-      dogId: el._source.dogId,
-      dogName: el._source.dogName,
+      id: el._source.id,
+      name: el._source.name,
     }));
 
-    await this.cacheManager.set(search, result2, {
+    const searchResult = [];
+    result2.map((userSearch) => {
+      const userOutput = new UserElasticsearchOutPut();
+      userOutput.email = userSearch.email;
+      userOutput.createdAt = userSearch.createdAt;
+      userOutput.deletedAt = userSearch.deletedAt;
+      userOutput.reportCnt = userSearch.reportCnt;
+      userOutput.isStop = userSearch.isStop;
+      userOutput.dogId = userSearch.id;
+      userOutput.dogName = userSearch.name;
+      searchResult.push(userOutput);
+    });
+
+    await this.cacheManager.set(search, searchResult, {
       ttl: 3,
     });
     console.log('================');
     console.log('redis에 저장');
     // 5. 조회한 결과를 클라이언트로 반환
-    return result2;
+    return searchResult;
   }
 
   /**
@@ -170,6 +158,7 @@ export class UsersService {
     // bcrypt 사용하기
     // hash 알고리즘을 사용해 비밀번호를 암호화하는데 hash 메서드의 두 번째 인자는 salt이다.
     // 원본 password를 salt 시켜 준다.
+
     const salt = process.env.BCRYPT_USER_SALT;
     const hashedPassword = await bcrypt.hash(
       createUserInput.password,
