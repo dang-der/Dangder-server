@@ -1,5 +1,6 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { BlockUsersService } from './blockUsers.service';
+import { BlockUserOutput } from './dto/blockUserOutput';
 import { BlockUser } from './entities/blockUser.entity';
 
 /**
@@ -18,11 +19,14 @@ export class BlockUserResolver {
    * @returns 차단된 모든 유저 정보
    */
 
-  @Query(() => [BlockUser], { description: 'Return : 차단된 모든 유저 정보' })
+  @Query(() => [BlockUserOutput], {
+    description: 'Return : 차단된 모든 유저 정보',
+  })
   fetchBlockUsers(
     @Args('page') page: number, //
+    email: string, //
   ) {
-    return this.blockUsersService.fetchBlockUsers(page);
+    return this.blockUsersService.fetchBlockUsers(page, email);
   }
 
   /**
@@ -60,6 +64,7 @@ export class BlockUserResolver {
    * @type [`Mutation`]
    * @param userId 차단을 요청한 유저 Id
    * @param blockId 차단하고 싶은 유저 Id
+   * @param email 차단을 요청한 유저 email
    * @returns 차단된 유저 정보
    */
 

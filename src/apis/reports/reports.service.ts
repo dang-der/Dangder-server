@@ -24,19 +24,18 @@ export class ReportsService {
    * @returns 신고 정보
    */
 
-  async fetchReport(page: number) {
+  async fetchReport(page: number, email) {
     const findReport = await this.reportsRepository.find({
       skip: page ? (page - 1) * 40 : 0, // 1페이지당 10마리씩 조회, 이미 조회한 만큼은 스킵
       take: 40,
+      where: { user: { email } },
       relations: { user: true },
     });
-
-    const findEmail = await this.usersRepository.find();
 
     const result = [];
     for (let i = 0; i < findReport.length; i++) {
       const tmp = new ReportOutput();
-      tmp.email = findEmail[i].email;
+      tmp.email = findReport[i].user.email;
       tmp.targetId = findReport[i].targetId;
       tmp.reportContent = findReport[i].reportContent;
       result.push(tmp);
@@ -75,6 +74,7 @@ export class ReportsService {
 
   /**
    * Create Report
+   * @param email 이메일
    * @param userId 신고한 유저 Id
    * @param targetId 신고당한 유저 Id
    * @param reportContent 신고 내용

@@ -22,19 +22,18 @@ export class BlockUsersService {
    * Fetch BlockUsers
    * @returns 조회한 모든 차단 유저 정보
    */
-  async fetchBlockUsers(page: number) {
+  async fetchBlockUsers(page: number, email) {
     const findBlockUser = await this.blockUsersRepository.find({
       skip: page ? (page - 1) * 40 : 0, // 1페이지당 10마리씩 조회, 이미 조회한 만큼은 스킵
       take: 40,
+      where: { user: { email } },
       relations: { user: true },
     });
-
-    const findEmail = await this.usersRepository.find();
 
     const result = [];
     for (let i = 0; i < findBlockUser.length; i++) {
       const tmp = new BlockUserOutput();
-      tmp.email = findEmail[i].email;
+      tmp.email = findBlockUser[i].user.email;
       tmp.blockId = findBlockUser[i].blockId;
       result.push(tmp);
     }

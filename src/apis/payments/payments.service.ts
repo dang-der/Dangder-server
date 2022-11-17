@@ -71,19 +71,18 @@ export class PaymentsService {
    * Fetch Payment
    * @returns 결제 정보
    */
-  async fetchPayments(page: number) {
+  async fetchPayments(page: number, email) {
     const findPayment = await this.paymentsRepository.find({
       skip: page ? (page - 1) * 40 : 0, // 1페이지당 10마리씩 조회, 이미 조회한 만큼은 스킵
       take: 40,
+      where: { user: { email } },
       relations: { user: true },
     });
-
-    const findEmail = await this.usersRepository.find();
 
     const result = [];
     for (let i = 0; i < findPayment.length; i++) {
       const tmp = new PaymentOutput();
-      tmp.email = findEmail[i].email;
+      tmp.email = findPayment[i].user.email;
       tmp.payMoney = findPayment[i].payMoney;
       tmp.paymentType = findPayment[i].paymentType;
       tmp.createdAt = findPayment[i].createdAt;
