@@ -24,9 +24,8 @@ export class BlockUserResolver {
   })
   fetchBlockUsers(
     @Args('page') page: number, //
-    email: string, //
   ) {
-    return this.blockUsersService.fetchBlockUsers(page, email);
+    return this.blockUsersService.fetchBlockUsers(page);
   }
 
   /**

@@ -53,7 +53,10 @@ export class UsersService {
     const result2 = result.hits.hits.map((el: any) => ({
       email: el._source.email,
       createdAt: new Date(el._source.createdAt).toLocaleString(),
-      deletedAt: new Date(el._source.createdAt).toLocaleString(),
+      deletedAt:
+        el._source.deletedAt === null
+          ? null
+          : new Date(el._source.deletedAt).toLocaleString(),
       reportCnt: el._source.reportCnt,
       isStop: el._source.isStop,
       id: el._source.id,

@@ -38,9 +38,8 @@ export class PaymentsResolver {
   @Query(() => [PaymentOutput], { description: 'Return : 결제 정보' })
   fetchPayments(
     @Args('page') page: number, //
-    email: string, //
   ) {
-    return this.paymentsService.fetchPayments(page, email);
+    return this.paymentsService.fetchPayments(page);
   }
 
   /**

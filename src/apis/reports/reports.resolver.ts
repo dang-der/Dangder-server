@@ -27,9 +27,8 @@ export class ReportsResolver {
   @Query(() => [ReportOutput], { description: 'Return : 신고 정보' })
   async fetchReports(
     @Args('page') page: number, //
-    email: string, //
   ) {
-    return this.reportsService.fetchReport(page, email);
+    return this.reportsService.fetchReport(page);
   }
 
   /**

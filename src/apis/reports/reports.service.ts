@@ -24,11 +24,10 @@ export class ReportsService {
    * @returns 신고 정보
    */
 
-  async fetchReport(page: number, email) {
+  async fetchReport(page: number) {
     const findReport = await this.reportsRepository.find({
       skip: page ? (page - 1) * 40 : 0, // 1페이지당 10마리씩 조회, 이미 조회한 만큼은 스킵
       take: 40,
-      where: { user: { email } },
       relations: { user: true },
     });
 
