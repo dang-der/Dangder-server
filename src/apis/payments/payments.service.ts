@@ -78,12 +78,10 @@ export class PaymentsService {
       relations: { user: true },
     });
 
-    const findEmail = await this.usersRepository.find();
-
     const result = [];
     for (let i = 0; i < findPayment.length; i++) {
       const tmp = new PaymentOutput();
-      tmp.email = findEmail[i].email;
+      tmp.email = findPayment[i].user.email;
       tmp.payMoney = findPayment[i].payMoney;
       tmp.paymentType = findPayment[i].paymentType;
       tmp.createdAt = findPayment[i].createdAt;

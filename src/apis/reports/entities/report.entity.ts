@@ -17,10 +17,6 @@ export class Report {
 
   @Column()
   @Field(() => String)
-  email: string;
-
-  @Column()
-  @Field(() => String)
   targetId: string;
 
   @Column()

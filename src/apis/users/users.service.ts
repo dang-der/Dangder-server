@@ -36,31 +36,27 @@ export class UsersService {
   async search({ search }) {
     const redisUser = await this.cacheManager.get(search);
     if (redisUser) {
-      console.log('redis에서 찾음');
-      console.log(redisUser);
-      console.log('==========================');
       return redisUser;
     }
 
     // 3. miss => Elasticsearch에서 검색
-    console.time('ELA에서 찾음');
     const result = await this.elasticsearchService.search({
       index: 'user',
       query: {
         term: { email: search },
       },
     });
-    console.log(result, '----------------------');
-
-    console.timeEnd('ELA에서 찾음');
 
     // 4. 조회한 결과를 redis에 등록
     // email, dog.name, dog.id, reportCnt, isStop, createdAt, deletedAt
 
     const result2 = result.hits.hits.map((el: any) => ({
       email: el._source.email,
-      createdAt: el._source.createdAt,
-      deletedAt: el._source.deletedAt,
+      createdAt: new Date(el._source.createdAt).toLocaleString(),
+      deletedAt:
+        el._source.deletedAt === null
+          ? null
+          : new Date(el._source.deletedAt).toLocaleString(),
       reportCnt: el._source.reportCnt,
       isStop: el._source.isStop,
       id: el._source.id,
@@ -83,8 +79,6 @@ export class UsersService {
     await this.cacheManager.set(search, searchResult, {
       ttl: 3,
     });
-    console.log('================');
-    console.log('redis에 저장');
     // 5. 조회한 결과를 클라이언트로 반환
     return searchResult;
   }

@@ -64,6 +64,7 @@ export class ReportsResolver {
    * @type [`Mutation`]
    * @param userId 신고한 유저 Id
    * @param targetId 신고당한 유저 Id
+   * @param reportContent
    * @returns 생성된 신고 게시물
    */
 
@@ -82,6 +83,10 @@ export class ReportsResolver {
       id: targetId,
     });
 
-    return this.reportsService.create({ userId, targetId, reportContent });
+    return this.reportsService.create({
+      userId,
+      targetId,
+      reportContent,
+    });
   }
 }

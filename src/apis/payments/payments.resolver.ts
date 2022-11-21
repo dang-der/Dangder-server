@@ -13,6 +13,7 @@ import { IContext } from 'src/commons/type/context';
 import { IamportsService } from '../imports/imports.services';
 import { PassTicketsService } from '../passTickets/passTickets.service';
 import { PassTicket } from '../passTickets/entities/passTicket.entity';
+import { PaymentOutput } from './dto/paymentOutput';
 
 /**
  * Payment GraphQL API Resolver
@@ -34,7 +35,7 @@ export class PaymentsResolver {
    * @type [`Query`]
    * @returns 결제 정보
    */
-  @Query(() => Payment, { description: 'Return : 결제 정보' })
+  @Query(() => [PaymentOutput], { description: 'Return : 결제 정보' })
   fetchPayments(
     @Args('page') page: number, //
   ) {

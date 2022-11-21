@@ -8,13 +8,13 @@ export class UserElasticsearchOutPut {
   @Field(() => String)
   createdAt: string;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   deletedAt: string;
 
-  @Field(() => Int)
+  @Field(() => Int, { nullable: true })
   reportCnt: number;
 
-  @Field(() => Boolean)
+  @Field(() => Boolean, { nullable: true })
   isStop: boolean;
 
   @Field(() => String, { nullable: true })

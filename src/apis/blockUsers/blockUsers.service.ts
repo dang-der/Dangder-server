@@ -29,12 +29,10 @@ export class BlockUsersService {
       relations: { user: true },
     });
 
-    const findEmail = await this.usersRepository.find();
-
     const result = [];
     for (let i = 0; i < findBlockUser.length; i++) {
       const tmp = new BlockUserOutput();
-      tmp.email = findEmail[i].email;
+      tmp.email = findBlockUser[i].user.email;
       tmp.blockId = findBlockUser[i].blockId;
       result.push(tmp);
     }

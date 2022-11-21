@@ -15,16 +15,10 @@ export class BlockUser {
   @Field(() => String)
   id: string;
 
-  @Column()
-  @Field(() => String)
-  email: string;
-
   // 차단 대상 유저 id
   @Column()
   @Field(() => String)
   blockId: string;
-
-  // BlockUser N : User 1 연결
 
   @JoinColumn()
   @ManyToOne(() => User, (user) => user.blockUsers, {
