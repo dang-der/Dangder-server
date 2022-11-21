@@ -77,6 +77,7 @@ export class Dog {
   updatedAt: Date;
 
   @DeleteDateColumn()
+  @Field(() => Date)
   deletedAt: Date;
 
   @JoinTable()
